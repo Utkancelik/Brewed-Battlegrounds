@@ -44,12 +44,12 @@ TagManager:
   - name: Ground
     uniqueID: 3640881615
     locked: 0
-  - name: Props
-    uniqueID: 3539002385
-    locked: 0
   - name: Warrior
     uniqueID: 3471532783
     locked: 0
   - name: Weapon
     uniqueID: 2829580103
+    locked: 0
+  - name: Props
+    uniqueID: 3539002385
     locked: 0
