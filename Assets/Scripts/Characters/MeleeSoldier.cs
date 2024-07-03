@@ -8,9 +8,5 @@ public class MeleeSoldier : Soldier
     public MeleeSoldier() : base(new MeleeAttack(), new SimpleMove())
     {
     }
-
-    public override void Display()
-    {
-        
-    }
+    
 }

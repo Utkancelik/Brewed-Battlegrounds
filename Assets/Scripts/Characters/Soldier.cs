@@ -1,11 +1,27 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
-public abstract class Soldier 
+[RequireComponent(typeof(IAttackBehavior))]
+public class Soldier : MonoBehaviour
 {
-    protected IAttackBehavior attackBehavior;
+    public IAttackBehavior attackBehavior;
     protected IMoveBehavior moveBehavior;
+
+    private void OnValidate()
+    {
+        attackBehavior = GetComponent<IAttackBehavior>();
+    }
+
+
+    private void Start()
+    {
+        Debug.Log(attackBehavior);
+    }
 
     public Soldier(IAttackBehavior attackBehavior, IMoveBehavior moveBehavior)
     {
@@ -23,5 +39,5 @@ public abstract class Soldier
         moveBehavior.Move();
     }
     
-    public abstract void Display();  // for each soldier graph and animations
+    
 }
