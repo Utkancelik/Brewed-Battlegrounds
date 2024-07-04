@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
 public interface IMoveBehavior
 {
-    void Move();
+    void Move(Rigidbody2D rb, bool isEnemy, float speed);
 }
