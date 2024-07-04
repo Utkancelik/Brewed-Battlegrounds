@@ -1154,9 +1154,8 @@ MonoBehaviour:
   playerSpawnArea: {fileID: 359329666}
   enemySpawnArea: {fileID: 56840013}
   waveDataList:
-  - {fileID: 11400000, guid: af09ac15ad4bd114eb25bde8334ca47f, type: 2}
-  - {fileID: 11400000, guid: 78cb8aa2b727875409174bdd6a70c0d7, type: 2}
-  - {fileID: 11400000, guid: 78cb8aa2b727875409174bdd6a70c0d7, type: 2}
+  - {fileID: 11400000, guid: 885aab09cdc8aa744985145643d59e9c, type: 2}
+  waveData: {fileID: 11400000, guid: 885aab09cdc8aa744985145643d59e9c, type: 2}
 --- !u!1 &1884385226
 GameObject:
   m_ObjectHideFlags: 0

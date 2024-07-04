@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     public SpawnArea playerSpawnArea;
     public SpawnArea enemySpawnArea;
 
-    public List<WaveData> waveDataList;
+    public WaveData waveData;
     private int currentWaveIndex = 0;
 
     void Awake()
@@ -97,12 +97,15 @@ public class GameManager : MonoBehaviour
 
     IEnumerator SpawnWaves()
     {
-        while (currentWaveIndex < waveDataList.Count)
+        int waveCount = waveData.Waves.Count;
+        for (int i = 0; i < waveCount; i++)
         {
-            WaveData waveData = waveDataList[currentWaveIndex];
-            foreach (GameObject unit in waveData.units)
+            int totalEnemyInThisWave = waveData.Waves[i].Amount;
+            for (int j = 0; j < totalEnemyInThisWave; j++)
             {
-                SpawnSoldier(unit, true);
+                Soldier whatSoldierEnemyWillSpawn = waveData.Waves[i].Soldier;
+                GameObject enemyGameObject = whatSoldierEnemyWillSpawn.gameObject;
+                SpawnSoldier(enemyGameObject, true);
                 yield return new WaitForSeconds(waveData.delayBetweenUnits);
             }
             currentWaveIndex++;

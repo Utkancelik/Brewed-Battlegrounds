@@ -17,7 +17,7 @@ public class MeleeAttack : IAttackBehavior
         attacker.TriggerAttackAnimation();
         // Wait for the critical point in the animation to deal damage
         yield return new WaitForSeconds(0.5f);
-        attacker.DealDamage();
+        attacker.DealDamage(target);
         // Wait for the animation to end
         yield return new WaitForSeconds(0.5f);
         attacker.ResetAttackAnimation(); // Reset the attack animation trigger

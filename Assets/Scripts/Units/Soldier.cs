@@ -11,6 +11,7 @@ public abstract class Soldier : MonoBehaviour
     protected IAttackBehavior attackBehavior;
     private Animator animator;
     public Soldier currentTarget;
+    private bool isAttacking;
 
     protected virtual void Awake()
     {
@@ -54,17 +55,19 @@ public abstract class Soldier : MonoBehaviour
                 Vector3 direction = (currentTarget.transform.position - transform.position).normalized;
                 GetComponent<Rigidbody2D>().velocity = direction * stats.Speed;
             }
-            else
+            else if (!isAttacking)
             {
                 // Attack the target
                 GetComponent<Rigidbody2D>().velocity = Vector2.zero;
                 attackBehavior.Attack(this, currentTarget);
+                isAttacking = true;
             }
         }
         else
         {
-            // Move towards the enemy base
+            // Move towards the enemy base with collision avoidance
             moveBehavior.Move(GetComponent<Rigidbody2D>(), IsEnemy, stats.Speed);
+            isAttacking = false;
         }
 
         DetectEnemy();
@@ -72,14 +75,17 @@ public abstract class Soldier : MonoBehaviour
 
     void DetectEnemy()
     {
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, stats.DetectRange);
-        foreach (var hitCollider in hitColliders)
+        if (!isAttacking)
         {
-            Soldier target = hitCollider.GetComponent<Soldier>();
-            if (target != null && target.IsEnemy != IsEnemy && target.Health > 0)
+            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, stats.DetectRange);
+            foreach (var hitCollider in hitColliders)
             {
-                currentTarget = target;
-                break;
+                Soldier target = hitCollider.GetComponent<Soldier>();
+                if (target != null && target.IsEnemy != IsEnemy && target.Health > 0)
+                {
+                    currentTarget = target;
+                    break;
+                }
             }
         }
     }
@@ -102,21 +108,30 @@ public abstract class Soldier : MonoBehaviour
         {
             animator.ResetTrigger("Attack");
         }
+        isAttacking = false;
     }
 
-    // Method to deal damage called by the animation event
-    public void DealDamage()
+    public void DealDamage(Soldier target)
     {
-        if (currentTarget != null && currentTarget.Health > 0)
+        if (target != null && target.Health > 0)
         {
-            Debug.Log("Dealing damage to " + currentTarget.name);
-            currentTarget.Health -= GetStats().Damage;
-            if (currentTarget.Health <= 0)
+            Debug.Log("Dealing damage to " + target.name);
+            target.Health -= GetStats().Damage;
+            if (target.Health <= 0)
             {
-                GameObject.Destroy(currentTarget.gameObject);
+                target.Die();
                 currentTarget = null; // Clear the target
+                ResetAttackAnimation();
             }
         }
+    }
+
+    public void Die()
+    {
+        // Handle the death of the soldier
+        Debug.Log(name + " has died.");
+        ResetAttackAnimation();
+        GameObject.Destroy(gameObject);
     }
 
     // This method will be called by the animation event to reset the animation
