@@ -19,4 +19,9 @@ MonoBehaviour:
     Amount: 3
   - Soldier: {fileID: 8937490002869615386, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
     Amount: 6
+  - Soldier: {fileID: 8937490002869615386, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
+    Amount: 8
+  - Soldier: {fileID: 8937490002869615386, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
+    Amount: 12
   delayBetweenUnits: 0
+  delayBetweenWaves: 5

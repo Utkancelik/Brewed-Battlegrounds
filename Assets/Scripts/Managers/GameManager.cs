@@ -2,32 +2,33 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+using UnityEngine;
+using System.Collections;
+
+using UnityEngine;
+using System.Collections;
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public SoldierStats PlayerInfantryStats { get; private set; }
-    public SoldierStats EnemyInfantryStats { get; private set; }
-    // Add similar properties for other soldier types
+    [SerializeField] private SoldierStats playerInfantryStats;
+    [SerializeField] private SoldierStats enemyInfantryStats;
+    [SerializeField] private Transform playerBase;
+    [SerializeField] private Transform enemyBase;
+    [SerializeField] private WaveData waveData;
+    [SerializeField] private SpawnArea playerSpawnArea;
+    [SerializeField] private SpawnArea enemySpawnArea;
+    [SerializeField] private GameObject playerInfantryPrefab;
 
-    public Transform playerBase;
-    public Transform enemyBase;
-    public int gold = 0;
-    public int goldProductionRate = 1;
-    private float goldTimer;
+    private SoldierSpawner soldierSpawner;
+    [SerializeField] private GoldManager goldManager;
+    private AgeManager ageManager;
 
-    public GameObject playerInfantryPrefab;
-    public GameObject enemyInfantryPrefab;
-    public GameObject playerArcherPrefab;
-    public GameObject enemyArcherPrefab;
-    public GameObject playerCavalryPrefab;
-    public GameObject enemyCavalryPrefab;
+    [SerializeField] private int gold;  // Define the gold variable
 
-    public SpawnArea playerSpawnArea;
-    public SpawnArea enemySpawnArea;
-
-    public WaveData waveData;
-    private int currentWaveIndex = 0;
+    public SoldierStats PlayerInfantryStats => playerInfantryStats;
+    public SoldierStats EnemyInfantryStats => enemyInfantryStats;
 
     void Awake()
     {
@@ -42,15 +43,16 @@ public class GameManager : MonoBehaviour
         }
 
         InitializeStats();
+        soldierSpawner = new SoldierSpawner(playerSpawnArea, enemySpawnArea);
+        goldManager = new GoldManager();
+        ageManager = new AgeManager();
     }
 
     void InitializeStats()
     {
-        PlayerInfantryStats = new SoldierStats(10, 2f, 5f, 1f); // Adjust detect and attack range values as needed
-        EnemyInfantryStats = new SoldierStats(10, 2f, 5f, 1f);
-        // Initialize other stats similarly
+        playerInfantryStats = new SoldierStats(10, 2f, 5f, 1f); // Adjust detect and attack range values as needed
+        enemyInfantryStats = new SoldierStats(10, 2f, 5f, 1f);
     }
-
 
     void Start()
     {
@@ -59,41 +61,14 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        ProduceGold();
+        goldManager.ProduceGold(ref gold);
 
         if (Input.GetKeyDown(KeyCode.Alpha1) && gold >= 5)
         {
-            SpawnSoldier(playerInfantryPrefab, false);
+            soldierSpawner.SpawnSoldier(playerInfantryPrefab, false);
             gold -= 5;
         }
     }
-
-    void ProduceGold()
-    {
-        goldTimer += Time.deltaTime;
-        if (goldTimer >= 1f)
-        {
-            gold += goldProductionRate;
-            goldTimer = 0f;
-        }
-    }
-
-    public void UpgradePlayerInfantryDamage(int amount)
-    {
-        PlayerInfantryStats.UpgradeDamage(amount);
-    }
-
-    public void UpgradePlayerInfantrySpeed(float amount)
-    {
-        PlayerInfantryStats.UpgradeSpeed(amount);
-    }
-
-    public void UpgradePlayerInfantryAttackRange(float amount)
-    {
-        PlayerInfantryStats.UpgradeAttackRange(amount);
-    }
-
-    // Add similar methods for other upgrades
 
     IEnumerator SpawnWaves()
     {
@@ -105,28 +80,10 @@ public class GameManager : MonoBehaviour
             {
                 Soldier whatSoldierEnemyWillSpawn = waveData.Waves[i].Soldier;
                 GameObject enemyGameObject = whatSoldierEnemyWillSpawn.gameObject;
-                SpawnSoldier(enemyGameObject, true);
+                soldierSpawner.SpawnSoldier(enemyGameObject, true);
                 yield return new WaitForSeconds(waveData.delayBetweenUnits);
             }
-            currentWaveIndex++;
-            yield return new WaitForSeconds(10f); // Delay between waves
+            yield return new WaitForSeconds(waveData.delayBetweenWaves); // Delay between waves
         }
-    }
-
-    void SpawnSoldier(GameObject soldierPrefab, bool isEnemy)
-    {
-        Vector3 spawnPosition = isEnemy ? enemySpawnArea.GetRandomPosition() : playerSpawnArea.GetRandomPosition();
-        GameObject newSoldier = Instantiate(soldierPrefab, spawnPosition, Quaternion.identity);
-    
-        // Log to check the prefab being instantiated
-        Debug.Log("Instantiated soldier: " + newSoldier.name);
-    
-        Soldier soldierScript = newSoldier.GetComponent<Soldier>();
-        if (soldierScript == null)
-        {
-            Debug.LogError("Soldier component not found on instantiated prefab.");
-        }
-        soldierScript.IsEnemy = isEnemy;
-        newSoldier.tag = isEnemy ? "EnemySoldier" : "PlayerSoldier";
     }
 }

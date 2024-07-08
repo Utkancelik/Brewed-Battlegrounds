@@ -14,4 +14,5 @@ public class WaveData : ScriptableObject
     
     public List<WaveDataEntry> Waves;
     public float delayBetweenUnits;
+    public float delayBetweenWaves;
 }

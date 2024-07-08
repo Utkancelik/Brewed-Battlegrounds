@@ -1,14 +1,15 @@
-public class PlayerInfantry : Soldier
+public class PlayerCavalry : Soldier
 {
     private void Awake()
     {
         Health = 100;
         stats = GameManager.Instance.PlayerInfantryStats;
         base.Awake();
+        SetAttackBehavior(new MeleeAttack());
     }
 
     public override void Display()
     {
-        // Display Player Infantry-specific visuals
+        // Display Player Archer-specific visuals
     }
 }
