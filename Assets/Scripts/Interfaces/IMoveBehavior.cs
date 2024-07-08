@@ -1,5 +1,6 @@
 using UnityEngine;
-public interface IMoveBehavior
+
+public abstract class IMoveBehavior : MonoBehaviour
 {
-    void Move(Rigidbody2D rb, bool isEnemy, float speed);
+    public abstract void Move(Rigidbody2D rb, bool isEnemy, float speed);
 }

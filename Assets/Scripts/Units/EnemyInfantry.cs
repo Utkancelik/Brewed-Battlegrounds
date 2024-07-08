@@ -1,3 +1,6 @@
+using UnityEngine;
+
+[RequireComponent(typeof(MeleeAttack), typeof(NormalMove))]
 public class EnemyInfantry : Soldier
 {
     private void Awake()

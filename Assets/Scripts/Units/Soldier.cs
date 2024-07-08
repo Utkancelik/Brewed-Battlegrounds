@@ -1,6 +1,3 @@
-using System;
-using UnityEngine;
-
 using UnityEngine;
 
 public abstract class Soldier : MonoBehaviour
@@ -20,8 +17,9 @@ public abstract class Soldier : MonoBehaviour
         set { isEnemy = value; }
     }
 
-    protected IMoveBehavior moveBehavior;
-    protected IAttackBehavior attackBehavior;
+    [SerializeField] protected IMoveBehavior moveBehavior;
+    [SerializeField] protected IAttackBehavior attackBehavior;
+
     private Animator animator;
     public Soldier currentTarget;
     private bool isAttacking;
@@ -38,13 +36,15 @@ public abstract class Soldier : MonoBehaviour
             Debug.Log("Animator assigned on " + gameObject.name);
         }
 
-        InitializeStatsAndBehaviors();
-    }
+        if (moveBehavior == null)
+        {
+            moveBehavior = gameObject.GetComponent<IMoveBehavior>();
+        }
 
-    private void InitializeStatsAndBehaviors()
-    {
-        SetMoveBehavior(new NormalMove());
-        SetAttackBehavior(new MeleeAttack());
+        if (attackBehavior == null)
+        {
+            attackBehavior = gameObject.GetComponent<IAttackBehavior>();
+        }
     }
 
     public void SetMoveBehavior(IMoveBehavior mb)
@@ -64,16 +64,12 @@ public abstract class Soldier : MonoBehaviour
             float distanceToTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
             if (distanceToTarget > stats.AttackRange)
             {
-                // Move towards the current target
                 Vector3 direction = (currentTarget.transform.position - transform.position).normalized;
                 GetComponent<Rigidbody2D>().velocity = direction * stats.Speed;
             }
             else if (!isAttacking)
             {
-                // Face the target
                 FaceTarget();
-
-                // Attack the target
                 GetComponent<Rigidbody2D>().velocity = Vector2.zero;
                 attackBehavior.Attack(this, currentTarget);
                 isAttacking = true;
@@ -81,10 +77,7 @@ public abstract class Soldier : MonoBehaviour
         }
         else
         {
-            // Re-evaluate the target
             DetectEnemy();
-
-            // Move towards the enemy base with collision avoidance
             if (currentTarget == null)
             {
                 FaceEnemyBase();
@@ -124,7 +117,6 @@ public abstract class Soldier : MonoBehaviour
     {
         if (currentTarget != null)
         {
-            // Flip the soldier based on the target's position using the transform's scale
             if (currentTarget.transform.position.x > transform.position.x)
             {
                 transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
@@ -138,7 +130,6 @@ public abstract class Soldier : MonoBehaviour
 
     void FaceEnemyBase()
     {
-        // Flip the soldier based on the direction towards the enemy base
         if (IsEnemy)
         {
             transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
@@ -179,7 +170,7 @@ public abstract class Soldier : MonoBehaviour
             if (target.Health <= 0)
             {
                 target.Die();
-                currentTarget = null; // Clear the target
+                currentTarget = null;
                 ResetAttackAnimation();
             }
         }
@@ -187,13 +178,11 @@ public abstract class Soldier : MonoBehaviour
 
     public void Die()
     {
-        // Handle the death of the soldier
         Debug.Log(name + " has died.");
         ResetAttackAnimation();
         GameObject.Destroy(gameObject);
     }
 
-    // This method will be called by the animation event to reset the animation
     public void OnAttackAnimationEnd()
     {
         Debug.Log("OnAttackAnimationEnd called on " + gameObject.name);

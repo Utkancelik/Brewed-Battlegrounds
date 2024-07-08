@@ -5,7 +5,6 @@ public class FutureSniper : Soldier
         Health = 100;
         stats = GameManager.Instance.PlayerInfantryStats;
         base.Awake();
-        SetAttackBehavior(new RangedAttack());
     }
 
     public override void Display()

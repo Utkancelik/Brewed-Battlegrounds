@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1540646248096339738}
   - component: {fileID: 8057136323563840271}
   - component: {fileID: 2799119361601978684}
-  - component: {fileID: 800243239128372822}
   - component: {fileID: -1374866083851402799}
   m_Layer: 0
   m_Name: PlayerInfantry
@@ -98,19 +97,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &800243239128372822
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377341517561657481}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aaac796d5c4a67a478573d7492a1cd70, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentTarget: {fileID: 0}
 --- !u!95 &-1374866083851402799
 Animator:
   serializedVersion: 5

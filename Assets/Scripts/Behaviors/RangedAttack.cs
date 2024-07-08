@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class RangedAttack : IAttackBehavior
 {
-    public void Attack(Soldier attacker, Soldier target)
+    public override void Attack(Soldier attacker, Soldier target)
     {
         attacker.StartCoroutine(PerformAttack(attacker, target));
     }
@@ -23,4 +23,3 @@ public class RangedAttack : IAttackBehavior
         }
     }
 }
-

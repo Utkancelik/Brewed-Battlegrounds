@@ -5,7 +5,6 @@ public class PlayerCavalry : Soldier
         Health = 100;
         stats = GameManager.Instance.PlayerInfantryStats;
         base.Awake();
-        SetAttackBehavior(new MeleeAttack());
     }
 
     public override void Display()
