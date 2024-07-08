@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public abstract class Soldier : MonoBehaviour
+public class Soldier : MonoBehaviour
 {
-    [SerializeField] protected SoldierStats stats;
+    [SerializeField] private SoldierStats stats;
     [SerializeField] private int health;
     public int Health
     {
@@ -17,47 +17,36 @@ public abstract class Soldier : MonoBehaviour
         set { isEnemy = value; }
     }
 
-    [SerializeField] protected IMoveBehavior moveBehavior;
-    [SerializeField] protected IAttackBehavior attackBehavior;
+    private IMoveBehavior moveBehavior;
+    private IAttackBehavior attackBehavior;
 
     private Animator animator;
     public Soldier currentTarget;
     private bool isAttacking;
 
-    protected virtual void Awake()
+    private void Awake()
     {
         animator = GetComponent<Animator>();
-        if (animator == null)
-        {
-            Debug.LogError("Animator not found on " + gameObject.name);
-        }
-        else
-        {
-            Debug.Log("Animator assigned on " + gameObject.name);
-        }
+        moveBehavior = GetComponent<IMoveBehavior>();
+        attackBehavior = GetComponent<IAttackBehavior>();
 
         if (moveBehavior == null)
         {
-            moveBehavior = gameObject.GetComponent<IMoveBehavior>();
+            Debug.LogError("MoveBehavior not assigned on " + gameObject.name);
         }
 
         if (attackBehavior == null)
         {
-            attackBehavior = gameObject.GetComponent<IAttackBehavior>();
+            Debug.LogError("AttackBehavior not assigned on " + gameObject.name);
+        }
+
+        if (stats == null)
+        {
+            Debug.LogError("Stats not assigned on " + gameObject.name);
         }
     }
 
-    public void SetMoveBehavior(IMoveBehavior mb)
-    {
-        moveBehavior = mb;
-    }
-
-    public void SetAttackBehavior(IAttackBehavior ab)
-    {
-        attackBehavior = ab;
-    }
-
-    void Update()
+    private void Update()
     {
         if (currentTarget != null && currentTarget.Health > 0)
         {
@@ -87,7 +76,7 @@ public abstract class Soldier : MonoBehaviour
         }
     }
 
-    void DetectEnemy()
+    private void DetectEnemy()
     {
         if (!isAttacking)
         {
@@ -113,7 +102,7 @@ public abstract class Soldier : MonoBehaviour
         }
     }
 
-    void FaceTarget()
+    private void FaceTarget()
     {
         if (currentTarget != null)
         {
@@ -128,7 +117,7 @@ public abstract class Soldier : MonoBehaviour
         }
     }
 
-    void FaceEnemyBase()
+    private void FaceEnemyBase()
     {
         if (IsEnemy)
         {
@@ -142,14 +131,7 @@ public abstract class Soldier : MonoBehaviour
 
     public void TriggerAttackAnimation()
     {
-        if (animator != null)
-        {
-            animator.SetTrigger("Attack");
-        }
-        else
-        {
-            Debug.LogError("Animator is not assigned on " + gameObject.name);
-        }
+        animator?.SetTrigger("Attack");
     }
 
     public void ResetAttackAnimation()
@@ -165,8 +147,7 @@ public abstract class Soldier : MonoBehaviour
     {
         if (target != null && target.Health > 0)
         {
-            Debug.Log("Dealing damage to " + target.name);
-            target.Health -= GetStats().Damage;
+            target.Health -= stats.Damage;
             if (target.Health <= 0)
             {
                 target.Die();
@@ -178,21 +159,27 @@ public abstract class Soldier : MonoBehaviour
 
     public void Die()
     {
-        Debug.Log(name + " has died.");
         ResetAttackAnimation();
-        GameObject.Destroy(gameObject);
+        Destroy(gameObject);
     }
 
     public void OnAttackAnimationEnd()
     {
-        Debug.Log("OnAttackAnimationEnd called on " + gameObject.name);
         ResetAttackAnimation();
     }
 
-    public abstract void Display();
-
-    public SoldierStats GetStats()
+    public virtual void TakeDamage(int damage)
     {
-        return stats;
+        Health -= damage;
+        if (Health <= 0)
+        {
+            Die();
+        }
+    }
+
+    public SoldierStats Stats
+    {
+        get => stats;
+        set => stats = value;
     }
 }

@@ -12,6 +12,9 @@ GameObject:
   - component: {fileID: 8057136323563840271}
   - component: {fileID: 2799119361601978684}
   - component: {fileID: -1374866083851402799}
+  - component: {fileID: -4171262696366531182}
+  - component: {fileID: 2322744468278456292}
+  - component: {fileID: -434830491422176155}
   m_Layer: 0
   m_Name: PlayerInfantry
   m_TagString: PlayerSoldier
@@ -118,6 +121,51 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-4171262696366531182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377341517561657481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db4bbda91abc46741b16a11690f8af7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stats:
+    Health: 100
+    Speed: 1
+    AttackRange: 1
+    DetectRange: 5
+    Damage: 25
+  health: 100
+  isEnemy: 0
+  currentTarget: {fileID: 0}
+--- !u!114 &2322744468278456292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377341517561657481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0714262f77238384691f3fe5920f6bf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-434830491422176155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377341517561657481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1f7ad1acdfc13041a5c6e0e94ca4881, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4760164465194620103
 GameObject:
   m_ObjectHideFlags: 0

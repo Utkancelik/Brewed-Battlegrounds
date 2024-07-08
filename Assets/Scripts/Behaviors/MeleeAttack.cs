@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Soldier))]
 public class MeleeAttack : IAttackBehavior
 {
     public override void Attack(Soldier attacker, Soldier target)

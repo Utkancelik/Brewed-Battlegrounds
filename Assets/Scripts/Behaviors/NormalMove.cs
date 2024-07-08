@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Soldier))]
 public class NormalMove : IMoveBehavior
 {
     public override void Move(Rigidbody2D rb, bool isEnemy, float speed)

@@ -982,24 +982,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerInfantryStats:
-    damage: 0
-    speed: 0
-    detectRange: 0
-    attackRange: 0
+    Health: 0
+    Speed: 0
+    AttackRange: 0
+    DetectRange: 5
+    Damage: 0
   enemyInfantryStats:
-    damage: 0
-    speed: 0
-    detectRange: 0
-    attackRange: 0
+    Health: 0
+    Speed: 0
+    AttackRange: 0
+    DetectRange: 5
+    Damage: 0
   playerBase: {fileID: 359329665}
   enemyBase: {fileID: 56840012}
   waveData: {fileID: 11400000, guid: 885aab09cdc8aa744985145643d59e9c, type: 2}
   playerSpawnArea: {fileID: 359329666}
   enemySpawnArea: {fileID: 56840013}
-  playerInfantryPrefab: {fileID: 1377341517561657481, guid: eec70292f861f1c4d806847137f86c89, type: 3}
+  unitPrefab: {fileID: 1377341517561657481, guid: eec70292f861f1c4d806847137f86c89, type: 3}
   goldManager:
     goldProductionRate: 5
-    goldTimerRate: 0
   gold: 0
 --- !u!1 &1884385226
 GameObject:
