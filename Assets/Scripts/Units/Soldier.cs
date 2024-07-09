@@ -1,12 +1,11 @@
 using UnityEngine;
-
 public class Soldier : MonoBehaviour
 {
     [SerializeField] private SoldierStats stats;
     [SerializeField] private int health;
     public int Health
     {
-        get { return health; }
+        get => health;
         set
         {
             health = value;
@@ -17,8 +16,8 @@ public class Soldier : MonoBehaviour
     [SerializeField] private bool isEnemy;
     public bool IsEnemy
     {
-        get { return isEnemy; }
-        set { isEnemy = value; }
+        get => isEnemy;
+        set => isEnemy = value;
     }
 
     private IMoveBehavior moveBehavior;
@@ -29,7 +28,6 @@ public class Soldier : MonoBehaviour
     private bool isAttacking;
     private bool isDead = false;
 
-    [SerializeField] private GameObject healthBarPrefab;
     [SerializeField] private GameObject deathEffectPrefab;
     [SerializeField] private GameObject[] bloodTracePrefabs;
 
@@ -39,22 +37,16 @@ public class Soldier : MonoBehaviour
         moveBehavior = GetComponent<IMoveBehavior>();
         attackBehavior = GetComponent<IAttackBehavior>();
 
-        if (moveBehavior == null)
-        {
-            Debug.LogError("MoveBehavior not assigned on " + gameObject.name);
-        }
-
-        if (attackBehavior == null)
-        {
-            Debug.LogError("AttackBehavior not assigned on " + gameObject.name);
-        }
-
-        if (stats == null)
-        {
-            Debug.LogError("Stats not assigned on " + gameObject.name);
-        }
+        ValidateComponents();
 
         InitializeHealthBar();
+    }
+
+    private void ValidateComponents()
+    {
+        if (moveBehavior == null) Debug.LogError("MoveBehavior not assigned on " + gameObject.name);
+        if (attackBehavior == null) Debug.LogError("AttackBehavior not assigned on " + gameObject.name);
+        if (stats == null) Debug.LogError("Stats not assigned on " + gameObject.name);
     }
 
     private void InitializeHealthBar()
@@ -75,30 +67,50 @@ public class Soldier : MonoBehaviour
     {
         if (currentTarget != null && currentTarget.Health > 0)
         {
-            float distanceToTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
-            if (distanceToTarget > stats.AttackRange)
-            {
-                Vector3 direction = (currentTarget.transform.position - transform.position).normalized;
-                GetComponent<Rigidbody2D>().velocity = direction * stats.Speed;
-            }
-            else if (!isAttacking)
-            {
-                FaceTarget();
-                GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-                attackBehavior.Attack(this, currentTarget);
-                isAttacking = true;
-            }
+            EngageTarget();
         }
         else
         {
-            DetectEnemy();
-            if (currentTarget == null)
-            {
-                FaceEnemyBase();
-                moveBehavior.Move(GetComponent<Rigidbody2D>(), IsEnemy, stats.Speed);
-                isAttacking = false;
-            }
+            PatrolArea();
         }
+    }
+
+    private void EngageTarget()
+    {
+        float distanceToTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
+        if (distanceToTarget > stats.AttackRange)
+        {
+            MoveTowards(currentTarget.transform.position);
+        }
+        else if (!isAttacking)
+        {
+            FaceTarget();
+            StopMovement();
+            attackBehavior.Attack(this, currentTarget);
+            isAttacking = true;
+        }
+    }
+
+    private void PatrolArea()
+    {
+        DetectEnemy();
+        if (currentTarget == null)
+        {
+            FaceEnemyBase();
+            moveBehavior.Move(GetComponent<Rigidbody2D>(), IsEnemy, stats.Speed);
+            isAttacking = false;
+        }
+    }
+
+    private void MoveTowards(Vector3 targetPosition)
+    {
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        GetComponent<Rigidbody2D>().velocity = direction * stats.Speed;
+    }
+
+    private void StopMovement()
+    {
+        GetComponent<Rigidbody2D>().velocity = Vector2.zero;
     }
 
     private void DetectEnemy()
@@ -161,10 +173,7 @@ public class Soldier : MonoBehaviour
 
     public void ResetAttackAnimation()
     {
-        if (animator != null)
-        {
-            animator.ResetTrigger("Attack");
-        }
+        animator?.ResetTrigger("Attack");
         isAttacking = false;
     }
 
@@ -225,3 +234,4 @@ public class Soldier : MonoBehaviour
         set => stats = value;
     }
 }
+

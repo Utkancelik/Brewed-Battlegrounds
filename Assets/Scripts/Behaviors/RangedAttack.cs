@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Soldier))]
 public class RangedAttack : IAttackBehavior
 {
     public override void Attack(Soldier attacker, Soldier target)
@@ -20,3 +21,4 @@ public class RangedAttack : IAttackBehavior
         }
     }
 }
+

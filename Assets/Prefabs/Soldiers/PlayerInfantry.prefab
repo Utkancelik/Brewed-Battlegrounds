@@ -143,7 +143,6 @@ MonoBehaviour:
   health: 100
   isEnemy: 0
   currentTarget: {fileID: 0}
-  healthBarPrefab: {fileID: 9116586595084995808}
   deathEffectPrefab: {fileID: 1055890062764184040, guid: 8eb6419de7ebec04a810c8d635dad59d, type: 3}
   bloodTracePrefabs:
   - {fileID: 8797977791606939641, guid: 5ef47c50ea65fe24688dc5e85b55f873, type: 3}
@@ -456,10 +455,5 @@ PrefabInstance:
 --- !u!224 &2223508121944417525 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3246972260406275367, guid: 98f2c76a39c23a14b9565d89325e3eca, type: 3}
-  m_PrefabInstance: {fileID: 3734870344979270098}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &9116586595084995808 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5571080277012268338, guid: 98f2c76a39c23a14b9565d89325e3eca, type: 3}
   m_PrefabInstance: {fileID: 3734870344979270098}
   m_PrefabAsset: {fileID: 0}
