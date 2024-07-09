@@ -7,7 +7,11 @@ public class Soldier : MonoBehaviour
     public int Health
     {
         get { return health; }
-        set { health = value; }
+        set
+        {
+            health = value;
+            healthBar.SetHealth(health, stats.Health);
+        }
     }
 
     [SerializeField] private bool isEnemy;
@@ -19,10 +23,12 @@ public class Soldier : MonoBehaviour
 
     private IMoveBehavior moveBehavior;
     private IAttackBehavior attackBehavior;
-
+    private HealthBar healthBar;
     private Animator animator;
     public Soldier currentTarget;
     private bool isAttacking;
+
+    [SerializeField] private GameObject healthBarPrefab;
 
     private void Awake()
     {
@@ -43,6 +49,22 @@ public class Soldier : MonoBehaviour
         if (stats == null)
         {
             Debug.LogError("Stats not assigned on " + gameObject.name);
+        }
+
+        InitializeHealthBar();
+    }
+
+    private void InitializeHealthBar()
+    {
+        healthBar = GetComponentInChildren<HealthBar>();
+        if (healthBar != null)
+        {
+            healthBar.Initialize(transform);
+            healthBar.SetMaxHealth(stats.Health);
+        }
+        else
+        {
+            Debug.LogError("HealthBar component not found in children of " + gameObject.name);
         }
     }
 
@@ -147,7 +169,7 @@ public class Soldier : MonoBehaviour
     {
         if (target != null && target.Health > 0)
         {
-            target.Health -= stats.Damage;
+            target.TakeDamage(stats.Damage);
             if (target.Health <= 0)
             {
                 target.Die();

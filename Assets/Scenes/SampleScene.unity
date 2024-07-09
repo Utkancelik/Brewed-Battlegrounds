@@ -981,18 +981,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61cbd8a6d39d9a0499d620e3166111bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerInfantryStats:
-    Health: 0
-    Speed: 0
-    AttackRange: 0
-    DetectRange: 5
-    Damage: 0
-  enemyInfantryStats:
-    Health: 0
-    Speed: 0
-    AttackRange: 0
-    DetectRange: 5
-    Damage: 0
   playerBase: {fileID: 359329665}
   enemyBase: {fileID: 56840012}
   waveData: {fileID: 11400000, guid: 885aab09cdc8aa744985145643d59e9c, type: 2}
