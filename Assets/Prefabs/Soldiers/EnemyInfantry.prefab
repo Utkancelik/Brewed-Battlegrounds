@@ -32,8 +32,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -6.37, y: 0, z: 0}
-  m_LocalScale: {x: -1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: -0.8, y: 0.8, z: 0.8}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5509191866568606147}
   - {fileID: 3095727375497361026}
@@ -144,6 +144,13 @@ MonoBehaviour:
   isEnemy: 0
   currentTarget: {fileID: 0}
   healthBarPrefab: {fileID: 5380069044464950935}
+  deathEffectPrefab: {fileID: 1055890062764184040, guid: 8eb6419de7ebec04a810c8d635dad59d, type: 3}
+  bloodTracePrefabs:
+  - {fileID: 8797977791606939641, guid: 5ef47c50ea65fe24688dc5e85b55f873, type: 3}
+  - {fileID: 8797977791606939641, guid: 719c30278c3f073469c462b8ff36afdf, type: 3}
+  - {fileID: 8797977791606939641, guid: 7686471b4e9eafa45bf31a2b8a146bb0, type: 3}
+  - {fileID: 8797977791606939641, guid: 997e37fbdedd12e4d9f1099489e50fd3, type: 3}
+  - {fileID: 8797977791606939641, guid: d6faa98f585e1624c8fb94416ee22f28, type: 3}
 --- !u!114 &-1146700135276956965
 MonoBehaviour:
   m_ObjectHideFlags: 0

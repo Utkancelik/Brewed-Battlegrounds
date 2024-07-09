@@ -27,8 +27,11 @@ public class Soldier : MonoBehaviour
     private Animator animator;
     public Soldier currentTarget;
     private bool isAttacking;
+    private bool isDead = false;
 
     [SerializeField] private GameObject healthBarPrefab;
+    [SerializeField] private GameObject deathEffectPrefab;
+    [SerializeField] private GameObject[] bloodTracePrefabs;
 
     private void Awake()
     {
@@ -130,11 +133,11 @@ public class Soldier : MonoBehaviour
         {
             if (currentTarget.transform.position.x > transform.position.x)
             {
-                transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+                transform.localScale = new Vector3(.8f, transform.localScale.y, transform.localScale.z);
             }
             else if (currentTarget.transform.position.x < transform.position.x)
             {
-                transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+                transform.localScale = new Vector3(-.8f, transform.localScale.y, transform.localScale.z);
             }
         }
     }
@@ -143,11 +146,11 @@ public class Soldier : MonoBehaviour
     {
         if (IsEnemy)
         {
-            transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(-.8f, transform.localScale.y, transform.localScale.z);
         }
         else
         {
-            transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(.8f, transform.localScale.y, transform.localScale.z);
         }
     }
 
@@ -181,7 +184,24 @@ public class Soldier : MonoBehaviour
 
     public void Die()
     {
+        if (isDead) return; // Prevent multiple calls to Die
+        isDead = true;
+
         ResetAttackAnimation();
+
+        // Instantiate death effect
+        if (deathEffectPrefab != null)
+        {
+            Destroy(Instantiate(deathEffectPrefab, transform.position, Quaternion.identity), 1.5f);
+        }
+
+        // Instantiate blood trace and start coroutine to fade it out
+        if (bloodTracePrefabs.Length != 0)
+        {
+            GameObject bloodTrace = Instantiate(bloodTracePrefabs[Random.Range(0, bloodTracePrefabs.Length)], transform.position, Quaternion.identity);
+            bloodTrace.AddComponent<BloodTraceFade>().StartFadeOut(5.0f);
+        }
+
         Destroy(gameObject);
     }
 
