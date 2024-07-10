@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -33,11 +32,8 @@ public class GameManager : MonoBehaviour
         soldierSpawner = new SoldierSpawner(playerSpawnArea, enemySpawnArea);
         goldManager = new GoldManager();
         ageManager = new AgeManager();
-    }
 
-    void Start()
-    {
-        StartCoroutine(SpawnWaves());
+        BattleManager.Instance.SetSoldierSpawner(soldierSpawner);
     }
 
     void Update()
@@ -48,23 +44,6 @@ public class GameManager : MonoBehaviour
         {
             soldierSpawner.SpawnSoldier(unitPrefab, false);
             gold -= 5;
-        }
-    }
-
-    IEnumerator SpawnWaves()
-    {
-        int waveCount = waveData.Waves.Count;
-        for (int i = 0; i < waveCount; i++)
-        {
-            int totalEnemyInThisWave = waveData.Waves[i].Amount;
-            for (int j = 0; j < totalEnemyInThisWave; j++)
-            {
-                GameObject enemyGameObject = Instantiate(waveData.Waves[i].Soldier.gameObject, enemySpawnArea.GetRandomPosition(), Quaternion.identity);
-                Soldier enemySoldier = enemyGameObject.GetComponent<Soldier>();
-                enemySoldier.IsEnemy = true;
-                yield return new WaitForSeconds(waveData.delayBetweenUnits);
-            }
-            yield return new WaitForSeconds(waveData.delayBetweenWaves); // Delay between waves
         }
     }
 }

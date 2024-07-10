@@ -2,18 +2,18 @@ using UnityEngine;
 
 public class SoldierSpawner
 {
-    private SpawnArea playerSpawnArea;
-    private SpawnArea enemySpawnArea;
+    public SpawnArea PlayerSpawnArea { get; private set; }
+    public SpawnArea EnemySpawnArea { get; private set; }
 
     public SoldierSpawner(SpawnArea playerSpawnArea, SpawnArea enemySpawnArea)
     {
-        this.playerSpawnArea = playerSpawnArea;
-        this.enemySpawnArea = enemySpawnArea;
+        PlayerSpawnArea = playerSpawnArea;
+        EnemySpawnArea = enemySpawnArea;
     }
 
     public void SpawnSoldier(GameObject soldierPrefab, bool isEnemy)
     {
-        Vector3 spawnPosition = isEnemy ? enemySpawnArea.GetRandomPosition() : playerSpawnArea.GetRandomPosition();
+        Vector3 spawnPosition = isEnemy ? EnemySpawnArea.GetRandomPosition() : PlayerSpawnArea.GetRandomPosition();
         GameObject newSoldier = GameObject.Instantiate(soldierPrefab, spawnPosition, Quaternion.identity);
 
         Debug.Log("Instantiated soldier: " + newSoldier.name);

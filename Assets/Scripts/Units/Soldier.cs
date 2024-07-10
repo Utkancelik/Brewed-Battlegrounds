@@ -145,11 +145,11 @@ public class Soldier : MonoBehaviour
         {
             if (currentTarget.transform.position.x > transform.position.x)
             {
-                transform.localScale = new Vector3(.8f, transform.localScale.y, transform.localScale.z);
+                transform.localScale = new Vector3(0.8f, transform.localScale.y, transform.localScale.z);
             }
             else if (currentTarget.transform.position.x < transform.position.x)
             {
-                transform.localScale = new Vector3(-.8f, transform.localScale.y, transform.localScale.z);
+                transform.localScale = new Vector3(-0.8f, transform.localScale.y, transform.localScale.z);
             }
         }
     }
@@ -158,11 +158,11 @@ public class Soldier : MonoBehaviour
     {
         if (IsEnemy)
         {
-            transform.localScale = new Vector3(-.8f, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(-0.8f, transform.localScale.y, transform.localScale.z);
         }
         else
         {
-            transform.localScale = new Vector3(.8f, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(0.8f, transform.localScale.y, transform.localScale.z);
         }
     }
 
