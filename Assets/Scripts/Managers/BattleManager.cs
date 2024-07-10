@@ -47,7 +47,7 @@ public class BattleManager : MonoBehaviour
         int waveCount = waveData.Waves.Count;
         for (int i = 0; i < waveCount; i++)
         {
-            DisplayWaveText($"Wave {i + 1}");
+            DisplayWaveText(i == waveCount - 1 ? "Final Wave" : $"Wave {i + 1}");
             yield return new WaitForSeconds(waveTextDisplayDuration); // Display wave text for a while before spawning
 
             int totalEnemyInThisWave = waveData.Waves[i].Amount;
@@ -62,9 +62,11 @@ public class BattleManager : MonoBehaviour
             yield return new WaitForSeconds(waveTextStayAfterSpawn); // Wait a bit before hiding the wave text
             waveTextObject.SetActive(false);
 
-            yield return new WaitForSeconds(waveData.delayBetweenWaves); // Delay between waves
+            if (i < waveCount - 1) // Delay between waves except for the last wave
+            {
+                yield return new WaitForSeconds(waveData.delayBetweenWaves);
+            }
         }
-        DisplayWaveText("Final Wave");
     }
 
     private void DisplayWaveText(string text)
