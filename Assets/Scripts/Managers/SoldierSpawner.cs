@@ -16,8 +16,6 @@ public class SoldierSpawner
         Vector3 spawnPosition = isEnemy ? EnemySpawnArea.GetRandomPosition() : PlayerSpawnArea.GetRandomPosition();
         GameObject newSoldier = GameObject.Instantiate(soldierPrefab, spawnPosition, Quaternion.identity);
 
-        Debug.Log("Instantiated soldier: " + newSoldier.name);
-
         Soldier soldierScript = newSoldier.GetComponent<Soldier>();
         if (soldierScript == null)
         {

@@ -4,6 +4,21 @@ public class Soldier : MonoBehaviour
 {
     [SerializeField] private SoldierStats stats;
     [SerializeField] private int health;
+    [SerializeField] private bool isEnemy;
+    [SerializeField] private GameObject deathEffectPrefab;
+    [SerializeField] private GameObject[] bloodTracePrefabs;
+
+    private IMoveBehavior moveBehavior;
+    private IAttackBehavior attackBehavior;
+    private HealthBar healthBar;
+    private Animator animator;
+    private DamageFlicker damageFlicker;
+    private Rigidbody2D rb;
+    private bool isAttacking;
+    private bool isDead;
+
+    public Soldier CurrentTarget { get; set; }
+    public SoldierStats Stats => stats;
     public int Health
     {
         get => health;
@@ -13,32 +28,19 @@ public class Soldier : MonoBehaviour
             healthBar.SetHealth(health, stats.Health);
         }
     }
-
-    [SerializeField] private bool isEnemy;
     public bool IsEnemy
     {
         get => isEnemy;
         set => isEnemy = value;
     }
 
-    private IMoveBehavior moveBehavior;
-    private IAttackBehavior attackBehavior;
-    private HealthBar healthBar;
-    private Animator animator;
-    public Soldier currentTarget;
-    private bool isAttacking;
-    private bool isDead = false;
-    private DamageFlicker damageFlicker; // Reference to DamageFlicker component
-
-    [SerializeField] private GameObject deathEffectPrefab;
-    [SerializeField] private GameObject[] bloodTracePrefabs;
-
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
         moveBehavior = GetComponent<IMoveBehavior>();
         attackBehavior = GetComponent<IAttackBehavior>();
-        damageFlicker = GetComponent<DamageFlicker>(); // Initialize DamageFlicker component
+        damageFlicker = GetComponent<DamageFlicker>();
 
         ValidateComponents();
         InitializeHealthBar();
@@ -68,7 +70,9 @@ public class Soldier : MonoBehaviour
 
     private void Update()
     {
-        if (currentTarget != null && currentTarget.Health > 0)
+        if (isDead) return;
+
+        if (CurrentTarget != null && CurrentTarget.Health > 0)
         {
             EngageTarget();
         }
@@ -80,27 +84,30 @@ public class Soldier : MonoBehaviour
 
     private void EngageTarget()
     {
-        float distanceToTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
-        if (distanceToTarget > stats.AttackRange)
+        if (!isAttacking)
         {
-            MoveTowards(currentTarget.transform.position);
-        }
-        else if (!isAttacking)
-        {
-            FaceTarget();
-            StopMovement();
-            attackBehavior.Attack(this, currentTarget);
-            isAttacking = true;
+            float distanceToTarget = Vector3.Distance(transform.position, CurrentTarget.transform.position);
+            if (distanceToTarget > stats.AttackRange)
+            {
+                MoveTowards(CurrentTarget.transform.position);
+            }
+            else
+            {
+                FaceTarget();
+                StopMovement();
+                attackBehavior.Attack(this, CurrentTarget);
+                isAttacking = true;
+            }
         }
     }
 
     private void PatrolArea()
     {
         DetectEnemy();
-        if (currentTarget == null)
+        if (CurrentTarget == null)
         {
             FaceEnemyBase();
-            moveBehavior.Move(GetComponent<Rigidbody2D>(), IsEnemy, stats.Speed);
+            moveBehavior.Move(rb, IsEnemy, stats.Speed);
             isAttacking = false;
         }
     }
@@ -108,65 +115,53 @@ public class Soldier : MonoBehaviour
     private void MoveTowards(Vector3 targetPosition)
     {
         Vector3 direction = (targetPosition - transform.position).normalized;
-        GetComponent<Rigidbody2D>().velocity = direction * stats.Speed;
+        rb.velocity = direction * stats.Speed;
     }
 
     private void StopMovement()
     {
-        GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        rb.velocity = Vector2.zero;
     }
 
     private void DetectEnemy()
     {
-        if (!isAttacking)
-        {
-            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, stats.DetectRange);
-            Soldier closestTarget = null;
-            float closestDistance = Mathf.Infinity;
+        if (isAttacking) return;
 
-            foreach (var hitCollider in hitColliders)
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, stats.DetectRange);
+        Soldier closestTarget = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (var hitCollider in hitColliders)
+        {
+            Soldier target = hitCollider.GetComponent<Soldier>();
+            if (target != null && target.IsEnemy != IsEnemy && target.Health > 0)
             {
-                Soldier target = hitCollider.GetComponent<Soldier>();
-                if (target != null && target.IsEnemy != IsEnemy && target.Health > 0)
+                float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
+                if (distanceToTarget < closestDistance)
                 {
-                    float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
-                    if (distanceToTarget < closestDistance)
-                    {
-                        closestTarget = target;
-                        closestDistance = distanceToTarget;
-                    }
+                    closestTarget = target;
+                    closestDistance = distanceToTarget;
                 }
             }
-
-            currentTarget = closestTarget;
         }
+
+        CurrentTarget = closestTarget;
     }
 
     private void FaceTarget()
     {
-        if (currentTarget != null)
-        {
-            if (currentTarget.transform.position.x > transform.position.x)
-            {
-                transform.localScale = new Vector3(0.8f, transform.localScale.y, transform.localScale.z);
-            }
-            else if (currentTarget.transform.position.x < transform.position.x)
-            {
-                transform.localScale = new Vector3(-0.8f, transform.localScale.y, transform.localScale.z);
-            }
-        }
+        if (CurrentTarget == null) return;
+
+        transform.localScale = CurrentTarget.transform.position.x > transform.position.x
+            ? new Vector3(0.8f, transform.localScale.y, transform.localScale.z)
+            : new Vector3(-0.8f, transform.localScale.y, transform.localScale.z);
     }
 
     private void FaceEnemyBase()
     {
-        if (IsEnemy)
-        {
-            transform.localScale = new Vector3(-0.8f, transform.localScale.y, transform.localScale.z);
-        }
-        else
-        {
-            transform.localScale = new Vector3(0.8f, transform.localScale.y, transform.localScale.z);
-        }
+        transform.localScale = IsEnemy
+            ? new Vector3(-0.8f, transform.localScale.y, transform.localScale.z)
+            : new Vector3(0.8f, transform.localScale.y, transform.localScale.z);
     }
 
     public void TriggerAttackAnimation()
@@ -188,7 +183,7 @@ public class Soldier : MonoBehaviour
             if (target.Health <= 0)
             {
                 target.Die();
-                currentTarget = null;
+                CurrentTarget = null;
                 ResetAttackAnimation();
             }
         }
@@ -201,13 +196,11 @@ public class Soldier : MonoBehaviour
 
         ResetAttackAnimation();
 
-        // Instantiate death effect
         if (deathEffectPrefab != null)
         {
             Destroy(Instantiate(deathEffectPrefab, transform.position, Quaternion.identity), 1.5f);
         }
 
-        // Instantiate blood trace and start coroutine to fade it out
         if (bloodTracePrefabs.Length != 0)
         {
             GameObject bloodTrace = Instantiate(bloodTracePrefabs[Random.Range(0, bloodTracePrefabs.Length)], transform.position, Quaternion.identity);
@@ -225,16 +218,10 @@ public class Soldier : MonoBehaviour
     public virtual void TakeDamage(int damage)
     {
         Health -= damage;
-        damageFlicker?.Flicker(0.1f, Color.gray); // Use yellow for flicker effect
+        damageFlicker?.Flicker(0.1f, Color.gray);
         if (Health <= 0)
         {
             Die();
         }
-    }
-
-    public SoldierStats Stats
-    {
-        get => stats;
-        set => stats = value;
     }
 }

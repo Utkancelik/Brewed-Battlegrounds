@@ -1,7 +1,7 @@
 using UnityEngine;
+using System.Collections;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections;
 
 public class BattleManager : MonoBehaviour
 {
@@ -50,21 +50,25 @@ public class BattleManager : MonoBehaviour
             DisplayWaveText(i == waveCount - 1 ? "Final Wave" : $"Wave {i + 1}");
             yield return new WaitForSeconds(waveTextDisplayDuration); // Display wave text for a while before spawning
 
-            int totalEnemyInThisWave = waveData.Waves[i].Amount;
-            for (int j = 0; j < totalEnemyInThisWave; j++)
+            foreach (var group in waveData.Waves[i].Groups)
             {
-                GameObject enemyGameObject = Instantiate(waveData.Waves[i].Soldier.gameObject, soldierSpawner.EnemySpawnArea.GetRandomPosition(), Quaternion.identity);
-                Soldier enemySoldier = enemyGameObject.GetComponent<Soldier>();
-                enemySoldier.IsEnemy = true;
-                yield return new WaitForSeconds(waveData.delayBetweenUnits);
+                for (int j = 0; j < group.Amount; j++)
+                {
+                    GameObject enemyGameObject = Instantiate(group.Soldier.gameObject, soldierSpawner.EnemySpawnArea.GetRandomPosition(), Quaternion.identity);
+                    Soldier enemySoldier = enemyGameObject.GetComponent<Soldier>();
+                    enemySoldier.IsEnemy = true;
+                    yield return new WaitForSeconds(waveData.delayBetweenUnits);
+                }
+
+                yield return new WaitForSeconds(group.delayAfterGroup);
             }
 
             yield return new WaitForSeconds(waveTextStayAfterSpawn); // Wait a bit before hiding the wave text
             waveTextObject.SetActive(false);
 
-            if (i < waveCount - 1) // Delay between waves except for the last wave
+            if (i < waveCount - 1)
             {
-                yield return new WaitForSeconds(waveData.delayBetweenWaves);
+                yield return new WaitForSeconds(waveData.delayBetweenWaves); // Delay between waves
             }
         }
     }

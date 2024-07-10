@@ -6,13 +6,20 @@ using System.Collections.Generic;
 public class WaveData : ScriptableObject
 {
     [Serializable]
-    public class WaveDataEntry
+    public class Group
     {
         public Soldier Soldier;
         public int Amount;
+        public float delayAfterGroup;
     }
-    
-    public List<WaveDataEntry> Waves;
+
+    [Serializable]
+    public class Wave
+    {
+        public List<Group> Groups;
+    }
+
+    public List<Wave> Waves;
     public float delayBetweenUnits;
     public float delayBetweenWaves;
 }
