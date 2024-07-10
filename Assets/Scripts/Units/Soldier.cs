@@ -1,4 +1,5 @@
 using UnityEngine;
+
 public class Soldier : MonoBehaviour
 {
     [SerializeField] private SoldierStats stats;
@@ -27,6 +28,7 @@ public class Soldier : MonoBehaviour
     public Soldier currentTarget;
     private bool isAttacking;
     private bool isDead = false;
+    private DamageFlicker damageFlicker; // Reference to DamageFlicker component
 
     [SerializeField] private GameObject deathEffectPrefab;
     [SerializeField] private GameObject[] bloodTracePrefabs;
@@ -36,9 +38,9 @@ public class Soldier : MonoBehaviour
         animator = GetComponent<Animator>();
         moveBehavior = GetComponent<IMoveBehavior>();
         attackBehavior = GetComponent<IAttackBehavior>();
+        damageFlicker = GetComponent<DamageFlicker>(); // Initialize DamageFlicker component
 
         ValidateComponents();
-
         InitializeHealthBar();
     }
 
@@ -47,6 +49,7 @@ public class Soldier : MonoBehaviour
         if (moveBehavior == null) Debug.LogError("MoveBehavior not assigned on " + gameObject.name);
         if (attackBehavior == null) Debug.LogError("AttackBehavior not assigned on " + gameObject.name);
         if (stats == null) Debug.LogError("Stats not assigned on " + gameObject.name);
+        if (damageFlicker == null) Debug.LogError("DamageFlicker not assigned on " + gameObject.name);
     }
 
     private void InitializeHealthBar()
@@ -193,7 +196,7 @@ public class Soldier : MonoBehaviour
 
     public void Die()
     {
-        if (isDead) return; // Prevent multiple calls to Die
+        if (isDead) return;
         isDead = true;
 
         ResetAttackAnimation();
@@ -222,6 +225,7 @@ public class Soldier : MonoBehaviour
     public virtual void TakeDamage(int damage)
     {
         Health -= damage;
+        damageFlicker?.Flicker(0.1f, Color.gray); // Use yellow for flicker effect
         if (Health <= 0)
         {
             Die();
@@ -234,4 +238,3 @@ public class Soldier : MonoBehaviour
         set => stats = value;
     }
 }
-
