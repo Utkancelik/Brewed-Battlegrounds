@@ -22,7 +22,7 @@ public class Soldier : MonoBehaviour
     public int Health
     {
         get => health;
-        set
+        private set
         {
             health = value;
             healthBar.SetHealth(health, stats.Health);
@@ -152,16 +152,16 @@ public class Soldier : MonoBehaviour
     {
         if (CurrentTarget == null) return;
 
-        transform.localScale = CurrentTarget.transform.position.x > transform.position.x
-            ? new Vector3(0.8f, transform.localScale.y, transform.localScale.z)
-            : new Vector3(-0.8f, transform.localScale.y, transform.localScale.z);
+        Vector3 newScale = transform.localScale;
+        newScale.x = Mathf.Abs(newScale.x) * (CurrentTarget.transform.position.x > transform.position.x ? 1 : -1);
+        transform.localScale = newScale;
     }
 
     private void FaceEnemyBase()
     {
-        transform.localScale = IsEnemy
-            ? new Vector3(-0.8f, transform.localScale.y, transform.localScale.z)
-            : new Vector3(0.8f, transform.localScale.y, transform.localScale.z);
+        Vector3 newScale = transform.localScale;
+        newScale.x = Mathf.Abs(newScale.x) * (IsEnemy ? -1 : 1);
+        transform.localScale = newScale;
     }
 
     public void TriggerAttackAnimation()
