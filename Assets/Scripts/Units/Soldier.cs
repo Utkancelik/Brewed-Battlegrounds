@@ -17,6 +17,10 @@ public class Soldier : MonoBehaviour
     private bool isAttacking;
     private bool isDead;
 
+    private Vector3 currentDirection;
+    private float directionChangeInterval = 3f; // Time to change direction in seconds
+    private float directionChangeTimer;
+
     public Soldier CurrentTarget { get; set; }
     public SoldierStats Stats => stats;
     public int Health
@@ -44,6 +48,12 @@ public class Soldier : MonoBehaviour
 
         ValidateComponents();
         InitializeHealthBar();
+    }
+
+    private void Start()
+    {
+        SetNewDirection();
+        MoveDiagonally();
     }
 
     private void ValidateComponents()
@@ -80,12 +90,21 @@ public class Soldier : MonoBehaviour
         {
             PatrolArea();
         }
+
+        directionChangeTimer -= Time.deltaTime;
+        if (directionChangeTimer <= 0)
+        {
+            SetNewDirection();
+        }
     }
 
     private void EngageTarget()
     {
         if (!isAttacking)
         {
+            DetectEnemies();
+            if (CurrentTarget == null) return;
+
             float distanceToTarget = Vector3.Distance(transform.position, CurrentTarget.transform.position);
             if (distanceToTarget > stats.AttackRange)
             {
@@ -95,7 +114,7 @@ public class Soldier : MonoBehaviour
             {
                 FaceTarget();
                 StopMovement();
-                attackBehavior.Attack(this, CurrentTarget);
+                TriggerAttackAnimation();
                 isAttacking = true;
             }
         }
@@ -103,11 +122,11 @@ public class Soldier : MonoBehaviour
 
     private void PatrolArea()
     {
-        DetectEnemy();
+        DetectEnemies();
         if (CurrentTarget == null)
         {
             FaceEnemyBase();
-            moveBehavior.Move(rb, IsEnemy, stats.Speed);
+            MoveDiagonally();
             isAttacking = false;
         }
     }
@@ -118,12 +137,24 @@ public class Soldier : MonoBehaviour
         rb.velocity = direction * stats.Speed;
     }
 
+    private void MoveDiagonally()
+    {
+        rb.velocity = currentDirection * stats.Speed;
+    }
+
+    private void SetNewDirection()
+    {
+        Vector2 baseDirection = IsEnemy ? Vector2.left : Vector2.right;
+        currentDirection = new Vector2(baseDirection.x, Random.Range(-0.4f, 0.4f)).normalized;
+        directionChangeTimer = directionChangeInterval;
+    }
+
     private void StopMovement()
     {
         rb.velocity = Vector2.zero;
     }
 
-    private void DetectEnemy()
+    private void DetectEnemies()
     {
         if (isAttacking) return;
 
@@ -145,7 +176,10 @@ public class Soldier : MonoBehaviour
             }
         }
 
-        CurrentTarget = closestTarget;
+        if (closestTarget != null && (CurrentTarget == null || closestDistance < Vector3.Distance(transform.position, CurrentTarget.transform.position)))
+        {
+            CurrentTarget = closestTarget;
+        }
     }
 
     private void FaceTarget()
@@ -175,17 +209,16 @@ public class Soldier : MonoBehaviour
         isAttacking = false;
     }
 
-    public void DealDamage(Soldier target)
+    public void DealDamage()
     {
-        if (target != null && target.Health > 0)
+        if (isDead || CurrentTarget == null || CurrentTarget.Health <= 0) return;
+
+        CurrentTarget.TakeDamage(stats.Damage);
+        if (CurrentTarget.Health <= 0)
         {
-            target.TakeDamage(stats.Damage);
-            if (target.Health <= 0)
-            {
-                target.Die();
-                CurrentTarget = null;
-                ResetAttackAnimation();
-            }
+            CurrentTarget.Die();
+            CurrentTarget = null;
+            ResetAttackAnimation();
         }
     }
 
@@ -204,7 +237,7 @@ public class Soldier : MonoBehaviour
         if (bloodTracePrefabs.Length != 0)
         {
             GameObject bloodTrace = Instantiate(bloodTracePrefabs[Random.Range(0, bloodTracePrefabs.Length)], transform.position, Quaternion.identity);
-            bloodTrace.AddComponent<BloodTraceFade>().StartFadeOut(5.0f);
+            bloodTrace.AddComponent<BloodTraceFade>().StartFadeOut(15.0f);
         }
 
         Destroy(gameObject);
@@ -212,11 +245,13 @@ public class Soldier : MonoBehaviour
 
     public void OnAttackAnimationEnd()
     {
-        ResetAttackAnimation();
+        if (!isDead) ResetAttackAnimation();
     }
 
     public virtual void TakeDamage(int damage)
     {
+        if (isDead) return;
+
         Health -= damage;
         damageFlicker?.Flicker(0.1f, Color.gray);
         if (Health <= 0)

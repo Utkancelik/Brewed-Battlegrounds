@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2322744468278456292}
   - component: {fileID: -434830491422176155}
   - component: {fileID: 1628029123154131612}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PlayerInfantry
   m_TagString: PlayerSoldier
   m_Icon: {fileID: 0}
@@ -49,7 +49,7 @@ CapsuleCollider2D:
   m_GameObject: {fileID: 1377341517561657481}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 9ed00d72acd72254f9b4d0b8fcd6e1d3, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -73,7 +73,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.4, y: 0.8}
+  m_Size: {x: 0.4, y: 0.65}
   m_Direction: 0
 --- !u!50 &2799119361601978684
 Rigidbody2D:
@@ -91,7 +91,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 9ed00d72acd72254f9b4d0b8fcd6e1d3, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -138,7 +138,7 @@ MonoBehaviour:
   stats:
     Health: 100
     Speed: 1
-    AttackRange: 1
+    AttackRange: 0.75
     DetectRange: 5
     Damage: 25
   health: 100

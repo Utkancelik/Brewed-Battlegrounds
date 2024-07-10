@@ -16,7 +16,7 @@ public class MeleeAttack : IAttackBehavior
     {
         attacker.TriggerAttackAnimation();
         yield return new WaitForSeconds(0.5f);
-        attacker.DealDamage(target);
+        attacker.DealDamage();
         yield return new WaitForSeconds(0.5f);
         attacker.ResetAttackAnimation();
     }
