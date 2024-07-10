@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Soldier : MonoBehaviour
 {
@@ -16,10 +17,12 @@ public class Soldier : MonoBehaviour
     private Rigidbody2D rb;
     private bool isAttacking;
     private bool isDead;
+    private bool isLockedOnTarget;
 
     private Vector3 currentDirection;
     private float directionChangeInterval = 3f; // Time to change direction in seconds
     private float directionChangeTimer;
+    private Soldier lockedTarget;
 
     public Soldier CurrentTarget { get; set; }
     public SoldierStats Stats => stats;
@@ -102,9 +105,6 @@ public class Soldier : MonoBehaviour
     {
         if (!isAttacking)
         {
-            DetectEnemies();
-            if (CurrentTarget == null) return;
-
             float distanceToTarget = Vector3.Distance(transform.position, CurrentTarget.transform.position);
             if (distanceToTarget > stats.AttackRange)
             {
@@ -114,8 +114,10 @@ public class Soldier : MonoBehaviour
             {
                 FaceTarget();
                 StopMovement();
+                lockedTarget = CurrentTarget; // Lock onto the current target
                 TriggerAttackAnimation();
                 isAttacking = true;
+                isLockedOnTarget = true;
             }
         }
     }
@@ -127,6 +129,7 @@ public class Soldier : MonoBehaviour
         {
             FaceEnemyBase();
             MoveDiagonally();
+            
             isAttacking = false;
         }
     }
@@ -182,6 +185,20 @@ public class Soldier : MonoBehaviour
         }
     }
 
+    private bool HasEnemiesNearby()
+    {
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, stats.DetectRange);
+        foreach (var hitCollider in hitColliders)
+        {
+            Soldier target = hitCollider.GetComponent<Soldier>();
+            if (target != null && target.IsEnemy != IsEnemy && target.Health > 0)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void FaceTarget()
     {
         if (CurrentTarget == null) return;
@@ -191,6 +208,7 @@ public class Soldier : MonoBehaviour
         transform.localScale = newScale;
     }
 
+    
     private void FaceEnemyBase()
     {
         Vector3 newScale = transform.localScale;
@@ -207,19 +225,25 @@ public class Soldier : MonoBehaviour
     {
         animator?.ResetTrigger("Attack");
         isAttacking = false;
+        isLockedOnTarget = false;
+        lockedTarget = null;
     }
 
     public void DealDamage()
     {
-        if (isDead || CurrentTarget == null || CurrentTarget.Health <= 0) return;
+        if (isDead || lockedTarget == null || lockedTarget.Health <= 0) return;
 
-        CurrentTarget.TakeDamage(stats.Damage);
-        if (CurrentTarget.Health <= 0)
+        if (lockedTarget != null)
         {
-            CurrentTarget.Die();
-            CurrentTarget = null;
-            ResetAttackAnimation();
+            lockedTarget.TakeDamage(stats.Damage);
+            if (lockedTarget.Health <= 0)
+            {
+                lockedTarget.Die();
+                lockedTarget = null;
+            }
         }
+
+        ResetAttackAnimation();
     }
 
     public void Die()
@@ -260,3 +284,4 @@ public class Soldier : MonoBehaviour
         }
     }
 }
+

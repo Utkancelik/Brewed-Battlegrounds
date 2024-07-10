@@ -16,7 +16,10 @@ public class MeleeAttack : IAttackBehavior
     {
         attacker.TriggerAttackAnimation();
         yield return new WaitForSeconds(0.5f);
-        attacker.DealDamage();
+        if (target != null && target == attacker.CurrentTarget) // Ensure target is still valid and same
+        {
+            attacker.DealDamage();
+        }
         yield return new WaitForSeconds(0.5f);
         attacker.ResetAttackAnimation();
     }
