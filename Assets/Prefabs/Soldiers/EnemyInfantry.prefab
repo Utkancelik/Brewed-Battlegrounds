@@ -142,7 +142,7 @@ MonoBehaviour:
     DetectRange: 5
     Damage: 25
   health: 100
-  isEnemy: 0
+  isEnemy: 1
   deathEffectPrefab: {fileID: 1055890062764184040, guid: 8eb6419de7ebec04a810c8d635dad59d, type: 3}
   bloodTracePrefabs:
   - {fileID: 8797977791606939641, guid: 5ef47c50ea65fe24688dc5e85b55f873, type: 3}

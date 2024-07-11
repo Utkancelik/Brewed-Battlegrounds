@@ -4,8 +4,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [SerializeField] private Transform playerBase;
-    [SerializeField] private Transform enemyBase;
+    [SerializeField] public Base PlayerBase;
+    [SerializeField] public Base EnemyBase;
     [SerializeField] private WaveData waveData;
     [SerializeField] private SpawnArea playerSpawnArea;
     [SerializeField] private SpawnArea enemySpawnArea;
@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
 
     private SoldierSpawner soldierSpawner;
     [SerializeField] private GoldManager goldManager;
-    private AgeManager ageManager;
 
     [SerializeField] private int gold;
 
@@ -31,7 +30,6 @@ public class GameManager : MonoBehaviour
 
         soldierSpawner = new SoldierSpawner(playerSpawnArea, enemySpawnArea);
         goldManager = new GoldManager();
-        ageManager = new AgeManager();
 
         BattleManager.Instance.SetSoldierSpawner(soldierSpawner);
     }
@@ -44,6 +42,22 @@ public class GameManager : MonoBehaviour
         {
             soldierSpawner.SpawnSoldier(unitPrefab, false);
             gold -= 5;
+        }
+    }
+
+    public void CheckGameOver()
+    {
+        if (PlayerBase.Health <= 0)
+        {
+            // Handle player loss
+            Debug.Log("Player lost!");
+            // Additional logic for game over
+        }
+        else if (EnemyBase.Health <= 0)
+        {
+            // Handle player win
+            Debug.Log("Player won!");
+            // Additional logic for game over
         }
     }
 }

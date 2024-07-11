@@ -17,8 +17,8 @@ TagManager:
   - Soldier
   - Player
   - Enemy
-  - 
-  - 
+  - PlayerBase
+  - EnemyBase
   - 
   - 
   - 

@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,6 +9,12 @@ public class HealthBar : MonoBehaviour
     public Image foregroundImage;
     public Image backgroundImage;
     private Transform target;
+    private TMP_Text healthText;
+
+    private void Start()
+    {
+        healthText = GetComponentInChildren<TMP_Text>();
+    }
 
     public void Initialize(Transform target)
     {
@@ -21,6 +29,11 @@ public class HealthBar : MonoBehaviour
 
     public void SetHealth(int health, int maxHealth)
     {
+        if (healthText != null)
+        {
+            healthText.text = health.ToString();
+        }
+
         float healthPercentage = (float)health / maxHealth;
         foregroundImage.fillAmount = healthPercentage;
 

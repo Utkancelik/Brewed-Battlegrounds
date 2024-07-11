@@ -4,12 +4,12 @@ using UnityEngine;
 [RequireComponent(typeof(Soldier))]
 public class RangedAttack : IAttackBehavior
 {
-    public override void Attack(Soldier attacker, Soldier target)
+    public override void Attack(Soldier attacker, IDamageable target)
     {
         attacker.StartCoroutine(PerformAttack(attacker, target));
     }
 
-    private IEnumerator PerformAttack(Soldier attacker, Soldier target)
+    private IEnumerator PerformAttack(Soldier attacker, IDamageable target)
     {
         attacker.TriggerAttackAnimation();
         yield return new WaitForSeconds(1f);

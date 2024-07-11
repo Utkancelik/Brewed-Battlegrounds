@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Soldier : MonoBehaviour
+public class Soldier : IDamageable
 {
     [SerializeField] private SoldierStats stats;
     [SerializeField] private int health;
@@ -20,20 +20,22 @@ public class Soldier : MonoBehaviour
     private Vector3 currentDirection;
     private float directionChangeInterval = 3f; // Time to change direction in seconds
     private float directionChangeTimer;
-    private Soldier attackTarget;
+    private IDamageable attackTarget;
 
-    public Soldier CurrentTarget { get; set; }
+    public IDamageable CurrentTarget { get; set; }
     public SoldierStats Stats => stats;
-    public int Health
+    public override int Health
     {
         get => health;
-        private set
+        set
         {
             health = value;
             healthBar.SetHealth(health, stats.Health);
+            if (health <= 0) Die();
         }
     }
-    public bool IsEnemy
+
+    public override bool IsEnemy
     {
         get => isEnemy;
         set => isEnemy = value;
@@ -81,6 +83,8 @@ public class Soldier : MonoBehaviour
     {
         if (isDead) return;
 
+        DetectTargets();
+
         if (CurrentTarget != null && CurrentTarget.Health > 0)
         {
             EngageTarget();
@@ -119,10 +123,8 @@ public class Soldier : MonoBehaviour
 
     private void PatrolArea()
     {
-        DetectEnemies();
         if (CurrentTarget == null)
         {
-            FaceEnemyBase(); // Ensure the soldier faces the enemy base direction after patrol
             MoveDiagonally();
             isAttacking = false;
         }
@@ -144,7 +146,7 @@ public class Soldier : MonoBehaviour
         Vector2 baseDirection = IsEnemy ? Vector2.left : Vector2.right;
         currentDirection = new Vector2(baseDirection.x, Random.Range(-0.4f, 0.4f)).normalized;
         directionChangeTimer = directionChangeInterval;
-        FaceEnemyBase(); // Ensure the soldier faces the enemy base direction when changing direction
+        FaceTarget(); // Ensure the soldier faces the target direction when changing direction
     }
 
     private void StopMovement()
@@ -152,17 +154,17 @@ public class Soldier : MonoBehaviour
         rb.velocity = Vector2.zero;
     }
 
-    private void DetectEnemies()
+    private void DetectTargets()
     {
         if (isAttacking) return;
 
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, stats.DetectRange);
-        Soldier closestTarget = null;
+        IDamageable closestTarget = null;
         float closestDistance = Mathf.Infinity;
 
         foreach (var hitCollider in hitColliders)
         {
-            Soldier target = hitCollider.GetComponent<Soldier>();
+            IDamageable target = hitCollider.GetComponent<IDamageable>();
             if (target != null && target.IsEnemy != IsEnemy && target.Health > 0)
             {
                 float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
@@ -174,9 +176,13 @@ public class Soldier : MonoBehaviour
             }
         }
 
-        if (closestTarget != null && (CurrentTarget == null || closestDistance < Vector3.Distance(transform.position, CurrentTarget.transform.position)))
+        if (closestTarget != null)
         {
             CurrentTarget = closestTarget;
+        }
+        else
+        {
+            CurrentTarget = IsEnemy ? GameManager.Instance.PlayerBase : GameManager.Instance.EnemyBase;
         }
     }
 
@@ -186,13 +192,6 @@ public class Soldier : MonoBehaviour
 
         Vector3 newScale = transform.localScale;
         newScale.x = Mathf.Abs(newScale.x) * (CurrentTarget.transform.position.x > transform.position.x ? 1 : -1);
-        transform.localScale = newScale;
-    }
-
-    private void FaceEnemyBase()
-    {
-        Vector3 newScale = transform.localScale;
-        newScale.x = Mathf.Abs(newScale.x) * (IsEnemy ? -1 : 1);
         transform.localScale = newScale;
     }
 
@@ -207,7 +206,7 @@ public class Soldier : MonoBehaviour
         isAttacking = false;
     }
 
-    public void Die()
+    public override void Die()
     {
         if (isDead) return;
         isDead = true;
@@ -233,7 +232,7 @@ public class Soldier : MonoBehaviour
         if (!isDead) ResetAttackAnimation();
     }
 
-    public virtual void TakeDamage(int damage)
+    public override void TakeDamage(int damage)
     {
         if (isDead) return;
 
@@ -245,3 +244,4 @@ public class Soldier : MonoBehaviour
         }
     }
 }
+

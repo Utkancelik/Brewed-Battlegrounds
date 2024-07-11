@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Soldier))]
 public class MeleeAttack : IAttackBehavior
 {
-    public override void Attack(Soldier attacker, Soldier target)
+    public override void Attack(Soldier attacker, IDamageable target)
     {
         if (target != null && target.Health > 0)
         {
@@ -12,7 +12,7 @@ public class MeleeAttack : IAttackBehavior
         }
     }
 
-    private IEnumerator PerformAttack(Soldier attacker, Soldier target)
+    private IEnumerator PerformAttack(Soldier attacker, IDamageable target)
     {
         // Ensure target is valid before starting attack animation
         if (target != null && target == attacker.CurrentTarget)
