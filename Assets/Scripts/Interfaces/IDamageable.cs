@@ -9,3 +9,4 @@ public abstract class IDamageable : MonoBehaviour
     public abstract void Die();
 }
 
+

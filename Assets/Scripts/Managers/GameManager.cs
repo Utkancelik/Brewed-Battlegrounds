@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
 
     private SoldierSpawner soldierSpawner;
     [SerializeField] private GoldManager goldManager;
+    private AgeManager ageManager;
 
     [SerializeField] private int gold;
 
@@ -30,6 +31,7 @@ public class GameManager : MonoBehaviour
 
         soldierSpawner = new SoldierSpawner(playerSpawnArea, enemySpawnArea);
         goldManager = new GoldManager();
+        ageManager = new AgeManager();
 
         BattleManager.Instance.SetSoldierSpawner(soldierSpawner);
     }
@@ -60,4 +62,17 @@ public class GameManager : MonoBehaviour
             // Additional logic for game over
         }
     }
+
+    public void AddGold(int amount)
+    {
+        gold += amount;
+        UIManager.Instance.UpdateGoldUI(gold);
+    }
+
+    public void SpendGold(int amount)
+    {
+        gold -= amount;
+        UIManager.Instance.UpdateGoldUI(gold);
+    }
 }
+

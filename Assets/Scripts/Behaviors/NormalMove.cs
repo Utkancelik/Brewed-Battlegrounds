@@ -3,9 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(Soldier))]
 public class NormalMove : IMoveBehavior
 {
-    public override void Move(Rigidbody2D rb, bool isEnemy, float speed)
+    public override void Move(Rigidbody2D rb, Vector3 targetPosition, float speed)
     {
-        Vector2 direction = isEnemy ? Vector2.left : Vector2.right;
+        Vector3 direction = (targetPosition - (Vector3)rb.position).normalized;
         rb.velocity = direction * speed;
     }
 }

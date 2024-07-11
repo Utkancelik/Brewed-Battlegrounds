@@ -10,6 +10,7 @@ public class Soldier : IDamageable
     [SerializeField] private GameObject[] bloodTracePrefabs;
 
     private IAttackBehavior attackBehavior;
+    private IMoveBehavior moveBehavior;
     private HealthBar healthBar;
     private Animator animator;
     private DamageFlicker damageFlicker;
@@ -31,10 +32,8 @@ public class Soldier : IDamageable
         {
             health = value;
             healthBar.SetHealth(health, stats.Health);
-            if (health <= 0) Die();
         }
     }
-
     public override bool IsEnemy
     {
         get => isEnemy;
@@ -46,21 +45,17 @@ public class Soldier : IDamageable
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         attackBehavior = GetComponent<IAttackBehavior>();
+        moveBehavior = GetComponent<IMoveBehavior>();
         damageFlicker = GetComponent<DamageFlicker>();
 
         ValidateComponents();
         InitializeHealthBar();
     }
 
-    private void Start()
-    {
-        SetNewDirection();
-        MoveDiagonally();
-    }
-
     private void ValidateComponents()
     {
         if (attackBehavior == null) Debug.LogError("AttackBehavior not assigned on " + gameObject.name);
+        if (moveBehavior == null) Debug.LogError("MoveBehavior not assigned on " + gameObject.name);
         if (stats == null) Debug.LogError("Stats not assigned on " + gameObject.name);
         if (damageFlicker == null) Debug.LogError("DamageFlicker not assigned on " + gameObject.name);
     }
@@ -79,11 +74,15 @@ public class Soldier : IDamageable
         }
     }
 
+    private void Start()
+    {
+        SetNewDirection();
+        MoveDiagonally();
+    }
+
     private void Update()
     {
         if (isDead) return;
-
-        DetectTargets();
 
         if (CurrentTarget != null && CurrentTarget.Health > 0)
         {
@@ -119,10 +118,18 @@ public class Soldier : IDamageable
                 attackBehavior.Attack(this, attackTarget); // Use attack behavior
             }
         }
+
+        // Check for nearby enemies while engaging the base
+        DetectTargets();
+        if (CurrentTarget != attackTarget)
+        {
+            isAttacking = false;
+        }
     }
 
     private void PatrolArea()
     {
+        DetectTargets();
         if (CurrentTarget == null)
         {
             MoveDiagonally();
@@ -132,13 +139,12 @@ public class Soldier : IDamageable
 
     private void MoveTowards(Vector3 targetPosition)
     {
-        Vector3 direction = (targetPosition - transform.position).normalized;
-        rb.velocity = direction * stats.Speed;
+        moveBehavior.Move(rb, targetPosition, stats.Speed);
     }
 
     private void MoveDiagonally()
     {
-        rb.velocity = currentDirection * stats.Speed;
+        moveBehavior.Move(rb, currentDirection, stats.Speed);
     }
 
     private void SetNewDirection()
@@ -156,7 +162,7 @@ public class Soldier : IDamageable
 
     private void DetectTargets()
     {
-        if (isAttacking) return;
+        if (isAttacking && !(CurrentTarget is Base)) return;
 
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, stats.DetectRange);
         IDamageable closestTarget = null;
@@ -176,13 +182,22 @@ public class Soldier : IDamageable
             }
         }
 
+        // Prioritize enemy soldiers over bases
         if (closestTarget != null)
         {
             CurrentTarget = closestTarget;
         }
         else
         {
-            CurrentTarget = IsEnemy ? GameManager.Instance.PlayerBase : GameManager.Instance.EnemyBase;
+            // No enemy soldiers detected, target the opposing base
+            if (IsEnemy)
+            {
+                CurrentTarget = GameManager.Instance.PlayerBase;
+            }
+            else
+            {
+                CurrentTarget = GameManager.Instance.EnemyBase;
+            }
         }
     }
 
@@ -211,6 +226,9 @@ public class Soldier : IDamageable
         if (isDead) return;
         isDead = true;
 
+        // Drop gold on death
+        DropGold();
+
         ResetAttackAnimation();
 
         if (deathEffectPrefab != null)
@@ -225,6 +243,12 @@ public class Soldier : IDamageable
         }
 
         Destroy(gameObject);
+    }
+
+    private void DropGold()
+    {
+        GameObject gold = Instantiate(ResourceManager.Instance.GoldPrefab, transform.position, Quaternion.identity);
+        gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * 2f);
     }
 
     public void OnAttackAnimationEnd()

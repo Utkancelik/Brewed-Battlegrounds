@@ -7,15 +7,12 @@ public class BattleManager : MonoBehaviour
 {
     public static BattleManager Instance;
 
-    [SerializeField] private GameObject waveTextObject;
-    [SerializeField] private Button battleButton;
     [SerializeField] private WaveData waveData;
-    [SerializeField] private float waveTextDisplayDuration = 2f; // Duration for wave text to stay on screen
-    [SerializeField] private float waveTextStayAfterSpawn = 2f; // Duration for wave text to stay after spawning enemies
-    [SerializeField] private float battleButtonSlideDuration = 0.5f; // Duration for the battle button slide down animation
+    [SerializeField] private float waveTextDisplayDuration = 2f; 
+    [SerializeField] private float waveTextStayAfterSpawn = 2f; 
+    [SerializeField] private float battleButtonSlideDuration = 0.5f; 
 
     private SoldierSpawner soldierSpawner;
-    private RectTransform battleButtonRectTransform;
 
     private void Awake()
     {
@@ -32,8 +29,7 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        battleButton.onClick.AddListener(StartBattle);
-        battleButtonRectTransform = battleButton.GetComponent<RectTransform>();
+        UIManager.Instance.BattleButton.onClick.AddListener(StartBattle);
     }
 
     private void StartBattle()
@@ -47,8 +43,8 @@ public class BattleManager : MonoBehaviour
         int waveCount = waveData.Waves.Count;
         for (int i = 0; i < waveCount; i++)
         {
-            DisplayWaveText(i == waveCount - 1 ? "Final Wave" : $"Wave {i + 1}");
-            yield return new WaitForSeconds(waveTextDisplayDuration); // Display wave text for a while before spawning
+            UIManager.Instance.DisplayWaveText(i == waveCount - 1 ? "Final Wave" : $"Wave {i + 1}");
+            yield return new WaitForSeconds(waveTextDisplayDuration);
 
             foreach (var group in waveData.Waves[i].Groups)
             {
@@ -63,27 +59,22 @@ public class BattleManager : MonoBehaviour
                 yield return new WaitForSeconds(group.delayAfterGroup);
             }
 
-            yield return new WaitForSeconds(waveTextStayAfterSpawn); // Wait a bit before hiding the wave text
-            waveTextObject.SetActive(false);
+            yield return new WaitForSeconds(waveTextStayAfterSpawn);
+            UIManager.Instance.HideWaveText();
 
             if (i < waveCount - 1)
             {
-                yield return new WaitForSeconds(waveData.delayBetweenWaves); // Delay between waves
+                yield return new WaitForSeconds(waveData.delayBetweenWaves);
             }
         }
     }
 
-    private void DisplayWaveText(string text)
-    {
-        waveTextObject.GetComponentInChildren<TMP_Text>().text = text;
-        waveTextObject.SetActive(true);
-    }
-
     private IEnumerator SlideBattleButtonDown()
     {
+        RectTransform battleButtonRectTransform = UIManager.Instance.BattleButton.GetComponent<RectTransform>();
         float elapsedTime = 0f;
         Vector2 originalPosition = battleButtonRectTransform.anchoredPosition;
-        Vector2 targetPosition = new Vector2(originalPosition.x, originalPosition.y - 1000); // Adjust as needed
+        Vector2 targetPosition = new Vector2(originalPosition.x, originalPosition.y - 1000);
 
         while (elapsedTime < battleButtonSlideDuration)
         {
@@ -92,7 +83,7 @@ public class BattleManager : MonoBehaviour
             yield return null;
         }
 
-        battleButton.gameObject.SetActive(false);
+        UIManager.Instance.BattleButton.gameObject.SetActive(false);
     }
 
     public void SetSoldierSpawner(SoldierSpawner spawner)
