@@ -13,12 +13,19 @@ public class RangedAttack : IAttackBehavior
     {
         attacker.TriggerAttackAnimation();
         yield return new WaitForSeconds(1f);
-        target.TakeDamage(attacker.Stats.Damage);
-        if (target.Health <= 0)
+        if (target != null && target == attacker.CurrentTarget) // Ensure target is still valid and same
         {
-            GameObject.Destroy(target.gameObject);
-            attacker.CurrentTarget = null;
+            target.TakeDamage(attacker.Stats.Damage); // Handle damage directly here
+            if (target.Health <= 0)
+            {
+                target.Die();
+                attacker.CurrentTarget = null;
+            }
         }
+        attacker.ResetAttackAnimation();
     }
 }
+
+
+
 

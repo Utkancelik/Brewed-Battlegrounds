@@ -4,10 +4,8 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    public Image backgroundImage;
     public Image foregroundImage;
-    private Coroutine lerpCoroutine;
-
+    public Image backgroundImage;
     private Transform target;
 
     public void Initialize(Transform target)
@@ -18,32 +16,32 @@ public class HealthBar : MonoBehaviour
     public void SetMaxHealth(int health)
     {
         foregroundImage.fillAmount = 1f;
+        backgroundImage.fillAmount = 1f;
     }
 
     public void SetHealth(int health, int maxHealth)
     {
-        float targetFillAmount = (float)health / maxHealth;
-        foregroundImage.fillAmount = targetFillAmount;
+        float healthPercentage = (float)health / maxHealth;
+        foregroundImage.fillAmount = healthPercentage;
 
-        if (lerpCoroutine != null)
+        if (backgroundImage.fillAmount > foregroundImage.fillAmount)
         {
-            StopCoroutine(lerpCoroutine);
+            StartCoroutine(SmoothlyDecreaseBackground(healthPercentage));
         }
-        lerpCoroutine = StartCoroutine(LerpBackgroundFill(targetFillAmount));
+        else
+        {
+            backgroundImage.fillAmount = healthPercentage;
+        }
     }
 
-    private IEnumerator LerpBackgroundFill(float targetFillAmount)
+    private IEnumerator SmoothlyDecreaseBackground(float targetFill)
     {
-        float initialFillAmount = backgroundImage.fillAmount;
-        float elapsedTime = 0f;
-        float duration = 1f; // Duration to complete the lerp
-
-        while (elapsedTime < duration)
+        while (backgroundImage.fillAmount > targetFill)
         {
-            elapsedTime += Time.deltaTime;
-            backgroundImage.fillAmount = Mathf.Lerp(initialFillAmount, targetFillAmount, elapsedTime / duration);
+            backgroundImage.fillAmount = Mathf.Lerp(backgroundImage.fillAmount, targetFill, Time.deltaTime * 10f);
             yield return null;
         }
-        backgroundImage.fillAmount = targetFillAmount;
+
+        backgroundImage.fillAmount = targetFill;
     }
 }

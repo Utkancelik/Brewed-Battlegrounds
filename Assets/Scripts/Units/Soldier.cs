@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class Soldier : MonoBehaviour
 {
@@ -9,7 +9,6 @@ public class Soldier : MonoBehaviour
     [SerializeField] private GameObject deathEffectPrefab;
     [SerializeField] private GameObject[] bloodTracePrefabs;
 
-    private IMoveBehavior moveBehavior;
     private IAttackBehavior attackBehavior;
     private HealthBar healthBar;
     private Animator animator;
@@ -17,12 +16,11 @@ public class Soldier : MonoBehaviour
     private Rigidbody2D rb;
     private bool isAttacking;
     private bool isDead;
-    private bool isLockedOnTarget;
 
     private Vector3 currentDirection;
     private float directionChangeInterval = 3f; // Time to change direction in seconds
     private float directionChangeTimer;
-    private Soldier lockedTarget;
+    private Soldier attackTarget;
 
     public Soldier CurrentTarget { get; set; }
     public SoldierStats Stats => stats;
@@ -45,7 +43,6 @@ public class Soldier : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        moveBehavior = GetComponent<IMoveBehavior>();
         attackBehavior = GetComponent<IAttackBehavior>();
         damageFlicker = GetComponent<DamageFlicker>();
 
@@ -61,7 +58,6 @@ public class Soldier : MonoBehaviour
 
     private void ValidateComponents()
     {
-        if (moveBehavior == null) Debug.LogError("MoveBehavior not assigned on " + gameObject.name);
         if (attackBehavior == null) Debug.LogError("AttackBehavior not assigned on " + gameObject.name);
         if (stats == null) Debug.LogError("Stats not assigned on " + gameObject.name);
         if (damageFlicker == null) Debug.LogError("DamageFlicker not assigned on " + gameObject.name);
@@ -114,10 +110,9 @@ public class Soldier : MonoBehaviour
             {
                 FaceTarget();
                 StopMovement();
-                lockedTarget = CurrentTarget; // Lock onto the current target
-                TriggerAttackAnimation();
+                attackTarget = CurrentTarget; // Lock onto the current target
                 isAttacking = true;
-                isLockedOnTarget = true;
+                attackBehavior.Attack(this, attackTarget); // Use attack behavior
             }
         }
     }
@@ -127,9 +122,8 @@ public class Soldier : MonoBehaviour
         DetectEnemies();
         if (CurrentTarget == null)
         {
-            FaceEnemyBase();
+            FaceEnemyBase(); // Ensure the soldier faces the enemy base direction after patrol
             MoveDiagonally();
-            
             isAttacking = false;
         }
     }
@@ -150,6 +144,7 @@ public class Soldier : MonoBehaviour
         Vector2 baseDirection = IsEnemy ? Vector2.left : Vector2.right;
         currentDirection = new Vector2(baseDirection.x, Random.Range(-0.4f, 0.4f)).normalized;
         directionChangeTimer = directionChangeInterval;
+        FaceEnemyBase(); // Ensure the soldier faces the enemy base direction when changing direction
     }
 
     private void StopMovement()
@@ -185,20 +180,6 @@ public class Soldier : MonoBehaviour
         }
     }
 
-    private bool HasEnemiesNearby()
-    {
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, stats.DetectRange);
-        foreach (var hitCollider in hitColliders)
-        {
-            Soldier target = hitCollider.GetComponent<Soldier>();
-            if (target != null && target.IsEnemy != IsEnemy && target.Health > 0)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void FaceTarget()
     {
         if (CurrentTarget == null) return;
@@ -208,7 +189,6 @@ public class Soldier : MonoBehaviour
         transform.localScale = newScale;
     }
 
-    
     private void FaceEnemyBase()
     {
         Vector3 newScale = transform.localScale;
@@ -225,25 +205,6 @@ public class Soldier : MonoBehaviour
     {
         animator?.ResetTrigger("Attack");
         isAttacking = false;
-        isLockedOnTarget = false;
-        lockedTarget = null;
-    }
-
-    public void DealDamage()
-    {
-        if (isDead || lockedTarget == null || lockedTarget.Health <= 0) return;
-
-        if (lockedTarget != null)
-        {
-            lockedTarget.TakeDamage(stats.Damage);
-            if (lockedTarget.Health <= 0)
-            {
-                lockedTarget.Die();
-                lockedTarget = null;
-            }
-        }
-
-        ResetAttackAnimation();
     }
 
     public void Die()
@@ -284,4 +245,3 @@ public class Soldier : MonoBehaviour
         }
     }
 }
-

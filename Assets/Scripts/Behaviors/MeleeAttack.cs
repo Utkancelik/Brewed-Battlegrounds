@@ -14,13 +14,23 @@ public class MeleeAttack : IAttackBehavior
 
     private IEnumerator PerformAttack(Soldier attacker, Soldier target)
     {
-        attacker.TriggerAttackAnimation();
-        yield return new WaitForSeconds(0.5f);
-        if (target != null && target == attacker.CurrentTarget) // Ensure target is still valid and same
+        // Check if target is still valid before playing animation
+        if (target != null && target == attacker.CurrentTarget)
         {
-            attacker.DealDamage();
+            attacker.TriggerAttackAnimation();
+            yield return new WaitForSeconds(0.5f);
+
+            if (target != null && target == attacker.CurrentTarget) // Ensure target is still valid and same
+            {
+                target.TakeDamage(attacker.Stats.Damage); // Handle damage directly here
+                if (target.Health <= 0)
+                {
+                    target.Die();
+                }
+            }
+
+            yield return new WaitForSeconds(0.5f);
+            attacker.ResetAttackAnimation();
         }
-        yield return new WaitForSeconds(0.5f);
-        attacker.ResetAttackAnimation();
     }
 }
