@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement; // Add this to handle scene management
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
@@ -68,7 +69,7 @@ public class GameManager : MonoBehaviour
         {
             // Handle player loss
             Debug.Log("Player lost!");
-            // Additional logic for game over
+            ReloadScene(); // Reload the scene on player loss
         }
         else if (EnemyBase.Health <= 0)
         {
@@ -76,6 +77,11 @@ public class GameManager : MonoBehaviour
             Debug.Log("Player won!");
             // Additional logic for game over
         }
+    }
+
+    private void ReloadScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void AddGold(int amount)

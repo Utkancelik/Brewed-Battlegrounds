@@ -45,7 +45,7 @@ public class UIManager : MonoBehaviour
         goToBattleButton.onClick.AddListener(EnterBattleScene);
         upgradeButton.onClick.AddListener(OpenUpgradePanel);
         startBattleButton.onClick.AddListener(StartBattle);
-        ShowMainButtonsPanel();
+        EnterBattleScene(); // Ensure the MainBattlePanel is active when the game starts
     }
 
     public void ShowMainButtonsPanel()
@@ -74,7 +74,6 @@ public class UIManager : MonoBehaviour
     public void StartBattle()
     {
         mainButtonsPanel.SetActive(false);
-        mainBattlePanel.SetActive(true);
         battleBottomPanel.SetActive(true);
     }
 
