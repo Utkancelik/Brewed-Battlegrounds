@@ -14,8 +14,11 @@ public class GameManager : MonoBehaviour
     private SoldierSpawner soldierSpawner;
     [SerializeField] private GoldManager goldManager;
     private AgeManager ageManager;
-
     [SerializeField] private int gold;
+    [SerializeField] private int food;
+    [SerializeField] private float foodProductionRate = 1f; // Food per second
+
+    private float foodProductionTimer = 0f;
 
     void Awake()
     {
@@ -39,16 +42,18 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         UIManager.Instance.UpdateGoldUI(gold); // Initialize the gold UI with the current gold amount
+        UIManager.Instance.UpdateFoodUI(food); // Initialize the food UI with the current food amount
     }
 
     void Update()
     {
         goldManager.ProduceGold(ref gold);
+        ProduceFood();
 
-        if (Input.GetKeyDown(KeyCode.Alpha1) && gold >= 5)
+        if (Input.GetKeyDown(KeyCode.Alpha1) && food >= 5)
         {
             soldierSpawner.SpawnSoldier(unitPrefab, false);
-            gold -= 5;
+            SpendFood(5);
         }
     }
 
@@ -78,6 +83,29 @@ public class GameManager : MonoBehaviour
     {
         gold -= amount;
         UIManager.Instance.UpdateGoldUI(gold);
+    }
+
+    private void ProduceFood()
+    {
+        foodProductionTimer += Time.deltaTime;
+        if (foodProductionTimer >= 1f / foodProductionRate)
+        {
+            food += Mathf.FloorToInt(foodProductionTimer * foodProductionRate);
+            foodProductionTimer = 0f;
+            UIManager.Instance.UpdateFoodUI(food);
+        }
+    }
+
+    public void AddFood(int amount)
+    {
+        food += amount;
+        UIManager.Instance.UpdateFoodUI(food);
+    }
+
+    public void SpendFood(int amount)
+    {
+        food -= amount;
+        UIManager.Instance.UpdateFoodUI(food);
     }
 }
 

@@ -10,4 +10,9 @@ public class GoldManager
     {
         gold += Mathf.FloorToInt(goldProductionRate * Time.deltaTime);
     }
+
+    public void IncreaseFoodProduction(ref float foodProductionRate, int amount)
+    {
+        foodProductionRate += amount;
+    }
 }
