@@ -11,20 +11,26 @@ public class HealthBar : MonoBehaviour
     private Transform target;
     private TMP_Text healthText;
 
-    private void Start()
+    private void Awake()
     {
         healthText = GetComponentInChildren<TMP_Text>();
     }
 
-    public void Initialize(Transform target)
+    public void Initialize(Transform target, int maxHealth)
     {
         this.target = target;
+        SetMaxHealth(maxHealth);
+        SetHealth(maxHealth, maxHealth); // Set initial health display
     }
 
     public void SetMaxHealth(int health)
     {
         foregroundImage.fillAmount = 1f;
         backgroundImage.fillAmount = 1f;
+        if (healthText != null)
+        {
+            healthText.text = health.ToString();
+        }
     }
 
     public void SetHealth(int health, int maxHealth)

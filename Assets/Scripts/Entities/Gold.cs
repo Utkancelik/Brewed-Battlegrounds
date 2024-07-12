@@ -4,21 +4,13 @@ using UnityEngine;
 public class Gold : MonoBehaviour
 {
     private Vector2 direction;
-    private RectTransform goldUIRectTransform;
-    private Vector3 worldTargetPosition;
+    private Vector3 screenTargetPosition;
 
     public void Initialize(Vector2 initialDirection)
     {
         direction = initialDirection;
-        goldUIRectTransform = UIManager.Instance.GoldPosition.GetComponent<RectTransform>();
-        ConvertRectTransformToWorldPosition();
+        screenTargetPosition = UIManager.Instance.GetGoldUIPosition();
         StartCoroutine(MoveToRandomPositionThenUI());
-    }
-
-    private void ConvertRectTransformToWorldPosition()
-    {
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, goldUIRectTransform.position);
-        RectTransformUtility.ScreenPointToWorldPointInRectangle(goldUIRectTransform, screenPoint, Camera.main, out worldTargetPosition);
     }
 
     private IEnumerator MoveToRandomPositionThenUI()
@@ -35,6 +27,9 @@ public class Gold : MonoBehaviour
         }
 
         yield return new WaitForSeconds(1f); // Wait for a while at the fallen position
+
+        Vector3 worldTargetPosition = Camera.main.ScreenToWorldPoint(screenTargetPosition);
+        worldTargetPosition.z = 0; // Ensure the z position is correctly set
 
         while (Vector2.Distance(transform.position, worldTargetPosition) > 0.1f)
         {

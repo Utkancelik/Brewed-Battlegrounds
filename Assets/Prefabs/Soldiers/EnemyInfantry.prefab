@@ -139,7 +139,7 @@ MonoBehaviour:
     Health: 100
     Speed: 1
     AttackRange: 0.75
-    DetectRange: 5
+    DetectRange: 4
     Damage: 25
   health: 100
   isEnemy: 1

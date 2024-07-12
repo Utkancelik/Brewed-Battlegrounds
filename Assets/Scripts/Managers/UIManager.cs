@@ -2,7 +2,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
@@ -26,6 +25,11 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        UpdateGoldUI(0); // Initialize the gold UI with 0 gold
+    }
+
     public void DisplayWaveText(string text)
     {
         waveTextObject.GetComponentInChildren<TMP_Text>().text = text;
@@ -47,6 +51,12 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogError("Gold text UI element not assigned in UIManager.");
         }
+    }
+
+    public Vector3 GetGoldUIPosition()
+    {
+        Vector3 screenPosition = goldText.transform.position;
+        return screenPosition;
     }
 }
 

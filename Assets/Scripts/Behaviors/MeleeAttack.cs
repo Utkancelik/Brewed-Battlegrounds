@@ -18,7 +18,7 @@ public class MeleeAttack : IAttackBehavior
         if (target != null && target == attacker.CurrentTarget)
         {
             attacker.TriggerAttackAnimation();
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.5f); // Halfway point of the animation
 
             // Ensure target is still valid before dealing damage
             if (target != null && target == attacker.CurrentTarget)
@@ -29,7 +29,7 @@ public class MeleeAttack : IAttackBehavior
                     target.Die();
                 }
             }
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.5f); // Complete the animation
             attacker.ResetAttackAnimation();
         }
     }

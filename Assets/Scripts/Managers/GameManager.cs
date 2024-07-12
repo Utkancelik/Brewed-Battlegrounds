@@ -36,6 +36,11 @@ public class GameManager : MonoBehaviour
         BattleManager.Instance.SetSoldierSpawner(soldierSpawner);
     }
 
+    void Start()
+    {
+        UIManager.Instance.UpdateGoldUI(gold); // Initialize the gold UI with the current gold amount
+    }
+
     void Update()
     {
         goldManager.ProduceGold(ref gold);

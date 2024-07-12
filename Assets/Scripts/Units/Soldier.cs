@@ -19,9 +19,13 @@ public class Soldier : IDamageable
     private bool isDead;
 
     private Vector3 currentDirection;
-    private float directionChangeInterval = 3f; // Time to change direction in seconds
+    private float directionChangeInterval = 2f; // Time to change direction in seconds
     private float directionChangeTimer;
     private IDamageable attackTarget;
+
+    private Vector3 lastPosition;
+    private float stuckTimer;
+    private float stuckThreshold = 1f; // Time to consider a soldier as stuck
 
     public IDamageable CurrentTarget { get; set; }
     public SoldierStats Stats => stats;
@@ -65,8 +69,8 @@ public class Soldier : IDamageable
         healthBar = GetComponentInChildren<HealthBar>();
         if (healthBar != null)
         {
-            healthBar.Initialize(transform);
-            healthBar.SetMaxHealth(stats.Health);
+            healthBar.Initialize(transform, stats.Health);
+            healthBar.SetHealth(health, stats.Health); // Set initial health display
         }
         else
         {
@@ -77,7 +81,7 @@ public class Soldier : IDamageable
     private void Start()
     {
         SetNewDirection();
-        MoveDiagonally();
+        lastPosition = transform.position;
     }
 
     private void Update()
@@ -98,16 +102,19 @@ public class Soldier : IDamageable
         {
             SetNewDirection();
         }
+
+        CheckIfStuck();
     }
 
     private void EngageTarget()
     {
         if (!isAttacking)
         {
-            float distanceToTarget = Vector3.Distance(transform.position, CurrentTarget.transform.position);
+            Vector3 targetPosition = GetClosestPointOnTarget();
+            float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
             if (distanceToTarget > stats.AttackRange)
             {
-                MoveTowards(CurrentTarget.transform.position);
+                MoveTowards(targetPosition);
             }
             else
             {
@@ -144,7 +151,13 @@ public class Soldier : IDamageable
 
     private void MoveDiagonally()
     {
-        moveBehavior.Move(rb, currentDirection, stats.Speed);
+        if (!isAttacking)
+        {
+            if (moveBehavior != null)
+            {
+                moveBehavior.Move(rb, currentDirection, stats.Speed);
+            }
+        }
     }
 
     private void SetNewDirection()
@@ -152,7 +165,7 @@ public class Soldier : IDamageable
         Vector2 baseDirection = IsEnemy ? Vector2.left : Vector2.right;
         currentDirection = new Vector2(baseDirection.x, Random.Range(-0.4f, 0.4f)).normalized;
         directionChangeTimer = directionChangeInterval;
-        FaceTarget(); // Ensure the soldier faces the target direction when changing direction
+        MoveDiagonally(); // Ensure immediate movement in the new direction
     }
 
     private void StopMovement()
@@ -201,6 +214,17 @@ public class Soldier : IDamageable
         }
     }
 
+    private Vector3 GetClosestPointOnTarget()
+    {
+        if (CurrentTarget is Base baseTarget)
+        {
+            Collider2D baseCollider = baseTarget.GetComponent<Collider2D>();
+            Vector3 closestPoint = baseCollider.ClosestPoint(transform.position);
+            return closestPoint;
+        }
+        return CurrentTarget.transform.position;
+    }
+
     private void FaceTarget()
     {
         if (CurrentTarget == null) return;
@@ -208,6 +232,25 @@ public class Soldier : IDamageable
         Vector3 newScale = transform.localScale;
         newScale.x = Mathf.Abs(newScale.x) * (CurrentTarget.transform.position.x > transform.position.x ? 1 : -1);
         transform.localScale = newScale;
+    }
+
+    private void CheckIfStuck()
+    {
+        float distanceMoved = Vector3.Distance(transform.position, lastPosition);
+        if (distanceMoved < 0.1f)
+        {
+            stuckTimer += Time.deltaTime;
+            if (stuckTimer > stuckThreshold)
+            {
+                SetNewDirection();
+                stuckTimer = 0;
+            }
+        }
+        else
+        {
+            stuckTimer = 0;
+        }
+        lastPosition = transform.position;
     }
 
     public void TriggerAttackAnimation()
@@ -226,8 +269,11 @@ public class Soldier : IDamageable
         if (isDead) return;
         isDead = true;
 
-        // Drop gold on death
-        DropGold();
+        // Drop gold on death if the soldier is an enemy
+        if (IsEnemy)
+        {
+            DropGold();
+        }
 
         ResetAttackAnimation();
 
@@ -251,10 +297,7 @@ public class Soldier : IDamageable
         gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * 2f);
     }
 
-    public void OnAttackAnimationEnd()
-    {
-        if (!isDead) ResetAttackAnimation();
-    }
+
 
     public override void TakeDamage(int damage)
     {
@@ -268,4 +311,3 @@ public class Soldier : IDamageable
         }
     }
 }
-
