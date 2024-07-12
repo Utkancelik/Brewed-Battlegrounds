@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoldierFactory : MonoBehaviour
+/*public class SoldierFactory : MonoBehaviour
 {
     public static SoldierFactory Instance;
 
@@ -38,11 +38,6 @@ public class SoldierFactory : MonoBehaviour
 
         return soldier;
     }
-}
+}*/
 
-public enum SoldierType
-{
-    Melee,
-    Ranged
-}
 

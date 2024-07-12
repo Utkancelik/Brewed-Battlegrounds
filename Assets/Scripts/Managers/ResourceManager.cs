@@ -14,7 +14,7 @@ public class ResourceManager : MonoBehaviour
     [SerializeField] private float foodProductionRate = 1f; // Food per second
 
     private float foodProductionTimer = 0f;
-    public bool isBattleStarted = false; // Track if the battle has started
+    private bool isBattleStarted = false;
 
     private void Awake()
     {
@@ -67,9 +67,8 @@ public class ResourceManager : MonoBehaviour
         UIManager.Instance.UpdateFoodUI(food);
     }
 
-    private void ProduceResources()
+    public void ProduceResources()
     {
-        // Produce Food
         foodProductionTimer += Time.deltaTime;
         if (foodProductionTimer >= 1f / foodProductionRate)
         {
@@ -79,7 +78,7 @@ public class ResourceManager : MonoBehaviour
         }
     }
 
-    public void StartBattle()
+    public void StartProduction()
     {
         isBattleStarted = true;
     }
@@ -87,5 +86,3 @@ public class ResourceManager : MonoBehaviour
     public int Gold => gold;
     public int Food => food;
 }
-
-

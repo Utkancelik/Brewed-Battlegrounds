@@ -1,6 +1,7 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System.Collections.Generic;
 
 public class UIManager : MonoBehaviour
 {
@@ -10,7 +11,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button battleButton;
     [SerializeField] private TMP_Text goldText; // Reference to the UI text element displaying gold
     [SerializeField] private TMP_Text foodText; // Reference to the UI text element displaying food
+    [SerializeField] private GameObject unitButtonPrefab; // Prefab for unit buttons
+    [SerializeField] private Transform unitButtonContainer; // Container for unit buttons
     public Button BattleButton => battleButton;
+
+    private List<Button> unitButtons = new List<Button>();
 
     private void Awake()
     {
@@ -46,7 +51,7 @@ public class UIManager : MonoBehaviour
     {
         if (goldText != null)
         {
-            goldText.text = $"Gold: {goldAmount}";
+            goldText.text = $"{goldAmount}";
         }
         else
         {
@@ -58,7 +63,7 @@ public class UIManager : MonoBehaviour
     {
         if (foodText != null)
         {
-            foodText.text = $"Food: {foodAmount}";
+            foodText.text = $"{foodAmount}";
         }
         else
         {
@@ -71,5 +76,54 @@ public class UIManager : MonoBehaviour
         Vector3 screenPosition = goldText.transform.position;
         return screenPosition;
     }
-}
 
+    public void CreateUnitButtons(List<SoldierType> soldierTypes)
+    {
+        ClearUnitButtons();
+
+        foreach (var soldierType in soldierTypes)
+        {
+            GameObject buttonObj = Instantiate(unitButtonPrefab, unitButtonContainer);
+            Button button = buttonObj.GetComponent<Button>();
+            unitButtons.Add(button);
+
+            TMP_Text[] texts = buttonObj.GetComponentsInChildren<TMP_Text>();
+            Image unitImage = buttonObj.transform.Find("UnitImage").GetComponent<Image>();
+            Image unitCostImage = buttonObj.transform.Find("UnitCostImage").GetComponent<Image>();
+            TMP_Text unitCostText = unitCostImage.transform.Find("UnitCostText").GetComponent<TMP_Text>();
+
+            if (texts.Length > 0)
+            {
+                texts[0].text = soldierType.soldierName;
+            }
+            if (unitImage != null)
+            {
+                unitImage.sprite = soldierType.soldierIcon;
+            }
+            if (unitCostText != null)
+            {
+                unitCostText.text = soldierType.stats.FoodCost.ToString();
+            }
+
+            button.onClick.AddListener(() => SpawnSoldier(soldierType));
+        }
+    }
+
+    private void ClearUnitButtons()
+    {
+        foreach (var button in unitButtons)
+        {
+            Destroy(button.gameObject);
+        }
+        unitButtons.Clear();
+    }
+
+    private void SpawnSoldier(SoldierType soldierType)
+    {
+        if (ResourceManager.Instance.Food >= soldierType.stats.FoodCost)
+        {
+            GameManager.Instance.SpawnSoldier(soldierType);
+            ResourceManager.Instance.SpendFood(soldierType.stats.FoodCost);
+        }
+    }
+}

@@ -32,7 +32,8 @@ public class BattleManager : MonoBehaviour
 
     private void StartBattle()
     {
-        GameManager.Instance.StartBattle(); // Notify GameManager to start production and spawning
+        GameManager.Instance.StartBattle();
+        ResourceManager.Instance.StartProduction();
         StartCoroutine(SpawnWaves());
         StartCoroutine(SlideBattleButtonDown());
     }
