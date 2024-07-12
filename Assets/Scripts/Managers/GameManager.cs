@@ -6,19 +6,12 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] public Base PlayerBase;
     [SerializeField] public Base EnemyBase;
-    [SerializeField] private WaveData waveData;
     [SerializeField] private SpawnArea playerSpawnArea;
     [SerializeField] private SpawnArea enemySpawnArea;
     [SerializeField] private GameObject unitPrefab; // General unit prefab
 
     private SoldierSpawner soldierSpawner;
-    [SerializeField] private GoldManager goldManager;
     private AgeManager ageManager;
-    [SerializeField] private int gold;
-    [SerializeField] private int food;
-    [SerializeField] private float foodProductionRate = 1f; // Food per second
-
-    private float foodProductionTimer = 0f;
 
     void Awake()
     {
@@ -33,7 +26,6 @@ public class GameManager : MonoBehaviour
         }
 
         soldierSpawner = new SoldierSpawner(playerSpawnArea, enemySpawnArea);
-        goldManager = new GoldManager();
         ageManager = new AgeManager();
 
         BattleManager.Instance.SetSoldierSpawner(soldierSpawner);
@@ -41,20 +33,25 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        UIManager.Instance.UpdateGoldUI(gold); // Initialize the gold UI with the current gold amount
-        UIManager.Instance.UpdateFoodUI(food); // Initialize the food UI with the current food amount
+        UIManager.Instance.UpdateGoldUI(ResourceManager.Instance.Gold); // Initialize the gold UI with the current gold amount
+        UIManager.Instance.UpdateFoodUI(ResourceManager.Instance.Food); // Initialize the food UI with the current food amount
     }
 
     void Update()
     {
-        goldManager.ProduceGold(ref gold);
-        ProduceFood();
-
-        if (Input.GetKeyDown(KeyCode.Alpha1) && food >= 5)
+        if (ResourceManager.Instance.isBattleStarted)
         {
-            soldierSpawner.SpawnSoldier(unitPrefab, false);
-            SpendFood(5);
+            if (Input.GetKeyDown(KeyCode.Alpha1) && ResourceManager.Instance.Food >= 5)
+            {
+                soldierSpawner.SpawnSoldier(unitPrefab, false);
+                ResourceManager.Instance.SpendFood(5);
+            }
         }
+    }
+
+    public void StartBattle()
+    {
+        ResourceManager.Instance.StartBattle();
     }
 
     public void CheckGameOver()
@@ -75,37 +72,26 @@ public class GameManager : MonoBehaviour
 
     public void AddGold(int amount)
     {
-        gold += amount;
-        UIManager.Instance.UpdateGoldUI(gold);
+        ResourceManager.Instance.AddGold(amount);
+        UIManager.Instance.UpdateGoldUI(ResourceManager.Instance.Gold);
     }
 
     public void SpendGold(int amount)
     {
-        gold -= amount;
-        UIManager.Instance.UpdateGoldUI(gold);
-    }
-
-    private void ProduceFood()
-    {
-        foodProductionTimer += Time.deltaTime;
-        if (foodProductionTimer >= 1f / foodProductionRate)
-        {
-            food += Mathf.FloorToInt(foodProductionTimer * foodProductionRate);
-            foodProductionTimer = 0f;
-            UIManager.Instance.UpdateFoodUI(food);
-        }
+        ResourceManager.Instance.SpendGold(amount);
+        UIManager.Instance.UpdateGoldUI(ResourceManager.Instance.Gold);
     }
 
     public void AddFood(int amount)
     {
-        food += amount;
-        UIManager.Instance.UpdateFoodUI(food);
+        ResourceManager.Instance.AddFood(amount);
+        UIManager.Instance.UpdateFoodUI(ResourceManager.Instance.Food);
     }
 
     public void SpendFood(int amount)
     {
-        food -= amount;
-        UIManager.Instance.UpdateFoodUI(food);
+        ResourceManager.Instance.SpendFood(amount);
+        UIManager.Instance.UpdateFoodUI(ResourceManager.Instance.Food);
     }
 }
 

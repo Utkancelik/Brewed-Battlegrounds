@@ -1,16 +1,14 @@
 using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
-using TMPro;
 
 public class BattleManager : MonoBehaviour
 {
     public static BattleManager Instance;
 
     [SerializeField] private WaveData waveData;
-    [SerializeField] private float waveTextDisplayDuration = 2f; 
-    [SerializeField] private float waveTextStayAfterSpawn = 2f; 
-    [SerializeField] private float battleButtonSlideDuration = 0.5f; 
+    [SerializeField] private float waveTextDisplayDuration = 2f;
+    [SerializeField] private float waveTextStayAfterSpawn = 2f;
+    [SerializeField] private float battleButtonSlideDuration = 0.5f;
 
     private SoldierSpawner soldierSpawner;
 
@@ -34,6 +32,7 @@ public class BattleManager : MonoBehaviour
 
     private void StartBattle()
     {
+        GameManager.Instance.StartBattle(); // Notify GameManager to start production and spawning
         StartCoroutine(SpawnWaves());
         StartCoroutine(SlideBattleButtonDown());
     }

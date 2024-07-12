@@ -297,8 +297,6 @@ public class Soldier : IDamageable
         gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * 2f);
     }
 
-
-
     public override void TakeDamage(int damage)
     {
         if (isDead) return;

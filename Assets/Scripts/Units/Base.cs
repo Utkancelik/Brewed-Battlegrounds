@@ -47,18 +47,11 @@ public class Base : IDamageable
     public override void TakeDamage(int damage)
     {
         Health -= damage;
-        DropGold();
 
         if (Health <= 0)
         {
             Die();
         }
-    }
-
-    private void DropGold()
-    {
-        GameObject gold = Instantiate(goldPrefab, transform.position, Quaternion.identity);
-        gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * 2f);
     }
 
     public override void Die()
@@ -68,10 +61,21 @@ public class Base : IDamageable
             Instantiate(destructionEffectPrefab, transform.position, Quaternion.identity);
         }
 
+        if (isEnemy)
+        {
+            DropGold(); // Drop gold only if it is the enemy base
+        }
+
         Destroy(gameObject);
 
         // Trigger game over or win condition based on which base died
         GameManager.Instance.CheckGameOver();
+    }
+
+    private void DropGold()
+    {
+        GameObject gold = Instantiate(goldPrefab, transform.position, Quaternion.identity);
+        gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * 2f);
     }
 }
 

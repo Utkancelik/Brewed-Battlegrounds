@@ -11,7 +11,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text goldText; // Reference to the UI text element displaying gold
     [SerializeField] private TMP_Text foodText; // Reference to the UI text element displaying food
     public Button BattleButton => battleButton;
-    public Transform GoldPosition;
 
     private void Awake()
     {

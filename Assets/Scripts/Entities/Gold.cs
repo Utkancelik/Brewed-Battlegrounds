@@ -37,7 +37,7 @@ public class Gold : MonoBehaviour
             yield return null;
         }
 
-        GameManager.Instance.AddGold(1);
+        ResourceManager.Instance.AddGold(1);
         Destroy(gameObject);
     }
 }
