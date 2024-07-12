@@ -8,12 +8,20 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance;
 
     [SerializeField] private GameObject waveTextObject;
-    [SerializeField] private Button battleButton;
+    [SerializeField] private Button startBattleButton;
     [SerializeField] private TMP_Text goldText; // Reference to the UI text element displaying gold
     [SerializeField] private TMP_Text foodText; // Reference to the UI text element displaying food
     [SerializeField] private GameObject unitButtonPrefab; // Prefab for unit buttons
     [SerializeField] private Transform unitButtonContainer; // Container for unit buttons
-    public Button BattleButton => battleButton;
+    public Button StartBattleButton => startBattleButton;
+
+    [SerializeField] private GameObject mainBattlePanel; // Panel for the battle scene
+    [SerializeField] private GameObject battleBottomPanel; // Panel for the battle controls
+    [SerializeField] private GameObject upgradePanel;
+    [SerializeField] private GameObject mainButtonsPanel; // Panel containing the 5 main buttons
+
+    [SerializeField] private Button goToBattleButton; // Button to go to battle scene from main buttons
+    [SerializeField] private Button upgradeButton; // Button to go to upgrade panel
 
     private List<Button> unitButtons = new List<Button>();
 
@@ -34,6 +42,40 @@ public class UIManager : MonoBehaviour
     {
         UpdateGoldUI(0); // Initialize the gold UI with 0 gold
         UpdateFoodUI(0); // Initialize the food UI with 0 food
+        goToBattleButton.onClick.AddListener(EnterBattleScene);
+        upgradeButton.onClick.AddListener(OpenUpgradePanel);
+        startBattleButton.onClick.AddListener(StartBattle);
+        ShowMainButtonsPanel();
+    }
+
+    public void ShowMainButtonsPanel()
+    {
+        mainButtonsPanel.SetActive(true);
+        mainBattlePanel.SetActive(false);
+        battleBottomPanel.SetActive(false);
+        upgradePanel.SetActive(false);
+    }
+
+    public void EnterBattleScene()
+    {
+        mainBattlePanel.SetActive(true);
+        mainButtonsPanel.SetActive(true); // Keep the main buttons visible
+        battleBottomPanel.SetActive(false);
+        upgradePanel.SetActive(false);
+    }
+
+    public void OpenUpgradePanel()
+    {
+        mainBattlePanel.SetActive(false);
+        battleBottomPanel.SetActive(false);
+        upgradePanel.SetActive(true);
+    }
+
+    public void StartBattle()
+    {
+        mainButtonsPanel.SetActive(false);
+        mainBattlePanel.SetActive(true);
+        battleBottomPanel.SetActive(true);
     }
 
     public void DisplayWaveText(string text)

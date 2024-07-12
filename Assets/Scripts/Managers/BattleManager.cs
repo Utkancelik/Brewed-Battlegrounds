@@ -27,7 +27,7 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        UIManager.Instance.BattleButton.onClick.AddListener(StartBattle);
+        UIManager.Instance.StartBattleButton.onClick.AddListener(StartBattle);
     }
 
     private void StartBattle()
@@ -71,7 +71,7 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator SlideBattleButtonDown()
     {
-        RectTransform battleButtonRectTransform = UIManager.Instance.BattleButton.GetComponent<RectTransform>();
+        RectTransform battleButtonRectTransform = UIManager.Instance.StartBattleButton.GetComponent<RectTransform>();
         float elapsedTime = 0f;
         Vector2 originalPosition = battleButtonRectTransform.anchoredPosition;
         Vector2 targetPosition = new Vector2(originalPosition.x, originalPosition.y - 1000);
@@ -83,7 +83,7 @@ public class BattleManager : MonoBehaviour
             yield return null;
         }
 
-        UIManager.Instance.BattleButton.gameObject.SetActive(false);
+        UIManager.Instance.StartBattleButton.gameObject.SetActive(false);
     }
 
     public void SetSoldierSpawner(SoldierSpawner spawner)
