@@ -5,24 +5,33 @@ using UnityEngine;
 public class RangedAttack : IAttackBehavior
 {
     [SerializeField] private GameObject arrowPrefab; // Assign in inspector
+    private bool isAttacking; // Flag to indicate if the archer is currently attacking
 
     public override void Attack(Soldier attacker, IDamageable target)
     {
-        attacker.StartCoroutine(PerformAttack(attacker, target));
+        if (target != null && target.Health > 0 && !isAttacking)
+        {
+            attacker.StartCoroutine(PerformAttack(attacker, target));
+        }
     }
 
     private IEnumerator PerformAttack(Soldier attacker, IDamageable target)
     {
-        attacker.TriggerAttackAnimation();
-        yield return new WaitForSeconds(0.5f); // Adjust to match animation timing
-
+        isAttacking = true; // Set the flag to true when the attack starts
         if (target != null && target == attacker.CurrentTarget)
         {
-            SpawnArrow(attacker, target);
-        }
+            attacker.TriggerAttackAnimation();
+            yield return new WaitForSeconds(0.5f); // Adjust to match animation timing
 
-        yield return new WaitForSeconds(0.5f); // Adjust to match animation timing
-        attacker.ResetAttackAnimation();
+            if (target != null && target == attacker.CurrentTarget)
+            {
+                SpawnArrow(attacker, target);
+            }
+
+            yield return new WaitForSeconds(0.5f); // Adjust to match animation timing
+            attacker.ResetAttackAnimation();
+        }
+        isAttacking = false; // Reset the flag after the attack finishes
     }
 
     private void SpawnArrow(Soldier attacker, IDamageable target)
@@ -35,3 +44,6 @@ public class RangedAttack : IAttackBehavior
         }
     }
 }
+
+
+

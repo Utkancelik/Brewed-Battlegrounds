@@ -15,17 +15,17 @@ public class Soldier : IDamageable
     private Animator animator;
     private DamageFlicker damageFlicker;
     private Rigidbody2D rb;
-    private bool isAttacking;
+    public bool isAttacking;
     private bool isDead;
 
     private Vector3 currentDirection;
-    private float directionChangeInterval = 2f; // Time to change direction in seconds
+    private float directionChangeInterval = 2f;
     private float directionChangeTimer;
     private IDamageable attackTarget;
 
     private Vector3 lastPosition;
     private float stuckTimer;
-    private float stuckThreshold = 1f; // Time to consider a soldier as stuck
+    private float stuckThreshold = 1f;
 
     public IDamageable CurrentTarget { get; set; }
     public SoldierStats Stats => stats;
@@ -70,7 +70,7 @@ public class Soldier : IDamageable
         if (healthBar != null)
         {
             healthBar.Initialize(transform, stats.Health);
-            healthBar.SetHealth(health, stats.Health); // Set initial health display
+            healthBar.SetHealth(health, stats.Health);
         }
         else
         {
@@ -120,13 +120,12 @@ public class Soldier : IDamageable
             {
                 FaceTarget();
                 StopMovement();
-                attackTarget = CurrentTarget; // Lock onto the current target
+                attackTarget = CurrentTarget;
                 isAttacking = true;
-                attackBehavior.Attack(this, attackTarget); // Use attack behavior
+                attackBehavior.Attack(this, attackTarget);
             }
         }
 
-        // Check for nearby enemies while engaging the base
         DetectTargets();
         if (CurrentTarget != attackTarget)
         {
@@ -153,10 +152,7 @@ public class Soldier : IDamageable
     {
         if (!isAttacking)
         {
-            if (moveBehavior != null)
-            {
-                moveBehavior.Move(rb, currentDirection, stats.Speed);
-            }
+            moveBehavior?.Move(rb, currentDirection, stats.Speed);
         }
     }
 
@@ -165,7 +161,7 @@ public class Soldier : IDamageable
         Vector2 baseDirection = IsEnemy ? Vector2.left : Vector2.right;
         currentDirection = new Vector2(baseDirection.x, Random.Range(-0.4f, 0.4f)).normalized;
         directionChangeTimer = directionChangeInterval;
-        MoveDiagonally(); // Ensure immediate movement in the new direction
+        MoveDiagonally();
     }
 
     private void StopMovement()
@@ -195,22 +191,13 @@ public class Soldier : IDamageable
             }
         }
 
-        // Prioritize enemy soldiers over bases
         if (closestTarget != null)
         {
             CurrentTarget = closestTarget;
         }
         else
         {
-            // No enemy soldiers detected, target the opposing base
-            if (IsEnemy)
-            {
-                CurrentTarget = GameManager.Instance.PlayerBase;
-            }
-            else
-            {
-                CurrentTarget = GameManager.Instance.EnemyBase;
-            }
+            CurrentTarget = IsEnemy ? GameManager.Instance.PlayerBase : GameManager.Instance.EnemyBase;
         }
     }
 
@@ -219,8 +206,7 @@ public class Soldier : IDamageable
         if (CurrentTarget is Base baseTarget)
         {
             Collider2D baseCollider = baseTarget.GetComponent<Collider2D>();
-            Vector3 closestPoint = baseCollider.ClosestPoint(transform.position);
-            return closestPoint;
+            return baseCollider.ClosestPoint(transform.position);
         }
         return CurrentTarget.transform.position;
     }
@@ -269,7 +255,6 @@ public class Soldier : IDamageable
         if (isDead) return;
         isDead = true;
 
-        // Drop gold on death if the soldier is an enemy
         if (IsEnemy)
         {
             DropGold();
@@ -309,4 +294,5 @@ public class Soldier : IDamageable
         }
     }
 }
+
 
