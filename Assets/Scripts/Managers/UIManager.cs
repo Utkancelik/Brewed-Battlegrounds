@@ -9,19 +9,24 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private GameObject waveTextObject;
     [SerializeField] private Button startBattleButton;
-    [SerializeField] private TMP_Text goldText; // Reference to the UI text element displaying gold
-    [SerializeField] private TMP_Text foodText; // Reference to the UI text element displaying food
-    [SerializeField] private GameObject unitButtonPrefab; // Prefab for unit buttons
-    [SerializeField] private Transform unitButtonContainer; // Container for unit buttons
+    [SerializeField] private TMP_Text goldText;
+    [SerializeField] private TMP_Text foodText;
+    [SerializeField] private GameObject unitButtonPrefab;
+    [SerializeField] private Transform unitButtonContainer;
     public Button StartBattleButton => startBattleButton;
 
-    [SerializeField] private GameObject mainBattlePanel; // Panel for the battle scene
-    [SerializeField] private GameObject battleBottomPanel; // Panel for the battle controls
+    [SerializeField] private GameObject mainBattlePanel;
+    [SerializeField] private GameObject battleBottomPanel;
     [SerializeField] private GameObject upgradePanel;
-    [SerializeField] private GameObject mainButtonsPanel; // Panel containing the 5 main buttons
+    [SerializeField] private GameObject mainButtonsPanel;
 
-    [SerializeField] private Button goToBattleButton; // Button to go to battle scene from main buttons
-    [SerializeField] private Button upgradeButton; // Button to go to upgrade panel
+    [SerializeField] private Button goToBattleButton;
+    [SerializeField] private Button upgradeButton;
+    [SerializeField] private Button increaseFoodProductionButton;
+    [SerializeField] private Button increaseBaseHealthButton;
+
+    [SerializeField] private List<Button> unlockSoldierButtons;
+    [SerializeField] private List<Image> soldierCards;
 
     private List<Button> unitButtons = new List<Button>();
 
@@ -40,18 +45,30 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        UpdateGoldUI(0); // Initialize the gold UI with 0 gold
-        UpdateFoodUI(0); // Initialize the food UI with 0 food
+        UpdateGoldUI(0);
+        UpdateFoodUI(0);
         goToBattleButton.onClick.AddListener(EnterBattleScene);
         upgradeButton.onClick.AddListener(OpenUpgradePanel);
         startBattleButton.onClick.AddListener(StartBattle);
-        EnterBattleScene(); // Ensure the MainBattlePanel is active when the game starts
+        increaseFoodProductionButton.onClick.AddListener(IncreaseFoodProduction);
+        increaseBaseHealthButton.onClick.AddListener(IncreaseBaseHealth);
+
+        GameManager.Instance.soldierTypes[0].isUnlocked = true;
+
+        for (int i = 0; i < unlockSoldierButtons.Count; i++)
+        {
+            int index = i;
+            unlockSoldierButtons[i].onClick.AddListener(() => UnlockSoldierType(index));
+        }
+
+        EnterBattleScene();
+        UpdateUpgradePanel();
     }
 
     public void ShowMainButtonsPanel()
     {
         mainButtonsPanel.SetActive(true);
-        mainBattlePanel.SetActive(false);
+        mainBattlePanel.SetActive(true);
         battleBottomPanel.SetActive(false);
         upgradePanel.SetActive(false);
     }
@@ -59,7 +76,7 @@ public class UIManager : MonoBehaviour
     public void EnterBattleScene()
     {
         mainBattlePanel.SetActive(true);
-        mainButtonsPanel.SetActive(true); // Keep the main buttons visible
+        mainButtonsPanel.SetActive(true);
         battleBottomPanel.SetActive(false);
         upgradePanel.SetActive(false);
     }
@@ -69,6 +86,7 @@ public class UIManager : MonoBehaviour
         mainBattlePanel.SetActive(false);
         battleBottomPanel.SetActive(false);
         upgradePanel.SetActive(true);
+        UpdateUpgradePanel();
     }
 
     public void StartBattle()
@@ -124,6 +142,8 @@ public class UIManager : MonoBehaviour
 
         foreach (var soldierType in soldierTypes)
         {
+            if (!soldierType.isUnlocked) continue;
+
             GameObject buttonObj = Instantiate(unitButtonPrefab, unitButtonContainer);
             Button button = buttonObj.GetComponent<Button>();
             unitButtons.Add(button);
@@ -166,5 +186,58 @@ public class UIManager : MonoBehaviour
             GameManager.Instance.SpawnSoldier(soldierType);
             ResourceManager.Instance.SpendFood(soldierType.stats.FoodCost);
         }
+    }
+
+    private void UnlockSoldierType(int index)
+    {
+        if (index < 0 || index >= GameManager.Instance.soldierTypes.Count) return;
+
+        SoldierType soldierType = GameManager.Instance.soldierTypes[index];
+        if (!soldierType.isUnlocked && ResourceManager.Instance.SpendGold(soldierType.unlockCost))
+        {
+            soldierType.isUnlocked = true;
+            UpdateUpgradePanel();
+            CreateUnitButtons(GameManager.Instance.soldierTypes);
+        }
+    }
+
+    private void IncreaseFoodProduction()
+    {
+        if (ResourceManager.Instance.SpendGold(ResourceManager.Instance.foodProductionUpgradeCost))
+        {
+            ResourceManager.Instance.IncreaseFoodProduction();
+            UpdateUpgradePanel();
+        }
+    }
+
+    private void IncreaseBaseHealth()
+    {
+        if (ResourceManager.Instance.SpendGold(ResourceManager.Instance.baseHealthUpgradeCost))
+        {
+            GameManager.Instance.PlayerBase.IncreaseHealth();
+            UpdateUpgradePanel();
+        }
+    }
+
+    private void UpdateUpgradePanel()
+    {
+        for (int i = 0; i < soldierCards.Count; i++)
+        {
+            if (i < GameManager.Instance.soldierTypes.Count)
+            {
+                SoldierType soldierType = GameManager.Instance.soldierTypes[i];
+                soldierCards[i].color = soldierType.isUnlocked ? Color.white : Color.gray;
+                unlockSoldierButtons[i].gameObject.SetActive(!soldierType.isUnlocked || i == 0);
+                unlockSoldierButtons[i].GetComponentInChildren<TMP_Text>().text = soldierType.isUnlocked ? "Unlocked" : $"{soldierType.unlockCost} Gold";
+            }
+            else
+            {
+                soldierCards[i].gameObject.SetActive(false);
+            }
+        }
+
+        // Update the food production and base health upgrade buttons
+        increaseFoodProductionButton.GetComponentInChildren<TMP_Text>().text = $"Increase Food Production (+0.2/s) ({ResourceManager.Instance.foodProductionUpgradeCost} Gold)";
+        increaseBaseHealthButton.GetComponentInChildren<TMP_Text>().text = $"Increase Base Health (+100) ({ResourceManager.Instance.baseHealthUpgradeCost} Gold)";
     }
 }

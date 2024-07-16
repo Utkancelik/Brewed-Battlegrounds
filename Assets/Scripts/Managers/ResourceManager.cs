@@ -12,6 +12,8 @@ public class ResourceManager : MonoBehaviour
     [SerializeField] private int gold = 0;
     [SerializeField] private int food = 0;
     [SerializeField] private float foodProductionRate = 1f; // Food per second
+    public int foodProductionUpgradeCost = 10;
+    public int baseHealthUpgradeCost = 15;
 
     private float foodProductionTimer = 0f;
     private bool isBattleStarted = false;
@@ -49,10 +51,15 @@ public class ResourceManager : MonoBehaviour
         UIManager.Instance.UpdateGoldUI(gold);
     }
 
-    public void SpendGold(int amount)
+    public bool SpendGold(int amount)
     {
-        gold -= amount;
-        UIManager.Instance.UpdateGoldUI(gold);
+        if (gold >= amount)
+        {
+            gold -= amount;
+            UIManager.Instance.UpdateGoldUI(gold);
+            return true;
+        }
+        return false;
     }
 
     public void AddFood(int amount)
@@ -83,6 +90,19 @@ public class ResourceManager : MonoBehaviour
         isBattleStarted = true;
     }
 
+    public void IncreaseFoodProduction()
+    {
+        foodProductionRate += 0.2f;
+        foodProductionUpgradeCost += 10; // Increment the upgrade cost
+    }
+
+    public void IncreaseBaseHealth()
+    {
+        GameManager.Instance.PlayerBase.IncreaseHealth();
+        baseHealthUpgradeCost += 15; // Increment the upgrade cost
+    }
+
     public int Gold => gold;
     public int Food => food;
 }
+

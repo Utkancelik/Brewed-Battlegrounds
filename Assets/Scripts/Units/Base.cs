@@ -8,6 +8,8 @@ public class Base : IDamageable
     [SerializeField] private GameObject destructionEffectPrefab;
     [SerializeField] private GameObject goldPrefab;
 
+    private int maxHealth;
+
     public override int Health
     {
         get => health;
@@ -17,13 +19,12 @@ public class Base : IDamageable
             healthBar.SetHealth(health, maxHealth);
         }
     }
+
     public override bool IsEnemy
     {
         get => isEnemy;
         set => isEnemy = value;
     }
-
-    private int maxHealth;
 
     private void Awake()
     {
@@ -47,36 +48,22 @@ public class Base : IDamageable
     public override void TakeDamage(int damage)
     {
         Health -= damage;
-
         if (Health <= 0)
         {
             Die();
         }
     }
 
+    public void IncreaseHealth()
+    {
+        maxHealth += 100; // Increase max health by 100
+        Health = maxHealth; // Restore health to new max
+        healthBar.SetHealth(Health, maxHealth); // Update health bar
+    }
+
     public override void Die()
     {
-        if (destructionEffectPrefab != null)
-        {
-            Instantiate(destructionEffectPrefab, transform.position, Quaternion.identity);
-        }
-
-        if (isEnemy)
-        {
-            DropGold(); // Drop gold only if it is the enemy base
-        }
-
         Destroy(gameObject);
-
-        // Trigger game over or win condition based on which base died
         GameManager.Instance.CheckGameOver();
     }
-
-    private void DropGold()
-    {
-        GameObject gold = Instantiate(goldPrefab, transform.position, Quaternion.identity);
-        gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * 2f);
-    }
 }
-
-

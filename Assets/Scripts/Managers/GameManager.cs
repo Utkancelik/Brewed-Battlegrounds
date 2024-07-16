@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // Add this to handle scene management
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public Base EnemyBase;
     [SerializeField] private SpawnArea playerSpawnArea;
     [SerializeField] private SpawnArea enemySpawnArea;
-    [SerializeField] private List<SoldierType> soldierTypes; // List of soldier types
+    [SerializeField] public List<SoldierType> soldierTypes; // List of soldier types, now public
 
     private SoldierSpawner soldierSpawner;
     private ResourceManager resourceManager;
@@ -39,10 +39,17 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        // Ensure the first soldier type is unlocked at the start
+        if (soldierTypes.Count > 0)
+        {
+            soldierTypes[0].isUnlocked = true;
+        }
+
         UIManager.Instance.UpdateGoldUI(resourceManager.Gold); // Initialize the gold UI with the current gold amount
         UIManager.Instance.UpdateFoodUI(resourceManager.Food); // Initialize the food UI with the current food amount
         UIManager.Instance.CreateUnitButtons(soldierTypes); // Initialize unit buttons
     }
+
 
     void Update()
     {
@@ -61,6 +68,7 @@ public class GameManager : MonoBehaviour
     public void StartBattle()
     {
         isBattleStarted = true;
+        resourceManager.StartProduction();
     }
 
     public void CheckGameOver()
