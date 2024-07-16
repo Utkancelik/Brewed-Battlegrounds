@@ -4,12 +4,12 @@ using UnityEngine;
 [RequireComponent(typeof(Soldier))]
 public class RangedAttack : IAttackBehavior
 {
-    [SerializeField] private GameObject arrowPrefab; // Assign in inspector
-    private bool isAttacking; // Flag to indicate if the archer is currently attacking
+    [SerializeField] private GameObject arrowPrefab;
+    private bool isAttacking;
 
     public override void Attack(Soldier attacker, IDamageable target)
     {
-        if (target != null && target.Health > 0 && !isAttacking)
+        if (!isAttacking)
         {
             attacker.StartCoroutine(PerformAttack(attacker, target));
         }
@@ -17,33 +17,35 @@ public class RangedAttack : IAttackBehavior
 
     private IEnumerator PerformAttack(Soldier attacker, IDamageable target)
     {
-        isAttacking = true; // Set the flag to true when the attack starts
-        if (target != null && target == attacker.CurrentTarget)
+        isAttacking = true;
+        attacker.TriggerAttackAnimation();
+        yield return new WaitForSeconds(0.5f);
+
+        if (target != null)
         {
-            attacker.TriggerAttackAnimation();
-            yield return new WaitForSeconds(0.5f); // Adjust to match animation timing
-
-            if (target != null && target == attacker.CurrentTarget)
-            {
-                SpawnArrow(attacker, target);
-            }
-
-            yield return new WaitForSeconds(0.5f); // Adjust to match animation timing
-            attacker.ResetAttackAnimation();
+            SpawnArrow(attacker, target.transform.position);
         }
-        isAttacking = false; // Reset the flag after the attack finishes
+
+        yield return new WaitForSeconds(0.5f);
+        attacker.ResetAttackAnimation();
+        isAttacking = false;
     }
 
-    private void SpawnArrow(Soldier attacker, IDamageable target)
+    private void SpawnArrow(Soldier attacker, Vector3 targetPosition)
     {
         GameObject arrow = Instantiate(arrowPrefab, attacker.transform.position, Quaternion.identity);
         Arrow arrowScript = arrow.GetComponent<Arrow>();
         if (arrowScript != null)
         {
-            arrowScript.Initialize(target, attacker.Stats.Damage);
+            arrowScript.Initialize(targetPosition, attacker.Stats.Damage, attacker.gameObject);
         }
     }
 }
+
+
+
+
+
 
 
 

@@ -11,6 +11,8 @@ public class ResourceManager : MonoBehaviour
 
     [SerializeField] private int gold = 0;
     [SerializeField] private int food = 0;
+    [SerializeField] private int roundGold = 0; // Gold collected in the current round
+    [SerializeField] private int totalGold = 0; // Total gold across all rounds
     [SerializeField] private float foodProductionRate = 1f; // Food per second
     public int foodProductionUpgradeCost = 10;
     public int baseHealthUpgradeCost = 15;
@@ -18,6 +20,10 @@ public class ResourceManager : MonoBehaviour
     private float foodProductionTimer = 0f;
     private bool isBattleStarted = false;
 
+    public int TotalGold => totalGold; // Public getter for total gold
+    public int RoundGold => roundGold; // Public getter for round gold
+    public int Gold => gold;
+    public int Food => food;
     private void Awake()
     {
         if (Instance == null)
@@ -49,6 +55,20 @@ public class ResourceManager : MonoBehaviour
     {
         gold += amount;
         UIManager.Instance.UpdateGoldUI(gold);
+    }
+
+    public void AddRoundGold(int amount)
+    {
+        roundGold += amount;
+        UIManager.Instance.UpdateRoundGoldUI(roundGold); // Update round gold UI
+    }
+
+    public void AddRoundGoldToTotal()
+    {
+        totalGold += roundGold;
+        roundGold = 0; // Reset round gold
+        UIManager.Instance.UpdateTotalGoldUI(totalGold); // Update total gold UI
+        UIManager.Instance.UpdateRoundGoldUI(roundGold); // Reset round gold UI
     }
 
     public bool SpendGold(int amount)
@@ -90,19 +110,6 @@ public class ResourceManager : MonoBehaviour
         isBattleStarted = true;
     }
 
-    public void IncreaseFoodProduction()
-    {
-        foodProductionRate += 0.2f;
-        foodProductionUpgradeCost += 10; // Increment the upgrade cost
-    }
-
-    public void IncreaseBaseHealth()
-    {
-        GameManager.Instance.PlayerBase.IncreaseHealth();
-        baseHealthUpgradeCost += 15; // Increment the upgrade cost
-    }
-
-    public int Gold => gold;
-    public int Food => food;
+    
 }
 

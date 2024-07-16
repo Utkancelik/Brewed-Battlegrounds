@@ -5,11 +5,13 @@ public class Gold : MonoBehaviour
 {
     private Vector2 direction;
     private Vector3 screenTargetPosition;
+    private bool isFromEnemy;
 
-    public void Initialize(Vector2 initialDirection)
+    public void Initialize(Vector2 initialDirection, bool isFromEnemy)
     {
         direction = initialDirection;
         screenTargetPosition = UIManager.Instance.GetGoldUIPosition();
+        this.isFromEnemy = isFromEnemy;
         StartCoroutine(MoveToRandomPositionThenUI());
     }
 
@@ -37,7 +39,15 @@ public class Gold : MonoBehaviour
             yield return null;
         }
 
-        ResourceManager.Instance.AddGold(1);
+        if (isFromEnemy)
+        {
+            ResourceManager.Instance.AddRoundGold(1); // Add to round gold if from an enemy
+            UIManager.Instance.UpdateRoundGoldUI(ResourceManager.Instance.RoundGold); // Update round gold UI
+        }
+        else
+        {
+            ResourceManager.Instance.AddGold(1); // Add to total gold if from player base
+        }
         Destroy(gameObject);
     }
 }
