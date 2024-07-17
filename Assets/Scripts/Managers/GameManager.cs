@@ -89,31 +89,6 @@ public class GameManager : MonoBehaviour
         return ResourceManager.Instance.RoundGold;
     }
 
-    public void AddGold(int amount)
-    {
-        ResourceManager.Instance.AddRoundGold(amount);
-        UIManager.Instance.UpdateGoldUI(ResourceManager.Instance.Gold);
-        UIManager.Instance.UpdateRoundGoldUI(ResourceManager.Instance.RoundGold);
-    }
-
-    public void SpendGold(int amount)
-    {
-        resourceManager.SpendGold(amount);
-        UIManager.Instance.UpdateGoldUI(resourceManager.Gold);
-    }
-
-    public void AddFood(int amount)
-    {
-        resourceManager.AddFood(amount);
-        UIManager.Instance.UpdateFoodUI(resourceManager.Food);
-    }
-
-    public void SpendFood(int amount)
-    {
-        resourceManager.SpendFood(amount);
-        UIManager.Instance.UpdateFoodUI(resourceManager.Food);
-    }
-
     public void SpawnSoldier(SoldierType soldierType)
     {
         soldierSpawner.SpawnSoldier(soldierType.Prefab, false);

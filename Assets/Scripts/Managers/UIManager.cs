@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
 
+    [SerializeField] private GameObject roundGoldImage;
     [SerializeField] private GameObject waveTextObject;
     [SerializeField] private Button startBattleButton;
     [SerializeField] private TMP_Text currentGoldText;
@@ -145,7 +146,7 @@ public class UIManager : MonoBehaviour
 
     public Vector3 GetGoldUIPosition()
     {
-        return currentGoldText.transform.position;
+        return roundGoldImage.transform.position;
     }
 
     public void CreateUnitButtons(List<SoldierType> soldierTypes)

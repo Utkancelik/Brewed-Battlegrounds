@@ -20,7 +20,7 @@ public class HealthBar : MonoBehaviour
     {
         this.target = target;
         SetMaxHealth(maxHealth);
-        SetHealth(maxHealth, maxHealth);
+        SetHealth(maxHealth, maxHealth); // Set initial health display
     }
 
     public void SetMaxHealth(int health)
@@ -60,7 +60,6 @@ public class HealthBar : MonoBehaviour
             backgroundImage.fillAmount = Mathf.Lerp(backgroundImage.fillAmount, targetFill, Time.deltaTime * 10f);
             yield return null;
         }
-
         backgroundImage.fillAmount = targetFill;
     }
 }
