@@ -34,7 +34,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject gameOverPanel; 
     [SerializeField] private Button closeGameOverPanelButton; 
     [SerializeField] private Image fadeOverlay; 
-
+    
+    [SerializeField] private Button increaseFoodProductionButton;
+    [SerializeField] private Button increaseBaseHealthButton;
+    [SerializeField] private TMP_Text foodProductionRateText;
+    [SerializeField] private TMP_Text baseHealthText;
     private List<Button> unitButtons = new List<Button>();
 
     private void Awake()
@@ -52,18 +56,28 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
+        increaseFoodProductionButton.onClick.AddListener(() => ResourceManager.Instance.IncreaseFoodProductionRate());
+        increaseBaseHealthButton.onClick.AddListener(() => ResourceManager.Instance.IncreaseBaseHealth());
+        goToBattleButton.onClick.AddListener(EnterBattleScene);
+        upgradeButton.onClick.AddListener(OpenUpgradePanel);
+        startBattleButton.onClick.AddListener(StartBattle);
+        closeGameOverPanelButton.onClick.AddListener(CloseGameOverPanel);
+        
+        UpdateFoodProductionRateUI(ResourceManager.Instance.foodProductionRate);
+        UpdateBaseHealthUI(GameManager.Instance.PlayerBase.Health);
         UpdateGoldUI(ResourceManager.Instance.Gold);
         UpdateFoodUI(ResourceManager.Instance.Food);
         UpdateTotalGoldUI(ResourceManager.Instance.TotalGold);
         UpdateRoundGoldUI(ResourceManager.Instance.RoundGold);
 
-        goToBattleButton.onClick.AddListener(EnterBattleScene);
-        upgradeButton.onClick.AddListener(OpenUpgradePanel);
-        startBattleButton.onClick.AddListener(StartBattle);
-        closeGameOverPanelButton.onClick.AddListener(CloseGameOverPanel);
+        
 
         GameManager.Instance.soldierTypes[0].IsUnlocked = true;
-
+        
+        foreach (var soldierType in GameManager.Instance.soldierTypes)
+        {
+            soldierType.IsUnlocked = PlayerPrefs.GetInt(soldierType.SoldierName, 0) == 1;
+        }
         for (int i = 0; i < unlockSoldierButtons.Count; i++)
         {
             int index = i;
@@ -72,11 +86,22 @@ public class UIManager : MonoBehaviour
 
         EnterBattleScene();
         UpdateUpgradePanel();
+        CreateUnitButtons(GameManager.Instance.soldierTypes);
+        ResourceManager.Instance.LoadUpgrades();
 
+        
         gameOverPanel.SetActive(false);
         fadeOverlay.gameObject.SetActive(false);
     }
+    public void UpdateFoodProductionRateUI(float rate)
+    {
+        foodProductionRateText.text = $"Food Production Rate: {rate}";
+    }
 
+    public void UpdateBaseHealthUI(int health)
+    {
+        baseHealthText.text = $"Base Health: {health}";
+    }
     public void ShowMainButtonsPanel()
     {
         mainButtonsPanel.SetActive(true);
@@ -197,10 +222,14 @@ public class UIManager : MonoBehaviour
         if (!soldierType.IsUnlocked && ResourceManager.Instance.SpendGold(soldierType.UnlockCost))
         {
             soldierType.IsUnlocked = true;
+            PlayerPrefs.SetInt(soldierType.SoldierName, 1); // Save unlock status
+            PlayerPrefs.Save(); // Save preferences
+
             UpdateUpgradePanel();
             CreateUnitButtons(GameManager.Instance.soldierTypes);
         }
     }
+
 
     private void UpdateUpgradePanel()
     {

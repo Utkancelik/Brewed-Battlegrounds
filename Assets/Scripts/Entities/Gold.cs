@@ -13,6 +13,12 @@ public class Gold : MonoBehaviour
         StartCoroutine(MoveToRandomPositionThenUI());
     }
 
+    public void MoveImmediately()
+    {
+        StopAllCoroutines();
+        StartCoroutine(MoveToUI());
+    }
+
     private IEnumerator MoveToRandomPositionThenUI()
     {
         Vector2 randomPosition = (Vector2)transform.position + direction;
@@ -28,6 +34,11 @@ public class Gold : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
+        StartCoroutine(MoveToUI());
+    }
+
+    private IEnumerator MoveToUI()
+    {
         Vector3 worldTargetPosition = Camera.main.ScreenToWorldPoint(screenTargetPosition);
         worldTargetPosition.z = 0;
 

@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour
     private ResourceManager resourceManager;
     private int roundGoldEarned;
     private bool isBattleStarted = false;
+    private bool isGoldAddedToTotal = false;
+
 
     void Awake()
     {
@@ -72,19 +74,49 @@ public class GameManager : MonoBehaviour
         if (PlayerBase.Health <= 0 || EnemyBase.Health <= 0)
         {
             isBattleStarted = false;
-            roundGoldEarned = CalculateRoundGold();
-            resourceManager.AddRoundGoldToTotal();
 
-            if (EnemyBase.Health <= 0)
-            {
-                UIManager.Instance.ShowGameOverPanel(roundGoldEarned);
-            }
-
+            // Stop all actions and collect all gold
             StopAllActions();
             BattleManager.Instance.StopSpawning(); // Stop spawning new enemies
-            UIManager.Instance.FadeAndReload();
+
+            CollectAllGold();
+
+            StartCoroutine(WaitForAllGoldToBeCollected());
         }
     }
+
+    private void CollectAllGold()
+    {
+        var allGold = FindObjectsOfType<Gold>();
+        foreach (var gold in allGold)
+        {
+            gold.MoveImmediately();
+        }
+    }
+
+    private IEnumerator WaitForAllGoldToBeCollected()
+    {
+        while (FindObjectsOfType<Gold>().Length > 0)
+        {
+            yield return null;
+        }
+
+        // Now, all gold is collected and we ensure AddRoundGoldToTotal is called only once
+        if (!isGoldAddedToTotal)
+        {
+            roundGoldEarned = CalculateRoundGold();
+            resourceManager.AddRoundGoldToTotal();
+            isGoldAddedToTotal = true;
+        }
+
+        if (EnemyBase.Health <= 0)
+        {
+            UIManager.Instance.ShowGameOverPanel(roundGoldEarned);
+        }
+
+        UIManager.Instance.FadeAndReload();
+    }
+
     
     private void StopAllActions()
     {

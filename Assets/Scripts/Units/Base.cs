@@ -8,7 +8,7 @@ public class Base : IDamageable
     [SerializeField] private GameObject destructionEffectPrefab;
     [SerializeField] private GameObject destructionEffectPosition;
 
-    private int maxHealth;
+    public int maxHealth;
 
     public override int Health
     {

@@ -13,7 +13,7 @@ public class ResourceManager : MonoBehaviour
     [SerializeField] private int food = 0;
     [SerializeField] private int roundGold = 0;
     [SerializeField] private int totalGold = 0;
-    [SerializeField] private float foodProductionRate = 1f;
+    [SerializeField] public float foodProductionRate = 1f;
     public int foodProductionUpgradeCost = 10;
     public int baseHealthUpgradeCost = 15;
 
@@ -68,6 +68,7 @@ public class ResourceManager : MonoBehaviour
         SaveTotalGold();
     }
 
+
     public void SaveTotalGold()
     {
         PlayerPrefs.SetInt("TotalGold", totalGold);
@@ -111,5 +112,46 @@ public class ResourceManager : MonoBehaviour
     {
         isBattleStarted = true;
     }
+    
+    public void IncreaseFoodProductionRate()
+    {
+        if (SpendGold(foodProductionUpgradeCost))
+        {
+            foodProductionRate += 0.5f;
+            UIManager.Instance.UpdateFoodProductionRateUI(foodProductionRate);
+
+            // Save new food production rate
+            PlayerPrefs.SetFloat("FoodProductionRate", foodProductionRate);
+            PlayerPrefs.Save();
+        }
+    }
+
+    public void IncreaseBaseHealth()
+    {
+        if (SpendGold(baseHealthUpgradeCost))
+        {
+            Base playerBase = GameManager.Instance.PlayerBase;
+            playerBase.maxHealth += 50;
+            playerBase.Health = playerBase.maxHealth;
+            UIManager.Instance.UpdateBaseHealthUI(playerBase.Health);
+
+            // Save new base health
+            PlayerPrefs.SetInt("BaseHealth", playerBase.maxHealth);
+            PlayerPrefs.Save();
+        }
+    }
+
+    public void LoadUpgrades()
+    {
+        foodProductionRate = PlayerPrefs.GetFloat("FoodProductionRate", 1f);
+        UIManager.Instance.UpdateFoodProductionRateUI(foodProductionRate);
+
+        int savedBaseHealth = PlayerPrefs.GetInt("BaseHealth", GameManager.Instance.PlayerBase.maxHealth);
+        GameManager.Instance.PlayerBase.maxHealth = savedBaseHealth;
+        GameManager.Instance.PlayerBase.Health = savedBaseHealth;
+        UIManager.Instance.UpdateBaseHealthUI(savedBaseHealth);
+    }
+
+
 }
 

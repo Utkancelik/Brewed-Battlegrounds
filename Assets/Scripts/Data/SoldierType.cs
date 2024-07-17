@@ -17,7 +17,13 @@ public class SoldierType
         Prefab = prefab;
         Stats = stats;
         UnlockCost = unlockCost;
-        IsUnlocked = false;
+        IsUnlocked = PlayerPrefs.GetInt(name, 0) == 1; // Load unlock status
+    }
+
+    public void Save()
+    {
+        PlayerPrefs.SetInt(SoldierName, IsUnlocked ? 1 : 0);
     }
 }
+
 
