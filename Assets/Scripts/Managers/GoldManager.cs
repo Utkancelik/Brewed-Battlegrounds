@@ -4,7 +4,7 @@ using UnityEngine;
 [Serializable]
 public class GoldManager
 {
-    private float goldProductionRate = 50f; // Gold per second
+    private float goldProductionRate = 50f;
 
     public void ProduceGold(ref int gold)
     {
@@ -16,3 +16,4 @@ public class GoldManager
         foodProductionRate += amount;
     }
 }
+

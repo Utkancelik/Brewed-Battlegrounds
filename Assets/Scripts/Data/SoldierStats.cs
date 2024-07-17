@@ -9,7 +9,7 @@ public class SoldierStats
     public float DetectRange;
     public int Damage;
     public int FoodCost;
-    public GameObject ArrowPrefab; // Add arrow prefab for ranged units
+    public GameObject ArrowPrefab;
 
     public SoldierStats(int health, float speed, float attackRange, float detectRange, int damage, int foodCost, GameObject arrowPrefab)
     {
@@ -19,7 +19,7 @@ public class SoldierStats
         DetectRange = detectRange;
         Damage = damage;
         FoodCost = foodCost;
-        ArrowPrefab = arrowPrefab; // Initialize arrow prefab
+        ArrowPrefab = arrowPrefab;
     }
 
     public void CopyFrom(SoldierStats other)
@@ -30,6 +30,7 @@ public class SoldierStats
         DetectRange = other.DetectRange;
         Damage = other.Damage;
         FoodCost = other.FoodCost;
-        ArrowPrefab = other.ArrowPrefab; // Copy arrow prefab
+        ArrowPrefab = other.ArrowPrefab;
     }
 }
+

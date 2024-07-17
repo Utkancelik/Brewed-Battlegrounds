@@ -10,10 +10,7 @@ public class DamageFlicker : MonoBehaviour
     private void Awake()
     {
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            originalColor = spriteRenderer.color;
-        }
+        originalColor = spriteRenderer.color;
     }
 
     public void Flicker(float duration, Color flickerColor)
@@ -28,13 +25,7 @@ public class DamageFlicker : MonoBehaviour
     {
         isFlickering = true;
 
-        // If the current color is already the flicker color, use a different color for the flicker
-        if (spriteRenderer.color == flickerColor)
-        {
-            flickerColor = Color.white;
-        }
-
-        spriteRenderer.color = flickerColor;
+        spriteRenderer.color = flickerColor == spriteRenderer.color ? Color.white : flickerColor;
 
         yield return new WaitForSeconds(duration);
 

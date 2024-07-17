@@ -11,19 +11,20 @@ public class ResourceManager : MonoBehaviour
 
     [SerializeField] private int gold = 0;
     [SerializeField] private int food = 0;
-    [SerializeField] private int roundGold = 0; // Gold collected in the current round
-    [SerializeField] private int totalGold = 0; // Total gold across all rounds
-    [SerializeField] private float foodProductionRate = 1f; // Food per second
+    [SerializeField] private int roundGold = 0;
+    [SerializeField] private int totalGold = 0;
+    [SerializeField] private float foodProductionRate = 1f;
     public int foodProductionUpgradeCost = 10;
     public int baseHealthUpgradeCost = 15;
 
     private float foodProductionTimer = 0f;
     private bool isBattleStarted = false;
 
-    public int TotalGold => totalGold; // Public getter for total gold
-    public int RoundGold => roundGold; // Public getter for round gold
+    public int TotalGold => totalGold;
+    public int RoundGold => roundGold;
     public int Gold => gold;
     public int Food => food;
+
     private void Awake()
     {
         if (Instance == null)
@@ -60,15 +61,15 @@ public class ResourceManager : MonoBehaviour
     public void AddRoundGold(int amount)
     {
         roundGold += amount;
-        UIManager.Instance.UpdateRoundGoldUI(roundGold); // Update round gold UI
+        UIManager.Instance.UpdateRoundGoldUI(roundGold);
     }
 
     public void AddRoundGoldToTotal()
     {
         totalGold += roundGold;
-        roundGold = 0; // Reset round gold
-        UIManager.Instance.UpdateTotalGoldUI(totalGold); // Update total gold UI
-        UIManager.Instance.UpdateRoundGoldUI(roundGold); // Reset round gold UI
+        roundGold = 0;
+        UIManager.Instance.UpdateTotalGoldUI(totalGold);
+        UIManager.Instance.UpdateRoundGoldUI(roundGold);
     }
 
     public bool SpendGold(int amount)
@@ -109,7 +110,5 @@ public class ResourceManager : MonoBehaviour
     {
         isBattleStarted = true;
     }
-
-    
 }
 

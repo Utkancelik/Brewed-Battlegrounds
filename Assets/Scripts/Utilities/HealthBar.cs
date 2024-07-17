@@ -20,7 +20,7 @@ public class HealthBar : MonoBehaviour
     {
         this.target = target;
         SetMaxHealth(maxHealth);
-        SetHealth(maxHealth, maxHealth); // Set initial health display
+        SetHealth(maxHealth, maxHealth);
     }
 
     public void SetMaxHealth(int health)

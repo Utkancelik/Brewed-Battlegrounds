@@ -16,29 +16,29 @@ MonoBehaviour:
   - Groups:
     - Soldier: {fileID: 622894082000207707, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
       Amount: 1
-      delayAfterGroup: 5
+      DelayAfterGroup: 5
     - Soldier: {fileID: 622894082000207707, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
       Amount: 2
-      delayAfterGroup: 5
+      DelayAfterGroup: 5
     - Soldier: {fileID: 622894082000207707, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
       Amount: 2
-      delayAfterGroup: 0
+      DelayAfterGroup: 0
   - Groups:
     - Soldier: {fileID: 622894082000207707, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
       Amount: 4
-      delayAfterGroup: 5
+      DelayAfterGroup: 5
     - Soldier: {fileID: 622894082000207707, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
       Amount: 4
-      delayAfterGroup: 10
+      DelayAfterGroup: 5
     - Soldier: {fileID: 622894082000207707, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
       Amount: 8
-      delayAfterGroup: 0
+      DelayAfterGroup: 0
   - Groups:
     - Soldier: {fileID: 622894082000207707, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
       Amount: 10
-      delayAfterGroup: 5
+      DelayAfterGroup: 5
     - Soldier: {fileID: 622894082000207707, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
       Amount: 10
-      delayAfterGroup: 0
-  delayBetweenUnits: 0.1
-  delayBetweenWaves: 10
+      DelayAfterGroup: 0
+  DelayBetweenUnits: 0.1
+  DelayBetweenWaves: 5

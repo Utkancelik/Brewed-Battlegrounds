@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Soldier))]
 public class MeleeAttack : IAttackBehavior
 {
-    private bool isAttacking; // Flag to indicate if the melee soldier is currently attacking
+    private bool isAttacking;
 
     public override void Attack(Soldier attacker, IDamageable target)
     {
@@ -16,22 +16,21 @@ public class MeleeAttack : IAttackBehavior
 
     private IEnumerator PerformAttack(Soldier attacker, IDamageable target)
     {
-        isAttacking = true; // Set the flag to true when the attack starts
+        isAttacking = true;
+        attacker.TriggerAttackAnimation();
+        yield return new WaitForSeconds(0.5f);
+        
         if (target != null && target == attacker.CurrentTarget)
         {
-            attacker.TriggerAttackAnimation();
-            yield return new WaitForSeconds(0.5f);
-
-            if (target != null && target == attacker.CurrentTarget)
-            {
-                target.TakeDamage(attacker.Stats.Damage);
-            }
-            yield return new WaitForSeconds(0.5f);
-            attacker.ResetAttackAnimation();
+            target.TakeDamage(attacker.Stats.Damage);
         }
-        isAttacking = false; // Reset the flag after the attack finishes
+
+        yield return new WaitForSeconds(0.5f);
+        attacker.ResetAttackAnimation();
+        isAttacking = false;
     }
 }
+
 
 
 

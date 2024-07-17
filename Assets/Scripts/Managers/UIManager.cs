@@ -11,29 +11,29 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private GameObject waveTextObject;
     [SerializeField] private Button startBattleButton;
-    [SerializeField] private TMP_Text currentGoldText; // Reference to the UI text element displaying current gold
-    [SerializeField] private TMP_Text foodText; // Reference to the UI text element displaying food
-    [SerializeField] private TMP_Text totalGoldVaultText; // Reference to the UI text element displaying total gold vault
-    [SerializeField] private TMP_Text gameOverRoundGoldText; // Reference to the UI text element displaying round gold in the game over panel
-    [SerializeField] private TMP_Text roundGoldInGameText; // Reference to the UI text element displaying round gold in-game
-    [SerializeField] private GameObject unitButtonPrefab; // Prefab for unit buttons
-    [SerializeField] private Transform unitButtonContainer; // Container for unit buttons
+    [SerializeField] private TMP_Text currentGoldText;
+    [SerializeField] private TMP_Text foodText;
+    [SerializeField] private TMP_Text totalGoldVaultText; 
+    [SerializeField] private TMP_Text gameOverRoundGoldText;
+    [SerializeField] private TMP_Text roundGoldInGameText;
+    [SerializeField] private GameObject unitButtonPrefab; 
+    [SerializeField] private Transform unitButtonContainer; 
     public Button StartBattleButton => startBattleButton;
 
-    [SerializeField] private GameObject mainBattlePanel; // Panel for the battle scene
-    [SerializeField] private GameObject battleBottomPanel; // Panel for the battle controls
+    [SerializeField] private GameObject mainBattlePanel; 
+    [SerializeField] private GameObject battleBottomPanel; 
     [SerializeField] private GameObject upgradePanel;
-    [SerializeField] private GameObject mainButtonsPanel; // Panel containing the 5 main buttons
+    [SerializeField] private GameObject mainButtonsPanel; 
 
-    [SerializeField] private Button goToBattleButton; // Button to go to battle scene from main buttons
-    [SerializeField] private Button upgradeButton; // Button to go to upgrade panel
+    [SerializeField] private Button goToBattleButton; 
+    [SerializeField] private Button upgradeButton; 
 
-    [SerializeField] private List<Button> unlockSoldierButtons; // Buttons to unlock soldier types
-    [SerializeField] private List<Image> soldierCards; // Images for soldier cards
+    [SerializeField] private List<Button> unlockSoldierButtons; 
+    [SerializeField] private List<Image> soldierCards; 
 
-    [SerializeField] private GameObject gameOverPanel; // Game Over Panel
-    [SerializeField] private Button closeGameOverPanelButton; // Button to close the game over panel
-    [SerializeField] private Image fadeOverlay; // Image for fade effect
+    [SerializeField] private GameObject gameOverPanel; 
+    [SerializeField] private Button closeGameOverPanelButton; 
+    [SerializeField] private Image fadeOverlay; 
 
     private List<Button> unitButtons = new List<Button>();
 
@@ -52,20 +52,17 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        // Initialize the UI with the current gold and food amount
         UpdateGoldUI(ResourceManager.Instance.Gold);
         UpdateFoodUI(ResourceManager.Instance.Food);
         UpdateTotalGoldUI(ResourceManager.Instance.TotalGold);
         UpdateRoundGoldUI(ResourceManager.Instance.RoundGold);
 
-        // Assign button listeners
         goToBattleButton.onClick.AddListener(EnterBattleScene);
         upgradeButton.onClick.AddListener(OpenUpgradePanel);
         startBattleButton.onClick.AddListener(StartBattle);
         closeGameOverPanelButton.onClick.AddListener(CloseGameOverPanel);
 
-        // Set the first soldier type as unlocked by default
-        GameManager.Instance.soldierTypes[0].isUnlocked = true;
+        GameManager.Instance.soldierTypes[0].IsUnlocked = true;
 
         for (int i = 0; i < unlockSoldierButtons.Count; i++)
         {
@@ -73,13 +70,11 @@ public class UIManager : MonoBehaviour
             unlockSoldierButtons[i].onClick.AddListener(() => UnlockSoldierType(index));
         }
 
-        // Ensure the MainBattlePanel is active when the game starts
         EnterBattleScene();
-        // Ensure the upgrade panel is updated with the initial state
         UpdateUpgradePanel();
 
-        gameOverPanel.SetActive(false); // Ensure the Game Over panel is inactive at the start
-        fadeOverlay.gameObject.SetActive(false); // Ensure the fade overlay is inactive at the start
+        gameOverPanel.SetActive(false);
+        fadeOverlay.gameObject.SetActive(false);
     }
 
     public void ShowMainButtonsPanel()
@@ -93,7 +88,7 @@ public class UIManager : MonoBehaviour
     public void EnterBattleScene()
     {
         mainBattlePanel.SetActive(true);
-        mainButtonsPanel.SetActive(true); // Keep the main buttons visible
+        mainButtonsPanel.SetActive(true);
         battleBottomPanel.SetActive(false);
         upgradePanel.SetActive(false);
     }
@@ -103,7 +98,7 @@ public class UIManager : MonoBehaviour
         mainBattlePanel.SetActive(false);
         battleBottomPanel.SetActive(false);
         upgradePanel.SetActive(true);
-        UpdateUpgradePanel(); // Refresh the upgrade panel whenever it's opened
+        UpdateUpgradePanel();
     }
 
     public void StartBattle()
@@ -125,68 +120,32 @@ public class UIManager : MonoBehaviour
 
     public void UpdateGoldUI(int goldAmount)
     {
-        if (currentGoldText != null)
-        {
-            currentGoldText.text = $"{goldAmount}";
-        }
-        else
-        {
-            Debug.LogError("Gold text UI element not assigned in UIManager.");
-        }
+        currentGoldText.text = $"{goldAmount}";
     }
 
     public void UpdateTotalGoldUI(int totalGoldAmount)
     {
-        if (totalGoldVaultText != null)
-        {
-            totalGoldVaultText.text = $"Total Gold: {totalGoldAmount}";
-        }
-        else
-        {
-            Debug.LogError("Total gold text UI element not assigned in UIManager.");
-        }
+        totalGoldVaultText.text = $"Total Gold: {totalGoldAmount}";
     }
 
     public void UpdateFoodUI(int foodAmount)
     {
-        if (foodText != null)
-        {
-            foodText.text = $"{foodAmount}";
-        }
-        else
-        {
-            Debug.LogError("Food text UI element not assigned in UIManager.");
-        }
+        foodText.text = $"{foodAmount}";
     }
 
     public void UpdateRoundGoldUI(int roundGoldAmount)
     {
-        if (roundGoldInGameText != null)
-        {
-            roundGoldInGameText.text = $"{roundGoldAmount}";
-        }
-        else
-        {
-            Debug.LogError("Round gold text UI element not assigned in UIManager.");
-        }
+        roundGoldInGameText.text = $"{roundGoldAmount}";
     }
 
     public void UpdateGameOverRoundGoldUI(int roundGoldAmount)
     {
-        if (gameOverRoundGoldText != null)
-        {
-            gameOverRoundGoldText.text = $"Gold Earned: {roundGoldAmount}";
-        }
-        else
-        {
-            Debug.LogError("Game over round gold text UI element not assigned in UIManager.");
-        }
+        gameOverRoundGoldText.text = $"Gold Earned: {roundGoldAmount}";
     }
 
     public Vector3 GetGoldUIPosition()
     {
-        Vector3 screenPosition = currentGoldText.transform.position;
-        return screenPosition;
+        return currentGoldText.transform.position;
     }
 
     public void CreateUnitButtons(List<SoldierType> soldierTypes)
@@ -195,36 +154,27 @@ public class UIManager : MonoBehaviour
 
         foreach (var soldierType in soldierTypes)
         {
-            if (!soldierType.isUnlocked) continue; // Only create buttons for unlocked soldier types
+            if (!soldierType.IsUnlocked) continue;
 
             GameObject buttonObj = Instantiate(unitButtonPrefab, unitButtonContainer);
             Button button = buttonObj.GetComponent<Button>();
-            unitButtons.Add(button); // Correct method name with capital 'A'
+            unitButtons.Add(button);
 
             TMP_Text[] texts = buttonObj.GetComponentsInChildren<TMP_Text>();
             Image unitImage = buttonObj.transform.Find("UnitImage").GetComponent<Image>();
             Image unitCostImage = buttonObj.transform.Find("UnitCostImage").GetComponent<Image>();
             TMP_Text unitCostText = unitCostImage.transform.Find("UnitCostText").GetComponent<TMP_Text>();
 
-            if (texts.Length > 0)
-            {
-                texts[0].text = soldierType.soldierName;
-            }
-            if (unitImage != null)
-            {
-                unitImage.sprite = soldierType.soldierIcon;
-            }
-            if (unitCostText != null)
-            {
-                unitCostText.text = soldierType.stats.FoodCost.ToString();
-            }
+            texts[0].text = soldierType.SoldierName;
+            unitImage.sprite = soldierType.SoldierIcon;
+            unitCostText.text = soldierType.Stats.FoodCost.ToString();
 
             button.onClick.AddListener(() => {
-                if (ResourceManager.Instance.Food >= soldierType.stats.FoodCost) // Check if enough food
+                if (ResourceManager.Instance.Food >= soldierType.Stats.FoodCost)
                 {
                     GameManager.Instance.SpawnSoldier(soldierType);
-                    ResourceManager.Instance.SpendFood(soldierType.stats.FoodCost); // Spend the food
-                    UpdateFoodUI(ResourceManager.Instance.Food); // Update the UI
+                    ResourceManager.Instance.SpendFood(soldierType.Stats.FoodCost);
+                    UpdateFoodUI(ResourceManager.Instance.Food);
                 }
             });
         }
@@ -244,11 +194,11 @@ public class UIManager : MonoBehaviour
         if (index < 0 || index >= GameManager.Instance.soldierTypes.Count) return;
 
         SoldierType soldierType = GameManager.Instance.soldierTypes[index];
-        if (!soldierType.isUnlocked && ResourceManager.Instance.SpendGold(soldierType.unlockCost))
+        if (!soldierType.IsUnlocked && ResourceManager.Instance.SpendGold(soldierType.UnlockCost))
         {
-            soldierType.isUnlocked = true;
+            soldierType.IsUnlocked = true;
             UpdateUpgradePanel();
-            CreateUnitButtons(GameManager.Instance.soldierTypes); // Refresh unit buttons
+            CreateUnitButtons(GameManager.Instance.soldierTypes);
         }
     }
 
@@ -259,9 +209,9 @@ public class UIManager : MonoBehaviour
             if (i < GameManager.Instance.soldierTypes.Count)
             {
                 SoldierType soldierType = GameManager.Instance.soldierTypes[i];
-                soldierCards[i].color = soldierType.isUnlocked ? Color.white : Color.gray;
-                unlockSoldierButtons[i].gameObject.SetActive(!soldierType.isUnlocked || i == 0);
-                unlockSoldierButtons[i].GetComponentInChildren<TMP_Text>().text = soldierType.isUnlocked ? "Unlocked" : $"{soldierType.unlockCost} Gold";
+                soldierCards[i].color = soldierType.IsUnlocked ? Color.white : Color.gray;
+                unlockSoldierButtons[i].gameObject.SetActive(!soldierType.IsUnlocked || i == 0);
+                unlockSoldierButtons[i].GetComponentInChildren<TMP_Text>().text = soldierType.IsUnlocked ? "Unlocked" : $"{soldierType.UnlockCost} Gold";
             }
             else
             {
@@ -272,7 +222,7 @@ public class UIManager : MonoBehaviour
 
     public void ShowGameOverPanel(int roundGoldEarned)
     {
-        UpdateGameOverRoundGoldUI(roundGoldEarned); // Use the new method for game over round gold
+        UpdateGameOverRoundGoldUI(roundGoldEarned);
         gameOverPanel.SetActive(true);
     }
 
@@ -284,16 +234,11 @@ public class UIManager : MonoBehaviour
     private IEnumerator RestartSceneWithFade()
     {
         yield return StartCoroutine(FadeToBlack());
-
-        // Add round gold to total gold before reloading the scene
         ResourceManager.Instance.AddRoundGoldToTotal();
-
-        // Reload the scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-
         yield return StartCoroutine(FadeFromBlack());
     }
-    
+
     private IEnumerator FadeToBlack()
     {
         fadeOverlay.gameObject.SetActive(true);

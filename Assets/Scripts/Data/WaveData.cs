@@ -10,7 +10,7 @@ public class WaveData : ScriptableObject
     {
         public Soldier Soldier;
         public int Amount;
-        public float delayAfterGroup;
+        public float DelayAfterGroup;
     }
 
     [Serializable]
@@ -20,6 +20,6 @@ public class WaveData : ScriptableObject
     }
 
     public List<Wave> Waves;
-    public float delayBetweenUnits;
-    public float delayBetweenWaves;
+    public float DelayBetweenUnits;
+    public float DelayBetweenWaves;
 }

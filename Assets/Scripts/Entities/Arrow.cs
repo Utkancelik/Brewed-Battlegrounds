@@ -5,7 +5,7 @@ public class Arrow : MonoBehaviour
     private Vector3 initialTargetPosition;
     private int damage;
     private float speed = 10f;
-    private GameObject shooter; // Reference to the shooter to ignore collisions
+    private GameObject shooter;
 
     public void Initialize(Vector3 targetPosition, int damage, GameObject shooter)
     {
@@ -13,18 +13,13 @@ public class Arrow : MonoBehaviour
         this.damage = damage;
         this.shooter = shooter;
 
-        // Calculate direction based on the initial target position
         Vector3 direction = (targetPosition - transform.position).normalized;
         transform.right = direction;
 
-        if (shooter != null)
+        Collider2D shooterCollider = shooter.GetComponent<Collider2D>();
+        if (shooterCollider != null)
         {
-            // Ignore collision with the shooter
-            Collider2D shooterCollider = shooter.GetComponent<Collider2D>();
-            if (shooterCollider != null)
-            {
-                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), shooterCollider);
-            }
+            Physics2D.IgnoreCollision(GetComponent<Collider2D>(), shooterCollider);
         }
     }
 

@@ -12,15 +12,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] public Base EnemyBase;
     [SerializeField] private SpawnArea playerSpawnArea;
     [SerializeField] private SpawnArea enemySpawnArea;
-    [SerializeField] public List<SoldierType> soldierTypes; // List of soldier types, now public
-    [SerializeField] private GameObject gameOverPanel; // Reference to the Game Over Panel
+    [SerializeField] public List<SoldierType> soldierTypes;
+    [SerializeField] private GameObject gameOverPanel;
 
     private SoldierSpawner soldierSpawner;
     private ResourceManager resourceManager;
-    private AgeManager ageManager;
     private int roundGoldEarned;
-
-    private bool isBattleStarted = false; // Track if the battle has started
+    private bool isBattleStarted = false;
 
     void Awake()
     {
@@ -36,25 +34,23 @@ public class GameManager : MonoBehaviour
 
         soldierSpawner = new SoldierSpawner(playerSpawnArea, enemySpawnArea);
         resourceManager = ResourceManager.Instance;
-        ageManager = new AgeManager();
 
         BattleManager.Instance.SetSoldierSpawner(soldierSpawner);
     }
 
     void Start()
     {
-        // Ensure the first soldier type is unlocked at the start
         if (soldierTypes.Count > 0)
         {
-            soldierTypes[0].isUnlocked = true;
+            soldierTypes[0].IsUnlocked = true;
         }
 
-        UIManager.Instance.UpdateGoldUI(resourceManager.Gold); // Initialize the gold UI with the current gold amount
-        UIManager.Instance.UpdateFoodUI(resourceManager.Food); // Initialize the food UI with the current food amount
-        UIManager.Instance.UpdateTotalGoldUI(resourceManager.TotalGold); // Initialize the total gold UI with the total gold amount
-        UIManager.Instance.CreateUnitButtons(soldierTypes); // Initialize unit buttons
+        UIManager.Instance.UpdateGoldUI(resourceManager.Gold);
+        UIManager.Instance.UpdateFoodUI(resourceManager.Food);
+        UIManager.Instance.UpdateTotalGoldUI(resourceManager.TotalGold);
+        UIManager.Instance.CreateUnitButtons(soldierTypes);
 
-        gameOverPanel.SetActive(false); // Ensure the Game Over panel is inactive at the start
+        gameOverPanel.SetActive(false);
     }
 
     void Update()
@@ -65,7 +61,7 @@ public class GameManager : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Alpha1) && resourceManager.Food >= 5)
             {
-                soldierSpawner.SpawnSoldier(soldierTypes[0].Prefab, false); // Ensure soldierTypes[0] exists
+                soldierSpawner.SpawnSoldier(soldierTypes[0].Prefab, false);
                 resourceManager.SpendFood(5);
             }
         }
@@ -82,23 +78,22 @@ public class GameManager : MonoBehaviour
         if (PlayerBase.Health <= 0 || EnemyBase.Health <= 0)
         {
             isBattleStarted = false;
-            roundGoldEarned = CalculateRoundGold(); // Method to calculate gold earned in this round
-            resourceManager.AddRoundGoldToTotal(); // Add round gold to total gold
-            UIManager.Instance.ShowGameOverPanel(roundGoldEarned); // Show game over panel
+            roundGoldEarned = CalculateRoundGold();
+            resourceManager.AddRoundGoldToTotal();
+            UIManager.Instance.ShowGameOverPanel(roundGoldEarned);
         }
     }
 
     private int CalculateRoundGold()
     {
-        // Implement your logic to calculate gold earned in this round
-        return ResourceManager.Instance.RoundGold; // Return the round gold earned
+        return ResourceManager.Instance.RoundGold;
     }
 
     public void AddGold(int amount)
     {
-        ResourceManager.Instance.AddRoundGold(amount); // Add to round gold
+        ResourceManager.Instance.AddRoundGold(amount);
         UIManager.Instance.UpdateGoldUI(ResourceManager.Instance.Gold);
-        UIManager.Instance.UpdateRoundGoldUI(ResourceManager.Instance.RoundGold); // Update round gold UI
+        UIManager.Instance.UpdateRoundGoldUI(ResourceManager.Instance.RoundGold);
     }
 
     public void SpendGold(int amount)

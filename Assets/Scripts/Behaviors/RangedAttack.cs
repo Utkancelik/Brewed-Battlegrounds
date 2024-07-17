@@ -34,13 +34,10 @@ public class RangedAttack : IAttackBehavior
     private void SpawnArrow(Soldier attacker, Vector3 targetPosition)
     {
         GameObject arrow = Instantiate(arrowPrefab, attacker.transform.position, Quaternion.identity);
-        Arrow arrowScript = arrow.GetComponent<Arrow>();
-        if (arrowScript != null)
-        {
-            arrowScript.Initialize(targetPosition, attacker.Stats.Damage, attacker.gameObject);
-        }
+        arrow.GetComponent<Arrow>().Initialize(targetPosition, attacker.Stats.Damage, attacker.gameObject);
     }
 }
+
 
 
 

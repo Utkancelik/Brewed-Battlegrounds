@@ -45,7 +45,6 @@ public class BattleManager : MonoBehaviour
         {
             UIManager.Instance.DisplayWaveText(i == waveCount - 1 ? "Final Wave" : $"Wave {i + 1}");
             yield return new WaitForSeconds(waveTextDisplayDuration);
-
             foreach (var group in waveData.Waves[i].Groups)
             {
                 for (int j = 0; j < group.Amount; j++)
@@ -53,10 +52,9 @@ public class BattleManager : MonoBehaviour
                     GameObject enemyGameObject = Instantiate(group.Soldier.gameObject, soldierSpawner.EnemySpawnArea.GetRandomPosition(), Quaternion.identity);
                     Soldier enemySoldier = enemyGameObject.GetComponent<Soldier>();
                     enemySoldier.IsEnemy = true;
-                    yield return new WaitForSeconds(waveData.delayBetweenUnits);
+                    yield return new WaitForSeconds(waveData.DelayBetweenUnits);
                 }
-
-                yield return new WaitForSeconds(group.delayAfterGroup);
+                yield return new WaitForSeconds(group.DelayAfterGroup);
             }
 
             yield return new WaitForSeconds(waveTextStayAfterSpawn);
@@ -64,7 +62,7 @@ public class BattleManager : MonoBehaviour
 
             if (i < waveCount - 1)
             {
-                yield return new WaitForSeconds(waveData.delayBetweenWaves);
+                yield return new WaitForSeconds(waveData.DelayBetweenWaves);
             }
         }
     }

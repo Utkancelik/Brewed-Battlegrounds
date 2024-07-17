@@ -34,15 +34,8 @@ public class Base : IDamageable
 
     private void InitializeHealthBar()
     {
-        if (healthBar != null)
-        {
-            healthBar.Initialize(transform, maxHealth);
-            healthBar.SetHealth(maxHealth, maxHealth); // Ensure health bar is updated at the start
-        }
-        else
-        {
-            Debug.LogError("HealthBar component not found on " + gameObject.name);
-        }
+        healthBar.Initialize(transform, maxHealth);
+        healthBar.SetHealth(maxHealth, maxHealth);
     }
 
     public override void TakeDamage(int damage)
@@ -56,9 +49,9 @@ public class Base : IDamageable
 
     public void IncreaseHealth()
     {
-        maxHealth += 100; // Increase max health by 100
-        Health = maxHealth; // Restore health to new max
-        healthBar.SetHealth(Health, maxHealth); // Update health bar
+        maxHealth += 100;
+        Health = maxHealth;
+        healthBar.SetHealth(Health, maxHealth);
     }
 
     public override void Die()

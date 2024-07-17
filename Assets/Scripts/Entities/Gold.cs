@@ -28,10 +28,10 @@ public class Gold : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSeconds(1f); // Wait for a while at the fallen position
+        yield return new WaitForSeconds(1f);
 
         Vector3 worldTargetPosition = Camera.main.ScreenToWorldPoint(screenTargetPosition);
-        worldTargetPosition.z = 0; // Ensure the z position is correctly set
+        worldTargetPosition.z = 0;
 
         while (Vector2.Distance(transform.position, worldTargetPosition) > 0.1f)
         {
@@ -41,12 +41,12 @@ public class Gold : MonoBehaviour
 
         if (isFromEnemy)
         {
-            ResourceManager.Instance.AddRoundGold(1); // Add to round gold if from an enemy
-            UIManager.Instance.UpdateRoundGoldUI(ResourceManager.Instance.RoundGold); // Update round gold UI
+            ResourceManager.Instance.AddRoundGold(1);
+            UIManager.Instance.UpdateRoundGoldUI(ResourceManager.Instance.RoundGold);
         }
         else
         {
-            ResourceManager.Instance.AddGold(1); // Add to total gold if from player base
+            ResourceManager.Instance.AddGold(1);
         }
         Destroy(gameObject);
     }
