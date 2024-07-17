@@ -9,7 +9,6 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
 
-    [SerializeField] private GameObject roundGoldImage;
     [SerializeField] private GameObject waveTextObject;
     [SerializeField] private Button startBattleButton;
     [SerializeField] private TMP_Text currentGoldText;
@@ -146,7 +145,7 @@ public class UIManager : MonoBehaviour
 
     public Vector3 GetGoldUIPosition()
     {
-        return roundGoldImage.transform.position;
+        return currentGoldText.transform.position;
     }
 
     public void CreateUnitButtons(List<SoldierType> soldierTypes)
@@ -239,6 +238,35 @@ public class UIManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         yield return StartCoroutine(FadeFromBlack());
     }
+    
+    public void FadeAndReload()
+    {
+        StartCoroutine(FadeToBlackAndReload());
+    }
+
+    private IEnumerator FadeToBlackAndReload()
+    {
+        fadeOverlay.gameObject.SetActive(true);
+        Color color = fadeOverlay.color;
+        float fadeDuration = 5f; // Extend duration for a longer fade
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeDuration)
+        {
+            color.a = Mathf.Lerp(0, 1, elapsedTime / fadeDuration);
+            fadeOverlay.color = color;
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        color.a = 1f;
+        fadeOverlay.color = color;
+
+        ResourceManager.Instance.SaveTotalGold();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+
 
     private IEnumerator FadeToBlack()
     {

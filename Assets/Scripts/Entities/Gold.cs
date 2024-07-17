@@ -5,13 +5,11 @@ public class Gold : MonoBehaviour
 {
     private Vector2 direction;
     private Vector3 screenTargetPosition;
-    private bool isFromEnemy;
 
-    public void Initialize(Vector2 initialDirection, bool isFromEnemy)
+    public void Initialize(Vector2 initialDirection)
     {
         direction = initialDirection;
         screenTargetPosition = UIManager.Instance.GetGoldUIPosition();
-        this.isFromEnemy = isFromEnemy;
         StartCoroutine(MoveToRandomPositionThenUI());
     }
 
@@ -35,19 +33,13 @@ public class Gold : MonoBehaviour
 
         while (Vector2.Distance(transform.position, worldTargetPosition) > 0.1f)
         {
-            transform.position = Vector2.MoveTowards(transform.position, worldTargetPosition, 5f * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, worldTargetPosition, 10f * Time.deltaTime);
             yield return null;
         }
 
-        if (isFromEnemy)
-        {
-            ResourceManager.Instance.AddRoundGold(1);
-            UIManager.Instance.UpdateRoundGoldUI(ResourceManager.Instance.RoundGold);
-        }
-        else
-        {
-            ResourceManager.Instance.AddGold(1);
-        }
+        ResourceManager.Instance.AddRoundGold(1);
+        UIManager.Instance.UpdateRoundGoldUI(ResourceManager.Instance.RoundGold);
+
         Destroy(gameObject);
     }
 }

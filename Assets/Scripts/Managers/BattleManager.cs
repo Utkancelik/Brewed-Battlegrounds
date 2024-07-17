@@ -11,6 +11,7 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private float battleButtonSlideDuration = 0.5f;
 
     private SoldierSpawner soldierSpawner;
+    private Coroutine spawnWaveCoroutine;
 
     private void Awake()
     {
@@ -34,7 +35,7 @@ public class BattleManager : MonoBehaviour
     {
         GameManager.Instance.StartBattle();
         ResourceManager.Instance.StartProduction();
-        StartCoroutine(SpawnWaves());
+        spawnWaveCoroutine = StartCoroutine(SpawnWaves());
         StartCoroutine(SlideBattleButtonDown());
     }
 
@@ -87,5 +88,14 @@ public class BattleManager : MonoBehaviour
     public void SetSoldierSpawner(SoldierSpawner spawner)
     {
         soldierSpawner = spawner;
+    }
+
+    public void StopSpawning()
+    {
+        if (spawnWaveCoroutine != null)
+        {
+            StopCoroutine(spawnWaveCoroutine);
+            spawnWaveCoroutine = null;
+        }
     }
 }

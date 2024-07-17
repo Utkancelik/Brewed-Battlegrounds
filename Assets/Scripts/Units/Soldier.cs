@@ -257,7 +257,7 @@ public class Soldier : IDamageable
     private void DropGold()
     {
         GameObject gold = Instantiate(ResourceManager.Instance.GoldPrefab, transform.position, Quaternion.identity);
-        gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * 2f, isEnemy);
+        gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * 2f);
     }
 
     public override void TakeDamage(int damage)
@@ -270,6 +270,14 @@ public class Soldier : IDamageable
         {
             Die();
         }
+    }
+    
+    public void StopAllActions()
+    {
+        isAttacking = false;
+        rb.velocity = Vector2.zero;
+        ResetAttackAnimation();
+        enabled = false;
     }
 }
 

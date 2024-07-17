@@ -40,9 +40,12 @@ public class ResourceManager : MonoBehaviour
 
     private void Start()
     {
+        LoadTotalGold(); 
         UIManager.Instance.UpdateGoldUI(gold);
         UIManager.Instance.UpdateFoodUI(food);
+        UIManager.Instance.UpdateTotalGoldUI(totalGold);
     }
+
 
     private void Update()
     {
@@ -50,12 +53,6 @@ public class ResourceManager : MonoBehaviour
         {
             ProduceResources();
         }
-    }
-
-    public void AddGold(int amount)
-    {
-        gold += amount;
-        UIManager.Instance.UpdateGoldUI(gold);
     }
 
     public void AddRoundGold(int amount)
@@ -67,26 +64,30 @@ public class ResourceManager : MonoBehaviour
     public void AddRoundGoldToTotal()
     {
         totalGold += roundGold;
-        roundGold = 0;
         UIManager.Instance.UpdateTotalGoldUI(totalGold);
-        UIManager.Instance.UpdateRoundGoldUI(roundGold);
+        SaveTotalGold();
+    }
+
+    public void SaveTotalGold()
+    {
+        PlayerPrefs.SetInt("TotalGold", totalGold);
+        PlayerPrefs.Save();
+    }
+    public void LoadTotalGold()
+    {
+        totalGold = PlayerPrefs.GetInt("TotalGold", 0); // 0 is the default value if not found
     }
 
     public bool SpendGold(int amount)
     {
-        if (gold >= amount)
+        if (totalGold >= amount)
         {
-            gold -= amount;
-            UIManager.Instance.UpdateGoldUI(gold);
+            totalGold -= amount;
+            UIManager.Instance.UpdateTotalGoldUI(totalGold);
+            SaveTotalGold();
             return true;
         }
         return false;
-    }
-
-    public void AddFood(int amount)
-    {
-        food += amount;
-        UIManager.Instance.UpdateFoodUI(food);
     }
 
     public void SpendFood(int amount)

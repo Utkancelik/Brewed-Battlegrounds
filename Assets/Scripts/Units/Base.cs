@@ -6,7 +6,7 @@ public class Base : IDamageable
     [SerializeField] private bool isEnemy;
     [SerializeField] private HealthBar healthBar;
     [SerializeField] private GameObject destructionEffectPrefab;
-    [SerializeField] private GameObject goldPrefab;
+    [SerializeField] private GameObject destructionEffectPosition;
 
     private int maxHealth;
 
@@ -46,17 +46,16 @@ public class Base : IDamageable
             Die();
         }
     }
-
-    public void IncreaseHealth()
-    {
-        maxHealth += 100;
-        Health = maxHealth;
-        healthBar.SetHealth(Health, maxHealth);
-    }
-
+    
     public override void Die()
     {
-        Destroy(gameObject);
+        if (destructionEffectPrefab != null)
+        {
+            Instantiate(destructionEffectPrefab, transform.position, Quaternion.identity);
+        }
         GameManager.Instance.CheckGameOver();
+        Destroy(gameObject);
     }
+
+
 }

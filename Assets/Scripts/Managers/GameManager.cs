@@ -58,12 +58,6 @@ public class GameManager : MonoBehaviour
         if (isBattleStarted)
         {
             resourceManager.ProduceResources();
-
-            if (Input.GetKeyDown(KeyCode.Alpha1) && resourceManager.Food >= 5)
-            {
-                soldierSpawner.SpawnSoldier(soldierTypes[0].Prefab, false);
-                resourceManager.SpendFood(5);
-            }
         }
     }
 
@@ -80,10 +74,28 @@ public class GameManager : MonoBehaviour
             isBattleStarted = false;
             roundGoldEarned = CalculateRoundGold();
             resourceManager.AddRoundGoldToTotal();
-            UIManager.Instance.ShowGameOverPanel(roundGoldEarned);
+
+            if (EnemyBase.Health <= 0)
+            {
+                UIManager.Instance.ShowGameOverPanel(roundGoldEarned);
+            }
+
+            StopAllActions();
+            BattleManager.Instance.StopSpawning(); // Stop spawning new enemies
+            UIManager.Instance.FadeAndReload();
         }
     }
-
+    
+    private void StopAllActions()
+    {
+        var allSoldiers = FindObjectsOfType<Soldier>();
+        foreach (var soldier in allSoldiers)
+        {
+            soldier.StopAllActions();
+        }
+        StopAllCoroutines();
+    }
+    
     private int CalculateRoundGold()
     {
         return ResourceManager.Instance.RoundGold;
