@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ResourceManager : MonoBehaviour
 {
@@ -13,12 +14,13 @@ public class ResourceManager : MonoBehaviour
     [SerializeField] private int food = 0;
     [SerializeField] private int roundGold = 0;
     [SerializeField] private int totalGold = 0;
-    [SerializeField] public float foodProductionRate = 1f;
+    [SerializeField] public float foodProductionRate = .5f;
     public int foodProductionUpgradeCost = 10;
     public int baseHealthUpgradeCost = 15;
 
     private float foodProductionTimer = 0f;
     private bool isBattleStarted = false;
+    private Image foodFillingImage;
 
     public int TotalGold => totalGold;
     public int RoundGold => roundGold;
@@ -40,12 +42,12 @@ public class ResourceManager : MonoBehaviour
 
     private void Start()
     {
-        LoadTotalGold(); 
+        LoadTotalGold();
         UIManager.Instance.UpdateGoldUI(gold);
         UIManager.Instance.UpdateFoodUI(food);
         UIManager.Instance.UpdateTotalGoldUI(totalGold);
+        foodFillingImage = UIManager.Instance.GetFoodFillingImage();
     }
-
 
     private void Update()
     {
@@ -68,15 +70,15 @@ public class ResourceManager : MonoBehaviour
         SaveTotalGold();
     }
 
-
     public void SaveTotalGold()
     {
         PlayerPrefs.SetInt("TotalGold", totalGold);
         PlayerPrefs.Save();
     }
+
     public void LoadTotalGold()
     {
-        totalGold = PlayerPrefs.GetInt("TotalGold", 0); // 0 is the default value if not found
+        totalGold = PlayerPrefs.GetInt("TotalGold", 0);
     }
 
     public bool SpendGold(int amount)
@@ -100,27 +102,32 @@ public class ResourceManager : MonoBehaviour
     public void ProduceResources()
     {
         foodProductionTimer += Time.deltaTime;
+
+        // Update the fill amount continuously
+        foodFillingImage.fillAmount = foodProductionTimer * foodProductionRate;
+
+        // Check if food production timer has reached the threshold
         if (foodProductionTimer >= 1f / foodProductionRate)
         {
             food += Mathf.FloorToInt(foodProductionTimer * foodProductionRate);
-            foodProductionTimer = 0f;
+            foodProductionTimer = 0f; // Reset the timer
             UIManager.Instance.UpdateFoodUI(food);
+            StartCoroutine(UIManager.Instance.FillFoodImage(foodFillingImage, 1f / foodProductionRate));
         }
     }
+
 
     public void StartProduction()
     {
         isBattleStarted = true;
     }
-    
+
     public void IncreaseFoodProductionRate()
     {
         if (SpendGold(foodProductionUpgradeCost))
         {
             foodProductionRate += 0.25f;
             UIManager.Instance.UpdateFoodProductionRateUI(foodProductionRate);
-
-            // Save new food production rate
             PlayerPrefs.SetFloat("FoodProductionRate", foodProductionRate);
             PlayerPrefs.Save();
         }
@@ -134,8 +141,6 @@ public class ResourceManager : MonoBehaviour
             playerBase.maxHealth += 50;
             playerBase.Health = playerBase.maxHealth;
             UIManager.Instance.UpdateBaseHealthUI(playerBase.Health);
-
-            // Save new base health
             PlayerPrefs.SetInt("BaseHealth", playerBase.maxHealth);
             PlayerPrefs.Save();
         }
@@ -143,15 +148,11 @@ public class ResourceManager : MonoBehaviour
 
     public void LoadUpgrades()
     {
-        foodProductionRate = PlayerPrefs.GetFloat("FoodProductionRate", 1f);
+        foodProductionRate = PlayerPrefs.GetFloat("FoodProductionRate", .5f);
         UIManager.Instance.UpdateFoodProductionRateUI(foodProductionRate);
-
         int savedBaseHealth = PlayerPrefs.GetInt("BaseHealth", GameManager.Instance.PlayerBase.maxHealth);
         GameManager.Instance.PlayerBase.maxHealth = savedBaseHealth;
         GameManager.Instance.PlayerBase.Health = savedBaseHealth;
         UIManager.Instance.UpdateBaseHealthUI(savedBaseHealth);
     }
-
-
 }
-

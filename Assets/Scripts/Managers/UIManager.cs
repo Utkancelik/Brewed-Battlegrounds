@@ -40,6 +40,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button increaseBaseHealthButton;
     [SerializeField] private TMP_Text foodProductionRateText;
     [SerializeField] private TMP_Text baseHealthText;
+    [SerializeField] private Image foodFillingImage;
     private List<Button> unitButtons = new List<Button>();
 
     private void Awake()
@@ -350,6 +351,27 @@ public class UIManager : MonoBehaviour
         uiElement.gameObject.GetComponent<RectTransform>().anchoredPosition = originalPosition;
         uiElement.GetComponent<CanvasGroup>().alpha = 1f;
 
+    }
+    
+    public IEnumerator FillFoodImage(Image foodImage, float duration)
+    {
+        foodImage.fillAmount = 0f; // Reset fill amount at the start
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            foodImage.fillAmount = Mathf.Lerp(0, 1, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        foodImage.fillAmount = 1f;
+    }
+
+
+    public Image GetFoodFillingImage()
+    {
+        return foodFillingImage;
     }
 }
 
