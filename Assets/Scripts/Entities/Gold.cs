@@ -44,7 +44,7 @@ public class Gold : MonoBehaviour
 
         while (Vector2.Distance(transform.position, worldTargetPosition) > 0.1f)
         {
-            transform.position = Vector2.MoveTowards(transform.position, worldTargetPosition, 10f * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, worldTargetPosition, 2.5f * Time.deltaTime);
             yield return null;
         }
 

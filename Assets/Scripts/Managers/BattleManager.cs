@@ -59,7 +59,7 @@ public class BattleManager : MonoBehaviour
             }
 
             yield return new WaitForSeconds(waveTextStayAfterSpawn);
-            UIManager.Instance.HideWaveText();
+            //UIManager.Instance.HideWaveText();
 
             if (i < waveCount - 1)
             {

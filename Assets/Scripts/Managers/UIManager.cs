@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -136,6 +137,7 @@ public class UIManager : MonoBehaviour
     {
         waveTextObject.GetComponentInChildren<TMP_Text>().text = text;
         waveTextObject.SetActive(true);
+        StartCoroutine(SlideUIElement(waveTextObject.gameObject, -1));
     }
 
     public void HideWaveText()
@@ -319,6 +321,26 @@ public class UIManager : MonoBehaviour
             yield return null;
         }
         fadeOverlay.gameObject.SetActive(false);
+    }
+    
+    private IEnumerator SlideUIElement(GameObject uiElement, int isDown)
+    {
+        
+        RectTransform buttonRectTransform = uiElement.GetComponent<RectTransform>();
+        float elapsedTime = 0f;
+        Vector2 originalPosition = buttonRectTransform.anchoredPosition;
+        Vector2 targetPosition = new Vector2(originalPosition.x, originalPosition.y - 1000 * isDown);
+
+        while (elapsedTime < 5f)
+        {
+            elapsedTime += Time.deltaTime;
+            buttonRectTransform.anchoredPosition = Vector2.Lerp(originalPosition, targetPosition, elapsedTime / 1f);
+            yield return null;
+        }
+        
+        uiElement.gameObject.SetActive(false);
+        uiElement.gameObject.GetComponent<RectTransform>().anchoredPosition = originalPosition;
+
     }
 }
 
