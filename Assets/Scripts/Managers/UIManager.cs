@@ -337,9 +337,18 @@ public class UIManager : MonoBehaviour
             buttonRectTransform.anchoredPosition = Vector2.Lerp(originalPosition, targetPosition, elapsedTime / 1f);
             yield return null;
         }
-        
+
+        CanvasGroup canvasGroupAlpha = uiElement.GetComponent<CanvasGroup>();
+        elapsedTime = 0;
+        while (elapsedTime < 1f)
+        {
+            elapsedTime += Time.deltaTime;
+            uiElement.GetComponent<CanvasGroup>().alpha = Mathf.Lerp(1f,0f, elapsedTime / 1f);
+            yield return null;
+        }
         uiElement.gameObject.SetActive(false);
         uiElement.gameObject.GetComponent<RectTransform>().anchoredPosition = originalPosition;
+        uiElement.GetComponent<CanvasGroup>().alpha = 1f;
 
     }
 }

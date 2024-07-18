@@ -117,7 +117,7 @@ public class ResourceManager : MonoBehaviour
     {
         if (SpendGold(foodProductionUpgradeCost))
         {
-            foodProductionRate += 0.5f;
+            foodProductionRate += 0.25f;
             UIManager.Instance.UpdateFoodProductionRateUI(foodProductionRate);
 
             // Save new food production rate

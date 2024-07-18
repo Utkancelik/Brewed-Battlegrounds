@@ -98,9 +98,9 @@ GameObject:
   - component: {fileID: 3990315177598547352}
   - component: {fileID: 3703799979034024224}
   - component: {fileID: 2426460967753811068}
-  - component: {fileID: 7738044672067743732}
   - component: {fileID: 6589222430825714453}
   - component: {fileID: 5512991289144892981}
+  - component: {fileID: -2331365211085079374}
   m_Layer: 9
   m_Name: EnemyArcher
   m_TagString: EnemySoldier
@@ -118,7 +118,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.53, y: 0.01, z: 0}
-  m_LocalScale: {x: -0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: -0.45000002, y: 0.45000002, z: 0.45000002}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4870721349586621810}
@@ -197,7 +197,7 @@ Animator:
   m_GameObject: {fileID: 2164036362740599243}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 22f83fff8f1db4a48b54d4e441796ceb, type: 2}
+  m_Controller: {fileID: 9100000, guid: 4dea63e264dd4e944bd68f16303b4fb0, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -221,11 +221,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats:
-    Health: 100
-    Speed: 0.25
-    AttackRange: 1
-    DetectRange: 2
-    Damage: 30
+    Health: 50
+    Speed: 0.2
+    AttackRange: 2
+    DetectRange: 2.5
+    Damage: 35
     FoodCost: 0
     ArrowPrefab: {fileID: 760878427838536779, guid: 3b3d3d08fd84bd543a6435669866ab7a, type: 3}
   health: 100
@@ -237,18 +237,6 @@ MonoBehaviour:
   - {fileID: 8797977791606939641, guid: 7686471b4e9eafa45bf31a2b8a146bb0, type: 3}
   - {fileID: 8797977791606939641, guid: 997e37fbdedd12e4d9f1099489e50fd3, type: 3}
   - {fileID: 8797977791606939641, guid: d6faa98f585e1624c8fb94416ee22f28, type: 3}
---- !u!114 &7738044672067743732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2164036362740599243}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0714262f77238384691f3fe5920f6bf9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6589222430825714453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273,6 +261,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d952eccdb9a9748add1755e4803893, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-2331365211085079374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2164036362740599243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6e5e80f7acd3974abae93a1be4d193b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  arrowPrefab: {fileID: 760878427838536779, guid: 3b3d3d08fd84bd543a6435669866ab7a, type: 3}
 --- !u!1 &2785055593340485357
 GameObject:
   m_ObjectHideFlags: 0
