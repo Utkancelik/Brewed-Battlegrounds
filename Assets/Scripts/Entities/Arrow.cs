@@ -4,7 +4,7 @@ public class Arrow : MonoBehaviour
 {
     private Vector3 initialTargetPosition;
     private int damage;
-    private float speed = 10f;
+    [SerializeField] private float speed = 10f;
     private GameObject shooter;
 
     public void Initialize(Vector3 targetPosition, int damage, GameObject shooter)

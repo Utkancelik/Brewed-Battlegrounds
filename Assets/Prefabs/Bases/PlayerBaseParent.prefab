@@ -28,8 +28,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -7.33, y: -0.0239, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.42, y: 0.42, z: 0.42}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7431470320622580183}
   - {fileID: 3121482654240308389}
@@ -68,7 +68,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.3609488, y: 0.0025672317}
+  m_Offset: {x: -0.26373112, y: 0.085357785}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -79,7 +79,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.8349662, y: 3.2177744}
+  m_Size: {x: 1.9053655, y: 2.182894}
   m_EdgeRadius: 0
 --- !u!114 &5386406813933671378
 MonoBehaviour:
@@ -98,6 +98,7 @@ MonoBehaviour:
   healthBar: {fileID: 884276720484965745}
   destructionEffectPrefab: {fileID: 1055890062764184040, guid: dbeea47c864697e4d9fe6ec1f02ee3e1, type: 3}
   destructionEffectPosition: {fileID: 4681316403852798540}
+  maxHealth: 0
 --- !u!1 &971658913253044362
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,7 +125,7 @@ Transform:
   m_GameObject: {fileID: 971658913253044362}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.33, y: 0.06, z: 0}
+  m_LocalPosition: {x: -0.28, y: 0.06, z: 0}
   m_LocalScale: {x: 3.2841, y: 3.7914937, z: 3.2841}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -374,7 +375,7 @@ Transform:
   m_GameObject: {fileID: 8456277479879338329}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.35, y: 0.08, z: 0}
+  m_LocalPosition: {x: 0.402, y: 0.07, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -392,7 +393,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b4a91d6af2d45a4fb6f5e4c49a6a259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  areaSize: {x: 1, y: 2}
+  areaSize: {x: 0.2, y: 0.5}
 --- !u!1001 &4407800480559175802
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -431,11 +432,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3246972260406275367, guid: 98f2c76a39c23a14b9565d89325e3eca, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0.6
+      value: 0.32
       objectReference: {fileID: 0}
     - target: {fileID: 3246972260406275367, guid: 98f2c76a39c23a14b9565d89325e3eca, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0.125
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 3246972260406275367, guid: 98f2c76a39c23a14b9565d89325e3eca, type: 3}
       propertyPath: m_LocalPosition.x
@@ -467,11 +468,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3246972260406275367, guid: 98f2c76a39c23a14b9565d89325e3eca, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 0.234
       objectReference: {fileID: 0}
     - target: {fileID: 3246972260406275367, guid: 98f2c76a39c23a14b9565d89325e3eca, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.63
+      value: 0.382
       objectReference: {fileID: 0}
     - target: {fileID: 3246972260406275367, guid: 98f2c76a39c23a14b9565d89325e3eca, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

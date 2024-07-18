@@ -257,7 +257,7 @@ public class Soldier : IDamageable
     private void DropGold()
     {
         GameObject gold = Instantiate(ResourceManager.Instance.GoldPrefab, transform.position, Quaternion.identity);
-        gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * 2f);
+        gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * .75f);
     }
 
     public override void TakeDamage(int damage)
