@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
@@ -46,14 +47,25 @@ public class UIManager : MonoBehaviour
 
     private ResourceManager _resourceManager;
     private GameManager _gameManager;
+
+    private List<SoldierType> soldierTypes;
+    private int currentEra = 1;
     private void OnEnable()
     {
         OnStartBattle += StartBattle;
+        EraManager.OnEraChanged += UpdateSoldierTypesForEra;
     }
 
     private void OnDisable()
     {
         OnStartBattle -= StartBattle;
+        EraManager.OnEraChanged -= UpdateSoldierTypesForEra;
+    }
+    
+    public void Initialize(List<SoldierType> allSoldierTypes)
+    {
+        soldierTypes = allSoldierTypes;
+        UpdateSoldierTypesForEra(currentEra);
     }
 
     private void Awake()
@@ -81,9 +93,9 @@ public class UIManager : MonoBehaviour
         UpdateTotalGoldUI(_resourceManager.TotalGold);
         UpdateRoundGoldUI(_resourceManager.RoundGold);
 
-        _gameManager.soldierTypes[0].IsUnlocked = true;
+        _gameManager.allSoldierTypes[0].IsUnlocked = true;
 
-        foreach (var soldierType in _gameManager.soldierTypes)
+        foreach (var soldierType in _gameManager.allSoldierTypes)
         {
             soldierType.IsUnlocked = PlayerPrefs.GetInt(soldierType.SoldierName, 0) == 1;
         }
@@ -94,12 +106,31 @@ public class UIManager : MonoBehaviour
         }
 
         EnterBattleScene();
-        UpdateUpgradePanel();
-        CreateUnitButtons(_gameManager.soldierTypes);
+        Initialize(_gameManager.allSoldierTypes);
         _resourceManager.LoadUpgrades();
 
         gameOverPanel.SetActive(false);
         fadeOverlay.gameObject.SetActive(false);
+    }
+
+    private void UpdateSoldierTypesForEra(int era)
+    {
+        if (soldierTypes == null)
+        {
+            Debug.LogError("SoldierTypes list is null!");
+            return;
+        }
+
+        currentEra = era;
+        var eraSoldierTypes = soldierTypes.Where(s => s.Era == currentEra).ToList();
+
+        if (eraSoldierTypes == null || eraSoldierTypes.Count == 0)
+        {
+            Debug.LogWarning("No soldier types found for the current era: " + currentEra);
+        }
+
+        UpdateUpgradePanel(eraSoldierTypes);
+        CreateUnitButtons(eraSoldierTypes);
     }
 
     public void UpdateFoodProductionRateUI(float rate)
@@ -110,14 +141,6 @@ public class UIManager : MonoBehaviour
     public void UpdateBaseHealthUI(int health)
     {
         baseHealthText.text = $"Base Health: {health}";
-    }
-
-    public void ShowMainButtonsPanel()
-    {
-        mainButtonsPanel.SetActive(true);
-        mainBattlePanel.SetActive(true);
-        battleBottomPanel.SetActive(false);
-        upgradePanel.SetActive(false);
     }
 
     public void EnterBattleScene()
@@ -133,7 +156,7 @@ public class UIManager : MonoBehaviour
         mainBattlePanel.SetActive(false);
         battleBottomPanel.SetActive(false);
         upgradePanel.SetActive(true);
-        UpdateUpgradePanel();
+        UpdateSoldierTypesForEra(currentEra);
     }
 
     public void StartBattle()
@@ -147,11 +170,6 @@ public class UIManager : MonoBehaviour
         waveTextObject.GetComponentInChildren<TMP_Text>().text = text;
         waveTextObject.SetActive(true);
         StartCoroutine(SlideUIElement(waveTextObject.gameObject, -1));
-    }
-
-    public void HideWaveText()
-    {
-        waveTextObject.SetActive(false);
     }
 
     public void UpdateGoldUI(int goldAmount)
@@ -203,13 +221,13 @@ public class UIManager : MonoBehaviour
 
             texts[0].text = soldierType.SoldierName;
             unitImage.sprite = soldierType.SoldierIcon;
-            unitCostText.text = soldierType.Stats.FoodCost.ToString();
+            unitCostText.text = soldierType.FoodCost.ToString();
 
             button.onClick.AddListener(() => {
-                if (_resourceManager.Food >= soldierType.Stats.FoodCost)
+                if (_resourceManager.Food >= soldierType.FoodCost)
                 {
                     _gameManager.SpawnSoldier(soldierType);
-                    _resourceManager.SpendFood(soldierType.Stats.FoodCost);
+                    _resourceManager.SpendFood(soldierType.FoodCost);
                     UpdateFoodUI(_resourceManager.Food);
                 }
             });
@@ -227,27 +245,26 @@ public class UIManager : MonoBehaviour
 
     private void UnlockSoldierType(int index)
     {
-        if (index < 0 || index >= _gameManager.soldierTypes.Count) return;
+        if (index < 0 || index >= _gameManager.allSoldierTypes.Count) return;
 
-        SoldierType soldierType = _gameManager.soldierTypes[index];
+        SoldierType soldierType = _gameManager.allSoldierTypes[index];
         if (!soldierType.IsUnlocked && _resourceManager.SpendGold(soldierType.UnlockCost))
         {
             soldierType.IsUnlocked = true;
             PlayerPrefs.SetInt(soldierType.SoldierName, 1); // Save unlock status
             PlayerPrefs.Save(); // Save preferences
 
-            UpdateUpgradePanel();
-            CreateUnitButtons(_gameManager.soldierTypes);
+            UpdateSoldierTypesForEra(currentEra);
         }
     }
 
-    private void UpdateUpgradePanel()
+    private void UpdateUpgradePanel(List<SoldierType> eraSoldierTypes)
     {
         for (int i = 0; i < soldierCards.Count; i++)
         {
-            if (i < _gameManager.soldierTypes.Count)
+            if (i < eraSoldierTypes.Count)
             {
-                SoldierType soldierType = _gameManager.soldierTypes[i];
+                SoldierType soldierType = eraSoldierTypes[i];
                 soldierCards[i].color = soldierType.IsUnlocked ? Color.white : Color.gray;
                 unlockSoldierButtons[i].gameObject.SetActive(!soldierType.IsUnlocked || i == 0);
                 unlockSoldierButtons[i].GetComponentInChildren<TMP_Text>().text = soldierType.IsUnlocked ? "Unlocked" : $"{soldierType.UnlockCost} Gold";

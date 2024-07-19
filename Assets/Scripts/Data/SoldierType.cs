@@ -6,17 +6,19 @@ public class SoldierType
     public string SoldierName;
     public Sprite SoldierIcon;
     public GameObject Prefab;
-    public SoldierStats Stats;
     public bool IsUnlocked;
     public int UnlockCost;
+    public int Era;
+    public int FoodCost;
 
-    public SoldierType(string name, Sprite icon, GameObject prefab, SoldierStats stats, int unlockCost)
+    public SoldierType(string name, Sprite icon, GameObject prefab, SoldierStats stats, int unlockCost, int era, int foodCost)
     {
         SoldierName = name;
         SoldierIcon = icon;
         Prefab = prefab;
-        Stats = stats;
         UnlockCost = unlockCost;
+        Era = era;
+        FoodCost = foodCost;
         IsUnlocked = PlayerPrefs.GetInt(name, 0) == 1; // Load unlock status
     }
 

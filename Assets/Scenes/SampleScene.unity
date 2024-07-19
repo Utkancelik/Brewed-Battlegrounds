@@ -3708,7 +3708,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0.12968512}
-  m_AnchoredPosition: {x: 0, y: -83.6438}
+  m_AnchoredPosition: {x: 0, y: -83.643555}
   m_SizeDelta: {x: 0, y: -167.2879}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1082034425
@@ -5872,33 +5872,35 @@ MonoBehaviour:
   EnemyBase: {fileID: 4834771257189530830}
   playerSpawnArea: {fileID: 444026859409717938}
   enemySpawnArea: {fileID: 2471852658697300784}
-  soldierTypes:
+  allSoldierTypes:
   - SoldierName: Warrior
     SoldierIcon: {fileID: -1378664573, guid: 230239c4eda952b4e81272f785d0b593, type: 3}
     Prefab: {fileID: 1377341517561657481, guid: eec70292f861f1c4d806847137f86c89, type: 3}
     Stats:
       Health: 100
-      Speed: 1
-      AttackRange: 0.75
-      DetectRange: 4
+      Speed: 0.3
+      AttackRange: 0.4
+      DetectRange: 2
       Damage: 25
       FoodCost: 5
-      ArrowPrefab: {fileID: 0}
+      ArrowPrefab: {fileID: 760878427838536779, guid: 3b3d3d08fd84bd543a6435669866ab7a, type: 3}
     IsUnlocked: 0
     UnlockCost: 0
+    Era: 1
   - SoldierName: Archer
     SoldierIcon: {fileID: -284983373, guid: 230239c4eda952b4e81272f785d0b593, type: 3}
     Prefab: {fileID: 1377341517561657481, guid: 9d12d1dbd694a6f4390562ab936b30c2, type: 3}
     Stats:
       Health: 100
-      Speed: 1
-      AttackRange: 4
-      DetectRange: 5
-      Damage: 30
+      Speed: 0.2
+      AttackRange: 2
+      DetectRange: 2.5
+      Damage: 35
       FoodCost: 8
       ArrowPrefab: {fileID: 760878427838536779, guid: 3b3d3d08fd84bd543a6435669866ab7a, type: 3}
     IsUnlocked: 0
     UnlockCost: 50
+    Era: 1
   gameOverPanel: {fileID: 1383036766}
 --- !u!1 &1595443654
 GameObject:

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public Base EnemyBase;
     [SerializeField] private SpawnArea playerSpawnArea;
     [SerializeField] private SpawnArea enemySpawnArea;
-    [SerializeField] public List<SoldierType> soldierTypes;
+    [SerializeField] public List<SoldierType> allSoldierTypes;
     [SerializeField] private GameObject gameOverPanel;
 
     private SoldierSpawner _soldierSpawner;
@@ -24,9 +25,7 @@ public class GameManager : MonoBehaviour
     private int roundGoldEarned;
     private bool isBattleStarted = false;
     private bool isGoldAddedToTotal = false;
-
     
-
     private void Awake()
     {
         DIContainer.Instance.Register(this);
@@ -40,9 +39,9 @@ public class GameManager : MonoBehaviour
         _uiManager = DIContainer.Instance.Resolve<UIManager>();
         _battleManager = DIContainer.Instance.Resolve<BattleManager>();
         
-        if (soldierTypes.Count > 0)
+        if (allSoldierTypes.Count > 0)
         {
-            soldierTypes[0].IsUnlocked = true;
+            allSoldierTypes[0].IsUnlocked = true;
         }
         
         _battleManager.SetSoldierSpawner(_soldierSpawner);
@@ -50,8 +49,8 @@ public class GameManager : MonoBehaviour
         _uiManager.UpdateGoldUI(_resourceManager.Gold);
         _uiManager.UpdateFoodUI(_resourceManager.Food);
         _uiManager.UpdateTotalGoldUI(_resourceManager.TotalGold);
-        _uiManager.CreateUnitButtons(soldierTypes);
-
+        _uiManager.Initialize(allSoldierTypes);
+        
         gameOverPanel.SetActive(false);
     }
 
