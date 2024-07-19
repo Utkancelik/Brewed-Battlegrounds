@@ -11,7 +11,7 @@ public class SoldierType
     public int Era;
     public int FoodCost;
 
-    public SoldierType(string name, Sprite icon, GameObject prefab, SoldierStats stats, int unlockCost, int era, int foodCost)
+    public SoldierType(string name, Sprite icon, GameObject prefab, int unlockCost, int era, int foodCost)
     {
         SoldierName = name;
         SoldierIcon = icon;

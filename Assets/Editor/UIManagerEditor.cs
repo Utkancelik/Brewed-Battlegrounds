@@ -7,6 +7,8 @@ using System.Collections.Generic;
 [CustomEditor(typeof(UIManager))]
 public class UIManagerEditor : Editor
 {
+    SerializedProperty foodProductionCostText;
+    SerializedProperty baseHealthCostText;
     SerializedProperty waveTextObject;
     SerializedProperty startBattleButton;
     SerializedProperty currentGoldText;
@@ -40,6 +42,8 @@ public class UIManagerEditor : Editor
 
     void OnEnable()
     {
+        foodProductionCostText = serializedObject.FindProperty("foodProductionCostText");
+        baseHealthCostText = serializedObject.FindProperty("baseHealthCostText");
         waveTextObject = serializedObject.FindProperty("waveTextObject");
         startBattleButton = serializedObject.FindProperty("startBattleButton");
         currentGoldText = serializedObject.FindProperty("currentGoldText");
@@ -113,6 +117,8 @@ public class UIManagerEditor : Editor
             EditorGUILayout.PropertyField(foodFillingImage);
             EditorGUILayout.PropertyField(unitButtonPrefab);
             EditorGUILayout.PropertyField(unitButtonContainer);
+            EditorGUILayout.PropertyField(foodProductionCostText);
+            EditorGUILayout.PropertyField(baseHealthCostText);
             EditorGUILayout.PropertyField(soldierCards, true);
         }
 

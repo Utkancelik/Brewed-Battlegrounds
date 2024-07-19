@@ -119,6 +119,7 @@ public class ResourceManager : MonoBehaviour
             _uiManager.UpdateFoodProductionRateUI(foodProductionRate);
             PlayerPrefs.SetFloat("FoodProductionRate", foodProductionRate);
             PlayerPrefs.Save();
+            _uiManager.UpdateUpgradeButtonsUI();
         }
     }
 
@@ -132,6 +133,7 @@ public class ResourceManager : MonoBehaviour
             _uiManager.UpdateBaseHealthUI(playerBase.Health);
             PlayerPrefs.SetInt("BaseHealth", playerBase.maxHealth);
             PlayerPrefs.Save();
+            _uiManager.UpdateUpgradeButtonsUI();
         }
     }
 

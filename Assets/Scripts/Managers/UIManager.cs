@@ -50,6 +50,9 @@ public class UIManager : MonoBehaviour
 
     private List<SoldierType> soldierTypes;
     private int currentEra = 1;
+    
+    [SerializeField] private TMP_Text foodProductionCostText;
+    [SerializeField] private TMP_Text baseHealthCostText;
     private void OnEnable()
     {
         OnStartBattle += StartBattle;
@@ -78,6 +81,9 @@ public class UIManager : MonoBehaviour
         _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
         _gameManager = DIContainer.Instance.Resolve<GameManager>();
         
+        foodProductionCostText.text = _resourceManager.foodProductionUpgradeCost.ToString();
+        baseHealthCostText.text = _resourceManager.baseHealthUpgradeCost.ToString();
+        
         increaseFoodProductionButton.onClick.AddListener(() => _resourceManager.IncreaseFoodProductionRate());
         increaseBaseHealthButton.onClick.AddListener(() => _resourceManager.IncreaseBaseHealth());
         goToBattleButton.onClick.AddListener(EnterBattleScene);
@@ -85,7 +91,19 @@ public class UIManager : MonoBehaviour
         startBattleButton.onClick.AddListener(() => OnStartBattle?.Invoke()); // This is where you call the action
         closeGameOverPanelButton.onClick.AddListener(CloseGameOverPanel);
         
+        increaseFoodProductionButton.onClick.AddListener(() => 
+        {
+            _resourceManager.IncreaseFoodProductionRate();
+            UpdateUpgradeButtonsUI();
+        });
+
+        increaseBaseHealthButton.onClick.AddListener(() => 
+        {
+            _resourceManager.IncreaseBaseHealth();
+            UpdateUpgradeButtonsUI();
+        });
         
+        UpdateUpgradeButtonsUI();
         UpdateFoodProductionRateUI(_resourceManager.foodProductionRate);
         UpdateBaseHealthUI(_gameManager.PlayerBase.Health);
         UpdateGoldUI(_resourceManager.Gold);
@@ -112,6 +130,25 @@ public class UIManager : MonoBehaviour
         gameOverPanel.SetActive(false);
         fadeOverlay.gameObject.SetActive(false);
     }
+    public void UpdateUpgradeButtonsUI()
+    {
+        UpdateUpgradeButtonColor(foodProductionCostText, _resourceManager.foodProductionUpgradeCost);
+        UpdateUpgradeButtonColor(baseHealthCostText, _resourceManager.baseHealthUpgradeCost);
+
+        for (int i = 0; i < unlockSoldierButtons.Count; i++)
+        {
+            int index = i;
+            SoldierType soldierType = _gameManager.allSoldierTypes[index];
+            TMP_Text costText = unlockSoldierButtons[i].GetComponentInChildren<TMP_Text>();
+            costText.text = soldierType.UnlockCost.ToString();
+            UpdateUpgradeButtonColor(costText, soldierType.UnlockCost);
+        }
+    }
+    
+    private void UpdateUpgradeButtonColor(TMP_Text costText, int cost)
+    {
+        costText.color = _resourceManager.TotalGold >= cost ? Color.green : Color.red;
+    }
 
     private void UpdateSoldierTypesForEra(int era)
     {
@@ -135,7 +172,7 @@ public class UIManager : MonoBehaviour
 
     public void UpdateFoodProductionRateUI(float rate)
     {
-        foodProductionRateText.text = $"Food Production Rate: {rate}";
+        foodProductionRateText.text = $"Food Production Rate: {rate}/s";
     }
 
     public void UpdateBaseHealthUI(int health)
@@ -255,26 +292,58 @@ public class UIManager : MonoBehaviour
             PlayerPrefs.Save(); // Save preferences
 
             UpdateSoldierTypesForEra(currentEra);
+            UpdateUpgradeButtonsUI();
         }
     }
 
-    private void UpdateUpgradePanel(List<SoldierType> eraSoldierTypes)
+private void UpdateUpgradePanel(List<SoldierType> eraSoldierTypes)
+{
+    for (int i = 0; i < soldierCards.Count; i++)
     {
-        for (int i = 0; i < soldierCards.Count; i++)
+        if (i < eraSoldierTypes.Count)
         {
-            if (i < eraSoldierTypes.Count)
+            SoldierType soldierType = eraSoldierTypes[i];
+            soldierCards[i].color = soldierType.IsUnlocked ? Color.white : Color.gray;
+            unlockSoldierButtons[i].gameObject.SetActive(!soldierType.IsUnlocked && soldierType.UnlockCost > 0);
+            unlockSoldierButtons[i].GetComponentInChildren<TMP_Text>().text = $"{soldierType.UnlockCost} Gold";
+
+            Transform bgStats = soldierCards[i].transform.Find("BG_Stats");
+            if (bgStats != null)
             {
-                SoldierType soldierType = eraSoldierTypes[i];
-                soldierCards[i].color = soldierType.IsUnlocked ? Color.white : Color.gray;
-                unlockSoldierButtons[i].gameObject.SetActive(!soldierType.IsUnlocked || i == 0);
-                unlockSoldierButtons[i].GetComponentInChildren<TMP_Text>().text = soldierType.IsUnlocked ? "Unlocked" : $"{soldierType.UnlockCost} Gold";
+                bgStats.gameObject.SetActive(soldierType.IsUnlocked);
+
+                if (soldierType.IsUnlocked || soldierType.UnlockCost == 0)
+                {
+                    Transform damageImage = bgStats.Find("DamageImage");
+                    Transform healthImage = bgStats.Find("HealthImage");
+
+                    TMP_Text damageText = damageImage?.Find("DamageText")?.GetComponent<TMP_Text>();
+                    TMP_Text healthText = healthImage?.Find("HealthAmount")?.GetComponent<TMP_Text>();
+
+                    if (damageText != null && healthText != null)
+                    {
+                        damageText.text = $"{soldierType.Prefab.GetComponent<Soldier>().Stats.Damage}";
+                        healthText.text = $"{soldierType.Prefab.GetComponent<Soldier>().Stats.Health}";
+                        damageText.gameObject.SetActive(true);
+                        healthText.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        Debug.LogError("DamageText or HealthAmount component not found!");
+                    }
+                }
             }
             else
             {
-                soldierCards[i].gameObject.SetActive(false);
+                Debug.LogError("BG_Stats transform not found!");
             }
         }
+        else
+        {
+            soldierCards[i].gameObject.SetActive(false);
+        }
     }
+}
 
     public void ShowGameOverPanel(int roundGoldEarned)
     {
@@ -365,12 +434,12 @@ public class UIManager : MonoBehaviour
         while (elapsedTime < 1f)
         {
             elapsedTime += Time.deltaTime;
-            uiElement.GetComponent<CanvasGroup>().alpha = Mathf.Lerp(1f, 0f, elapsedTime / 1f);
+            canvasGroupAlpha.alpha = Mathf.Lerp(1f, 0f, elapsedTime / 1f);
             yield return null;
         }
         uiElement.gameObject.SetActive(false);
         uiElement.GetComponent<RectTransform>().anchoredPosition = originalPosition;
-        uiElement.GetComponent<CanvasGroup>().alpha = 1f;
+        canvasGroupAlpha.alpha = 1f;
     }
 
     public IEnumerator FillFoodImage(Image foodImage, float duration)
