@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class Soldier : IDamageable
@@ -256,7 +255,7 @@ public class Soldier : IDamageable
 
     private void DropGold()
     {
-        GameObject gold = Instantiate(ResourceManager.Instance.GoldPrefab, transform.position, Quaternion.identity);
+        GameObject gold = Instantiate(ResourceManager.Instance.goldPrefab, transform.position, Quaternion.identity);
         gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * .75f);
     }
 
@@ -280,5 +279,3 @@ public class Soldier : IDamageable
         enabled = false;
     }
 }
-
-

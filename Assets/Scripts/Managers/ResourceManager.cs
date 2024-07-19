@@ -5,16 +5,13 @@ public class ResourceManager : MonoBehaviour
 {
     public static ResourceManager Instance;
 
-    [SerializeField] private GameObject goldPrefab;
+    [SerializeField] public GameObject goldPrefab;
     [SerializeField] private GameObject foodPrefab;
-    public GameObject GoldPrefab => goldPrefab;
-    public GameObject FoodPrefab => foodPrefab;
-
     [SerializeField] private int gold = 0;
     [SerializeField] private int food = 0;
     [SerializeField] private int roundGold = 0;
     [SerializeField] private int totalGold = 0;
-    [SerializeField] public float foodProductionRate = .5f;
+    [SerializeField] public float foodProductionRate = 0.5f;
     public int foodProductionUpgradeCost = 10;
     public int baseHealthUpgradeCost = 15;
 
@@ -102,20 +99,16 @@ public class ResourceManager : MonoBehaviour
     public void ProduceResources()
     {
         foodProductionTimer += Time.deltaTime;
-
-        // Update the fill amount continuously
         foodFillingImage.fillAmount = foodProductionTimer * foodProductionRate;
 
-        // Check if food production timer has reached the threshold
         if (foodProductionTimer >= 1f / foodProductionRate)
         {
             food += Mathf.FloorToInt(foodProductionTimer * foodProductionRate);
-            foodProductionTimer = 0f; // Reset the timer
+            foodProductionTimer = 0f;
             UIManager.Instance.UpdateFoodUI(food);
             StartCoroutine(UIManager.Instance.FillFoodImage(foodFillingImage, 1f / foodProductionRate));
         }
     }
-
 
     public void StartProduction()
     {
@@ -148,7 +141,7 @@ public class ResourceManager : MonoBehaviour
 
     public void LoadUpgrades()
     {
-        foodProductionRate = PlayerPrefs.GetFloat("FoodProductionRate", .5f);
+        foodProductionRate = PlayerPrefs.GetFloat("FoodProductionRate", 0.5f);
         UIManager.Instance.UpdateFoodProductionRateUI(foodProductionRate);
         int savedBaseHealth = PlayerPrefs.GetInt("BaseHealth", GameManager.Instance.PlayerBase.maxHealth);
         GameManager.Instance.PlayerBase.maxHealth = savedBaseHealth;

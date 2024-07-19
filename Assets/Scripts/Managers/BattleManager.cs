@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
@@ -26,9 +26,14 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        UIManager.Instance.StartBattleButton.onClick.AddListener(StartBattle);
+        UIManager.OnStartBattle += StartBattle;
+    }
+
+    private void OnDisable()
+    {
+        UIManager.OnStartBattle -= StartBattle;
     }
 
     private void StartBattle()
@@ -50,17 +55,13 @@ public class BattleManager : MonoBehaviour
             {
                 for (int j = 0; j < group.Amount; j++)
                 {
-                    GameObject enemyGameObject = Instantiate(group.Soldier.gameObject, soldierSpawner.EnemySpawnArea.GetRandomPosition(), Quaternion.identity);
-                    Soldier enemySoldier = enemyGameObject.GetComponent<Soldier>();
-                    enemySoldier.IsEnemy = true;
+                    soldierSpawner.SpawnSoldier(group.Soldier.gameObject, true);
                     yield return new WaitForSeconds(waveData.DelayBetweenUnits);
                 }
                 yield return new WaitForSeconds(group.DelayAfterGroup);
             }
 
             yield return new WaitForSeconds(waveTextStayAfterSpawn);
-            //UIManager.Instance.HideWaveText();
-
             if (i < waveCount - 1)
             {
                 yield return new WaitForSeconds(waveData.DelayBetweenWaves);

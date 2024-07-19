@@ -2,46 +2,58 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
+    public static event Action OnStartBattle;
 
     [SerializeField] private GameObject waveTextObject;
     [SerializeField] private Button startBattleButton;
     [SerializeField] private TMP_Text currentGoldText;
     [SerializeField] private TMP_Text foodText;
-    [SerializeField] private TMP_Text totalGoldVaultText; 
+    [SerializeField] private TMP_Text totalGoldVaultText;
     [SerializeField] private TMP_Text gameOverRoundGoldText;
     [SerializeField] private TMP_Text roundGoldInGameText;
-    [SerializeField] private GameObject unitButtonPrefab; 
-    [SerializeField] private Transform unitButtonContainer; 
+    [SerializeField] private GameObject unitButtonPrefab;
+    [SerializeField] private Transform unitButtonContainer;
     public Button StartBattleButton => startBattleButton;
 
-    [SerializeField] private GameObject mainBattlePanel; 
-    [SerializeField] private GameObject battleBottomPanel; 
+    [SerializeField] private GameObject mainBattlePanel;
+    [SerializeField] private GameObject battleBottomPanel;
     [SerializeField] private GameObject upgradePanel;
-    [SerializeField] private GameObject mainButtonsPanel; 
+    [SerializeField] private GameObject mainButtonsPanel;
 
-    [SerializeField] private Button goToBattleButton; 
-    [SerializeField] private Button upgradeButton; 
+    [SerializeField] private Button goToBattleButton;
+    [SerializeField] private Button upgradeButton;
 
-    [SerializeField] private List<Button> unlockSoldierButtons; 
-    [SerializeField] private List<Image> soldierCards; 
+    [SerializeField] private List<Button> unlockSoldierButtons;
+    [SerializeField] private List<Image> soldierCards;
 
-    [SerializeField] private GameObject gameOverPanel; 
-    [SerializeField] private Button closeGameOverPanelButton; 
-    [SerializeField] private Image fadeOverlay; 
-    
+    [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private Button closeGameOverPanelButton;
+    [SerializeField] private Image fadeOverlay;
+
     [SerializeField] private Button increaseFoodProductionButton;
     [SerializeField] private Button increaseBaseHealthButton;
     [SerializeField] private TMP_Text foodProductionRateText;
     [SerializeField] private TMP_Text baseHealthText;
     [SerializeField] private Image foodFillingImage;
+
     private List<Button> unitButtons = new List<Button>();
+
+    private void OnEnable()
+    {
+        OnStartBattle += StartBattle;
+    }
+
+    private void OnDisable()
+    {
+        OnStartBattle -= StartBattle;
+    }
 
     private void Awake()
     {
@@ -62,9 +74,9 @@ public class UIManager : MonoBehaviour
         increaseBaseHealthButton.onClick.AddListener(() => ResourceManager.Instance.IncreaseBaseHealth());
         goToBattleButton.onClick.AddListener(EnterBattleScene);
         upgradeButton.onClick.AddListener(OpenUpgradePanel);
-        startBattleButton.onClick.AddListener(StartBattle);
+        startBattleButton.onClick.AddListener(() => OnStartBattle?.Invoke()); // This is where you call the action
         closeGameOverPanelButton.onClick.AddListener(CloseGameOverPanel);
-        
+
         UpdateFoodProductionRateUI(ResourceManager.Instance.foodProductionRate);
         UpdateBaseHealthUI(GameManager.Instance.PlayerBase.Health);
         UpdateGoldUI(ResourceManager.Instance.Gold);
@@ -72,10 +84,8 @@ public class UIManager : MonoBehaviour
         UpdateTotalGoldUI(ResourceManager.Instance.TotalGold);
         UpdateRoundGoldUI(ResourceManager.Instance.RoundGold);
 
-        
-
         GameManager.Instance.soldierTypes[0].IsUnlocked = true;
-        
+
         foreach (var soldierType in GameManager.Instance.soldierTypes)
         {
             soldierType.IsUnlocked = PlayerPrefs.GetInt(soldierType.SoldierName, 0) == 1;
@@ -91,10 +101,10 @@ public class UIManager : MonoBehaviour
         CreateUnitButtons(GameManager.Instance.soldierTypes);
         ResourceManager.Instance.LoadUpgrades();
 
-        
         gameOverPanel.SetActive(false);
         fadeOverlay.gameObject.SetActive(false);
     }
+
     public void UpdateFoodProductionRateUI(float rate)
     {
         foodProductionRateText.text = $"Food Production Rate: {rate}";
@@ -104,6 +114,7 @@ public class UIManager : MonoBehaviour
     {
         baseHealthText.text = $"Base Health: {health}";
     }
+
     public void ShowMainButtonsPanel()
     {
         mainButtonsPanel.SetActive(true);
@@ -233,7 +244,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-
     private void UpdateUpgradePanel()
     {
         for (int i = 0; i < soldierCards.Count; i++)
@@ -298,8 +308,6 @@ public class UIManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-
-
     private IEnumerator FadeToBlack()
     {
         fadeOverlay.gameObject.SetActive(true);
@@ -323,10 +331,9 @@ public class UIManager : MonoBehaviour
         }
         fadeOverlay.gameObject.SetActive(false);
     }
-    
+
     private IEnumerator SlideUIElement(GameObject uiElement, int isDown)
     {
-        
         RectTransform buttonRectTransform = uiElement.GetComponent<RectTransform>();
         float elapsedTime = 0f;
         Vector2 originalPosition = buttonRectTransform.anchoredPosition;
@@ -344,15 +351,14 @@ public class UIManager : MonoBehaviour
         while (elapsedTime < 1f)
         {
             elapsedTime += Time.deltaTime;
-            uiElement.GetComponent<CanvasGroup>().alpha = Mathf.Lerp(1f,0f, elapsedTime / 1f);
+            uiElement.GetComponent<CanvasGroup>().alpha = Mathf.Lerp(1f, 0f, elapsedTime / 1f);
             yield return null;
         }
         uiElement.gameObject.SetActive(false);
-        uiElement.gameObject.GetComponent<RectTransform>().anchoredPosition = originalPosition;
+        uiElement.GetComponent<RectTransform>().anchoredPosition = originalPosition;
         uiElement.GetComponent<CanvasGroup>().alpha = 1f;
-
     }
-    
+
     public IEnumerator FillFoodImage(Image foodImage, float duration)
     {
         foodImage.fillAmount = 0f; // Reset fill amount at the start
@@ -368,12 +374,8 @@ public class UIManager : MonoBehaviour
         foodImage.fillAmount = 1f;
     }
 
-
     public Image GetFoodFillingImage()
     {
         return foodFillingImage;
     }
 }
-
-
-

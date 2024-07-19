@@ -1,8 +1,7 @@
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using System.Collections.Generic;
+using System;
 using System.Collections;
-using UnityEngine.UI;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,8 +20,10 @@ public class GameManager : MonoBehaviour
     private bool isBattleStarted = false;
     private bool isGoldAddedToTotal = false;
 
+    public static event Action OnBattleStarted;
+    public static event Action OnGameOver;
 
-    void Awake()
+    private void Awake()
     {
         if (Instance == null)
         {
@@ -36,17 +37,17 @@ public class GameManager : MonoBehaviour
 
         soldierSpawner = new SoldierSpawner(playerSpawnArea, enemySpawnArea);
         resourceManager = ResourceManager.Instance;
-
-        BattleManager.Instance.SetSoldierSpawner(soldierSpawner);
     }
 
-    void Start()
+    private void Start()
     {
         if (soldierTypes.Count > 0)
         {
             soldierTypes[0].IsUnlocked = true;
         }
-
+    
+        BattleManager.Instance.SetSoldierSpawner(soldierSpawner);
+        
         UIManager.Instance.UpdateGoldUI(resourceManager.Gold);
         UIManager.Instance.UpdateFoodUI(resourceManager.Food);
         UIManager.Instance.UpdateTotalGoldUI(resourceManager.TotalGold);
@@ -55,7 +56,7 @@ public class GameManager : MonoBehaviour
         gameOverPanel.SetActive(false);
     }
 
-    void Update()
+    private void Update()
     {
         if (isBattleStarted)
         {
@@ -67,6 +68,7 @@ public class GameManager : MonoBehaviour
     {
         isBattleStarted = true;
         resourceManager.StartProduction();
+        OnBattleStarted?.Invoke();
     }
 
     public void CheckGameOver()
@@ -74,13 +76,9 @@ public class GameManager : MonoBehaviour
         if (PlayerBase.Health <= 0 || EnemyBase.Health <= 0)
         {
             isBattleStarted = false;
-
-            // Stop all actions and collect all gold
             StopAllActions();
-            BattleManager.Instance.StopSpawning(); // Stop spawning new enemies
-
+            BattleManager.Instance.StopSpawning();
             CollectAllGold();
-
             StartCoroutine(WaitForAllGoldToBeCollected());
         }
     }
@@ -101,7 +99,6 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        // Now, all gold is collected and we ensure AddRoundGoldToTotal is called only once
         if (!isGoldAddedToTotal)
         {
             roundGoldEarned = CalculateRoundGold();
@@ -114,10 +111,10 @@ public class GameManager : MonoBehaviour
             UIManager.Instance.ShowGameOverPanel(roundGoldEarned);
         }
 
+        OnGameOver?.Invoke();
         UIManager.Instance.FadeAndReload();
     }
 
-    
     private void StopAllActions()
     {
         var allSoldiers = FindObjectsOfType<Soldier>();
@@ -127,7 +124,7 @@ public class GameManager : MonoBehaviour
         }
         StopAllCoroutines();
     }
-    
+
     private int CalculateRoundGold()
     {
         return ResourceManager.Instance.RoundGold;
