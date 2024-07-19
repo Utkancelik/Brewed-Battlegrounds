@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Base : IDamageable
@@ -26,10 +27,17 @@ public class Base : IDamageable
         set => isEnemy = value;
     }
 
+    private GameManager _gameManager;
     private void Awake()
     {
+        DIContainer.Instance.Register(this);
         maxHealth = health;
         InitializeHealthBar();
+    }
+
+    private void Start()
+    {
+        _gameManager = DIContainer.Instance.Resolve<GameManager>();
     }
 
     private void InitializeHealthBar()
@@ -53,7 +61,7 @@ public class Base : IDamageable
         {
             Instantiate(destructionEffectPrefab, transform.position, Quaternion.identity);
         }
-        GameManager.Instance.CheckGameOver();
+        _gameManager.CheckGameOver();
         Destroy(gameObject);
     }
 

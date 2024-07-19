@@ -9,6 +9,7 @@ public class SoldierSpawner
     {
         PlayerSpawnArea = playerSpawnArea;
         EnemySpawnArea = enemySpawnArea;
+        DIContainer.Instance.Register(this);
     }
 
     public void SpawnSoldier(GameObject soldierPrefab, bool isEnemy)

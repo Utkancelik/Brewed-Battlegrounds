@@ -41,8 +41,13 @@ public class Soldier : IDamageable
         set => isEnemy = value;
     }
 
+    private ResourceManager _resourceManager;
+    private GameManager _gameManager;
+
     private void Awake()
     {
+        DIContainer.Instance.Register(this);
+        
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         attackBehavior = GetComponent<IAttackBehavior>();
@@ -72,6 +77,9 @@ public class Soldier : IDamageable
     {
         SetNewDirection();
         lastPosition = transform.position;
+
+        _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
+        _gameManager = DIContainer.Instance.Resolve<GameManager>();
     }
 
     private void Update()
@@ -178,7 +186,7 @@ public class Soldier : IDamageable
             }
         }
 
-        CurrentTarget = closestTarget ?? (isEnemy ? GameManager.Instance.PlayerBase : GameManager.Instance.EnemyBase);
+        CurrentTarget = closestTarget ?? (isEnemy ? _gameManager.PlayerBase : _gameManager.EnemyBase);
     }
 
     private Vector3 GetClosestPointOnTarget()
@@ -255,7 +263,7 @@ public class Soldier : IDamageable
 
     private void DropGold()
     {
-        GameObject gold = Instantiate(ResourceManager.Instance.goldPrefab, transform.position, Quaternion.identity);
+        GameObject gold = Instantiate(_resourceManager.goldPrefab, transform.position, Quaternion.identity);
         gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * .75f);
     }
 

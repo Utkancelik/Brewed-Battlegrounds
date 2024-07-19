@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -6,10 +7,44 @@ public class Gold : MonoBehaviour
     private Vector2 direction;
     private Vector3 screenTargetPosition;
 
+    private ResourceManager _resourceManager;
+    private UIManager _uiManager;
+
+    private void Awake()
+    {
+        DIContainer.Instance.Register(this);
+    }
+
+    private void Start()
+    {
+        _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
+        _uiManager = DIContainer.Instance.Resolve<UIManager>();
+    }
+
     public void Initialize(Vector2 initialDirection)
     {
         direction = initialDirection;
-        screenTargetPosition = UIManager.Instance.GetGoldUIPosition();
+        
+        if (_uiManager == null)
+        {
+            StartCoroutine(RetryInitialize());
+        }
+        else
+        {
+            screenTargetPosition = _uiManager.GetGoldUIPosition();
+            StartCoroutine(MoveToRandomPositionThenUI());
+        }
+    }
+
+    private IEnumerator RetryInitialize()
+    {
+        while (_uiManager == null)
+        {
+            _uiManager = DIContainer.Instance.Resolve<UIManager>();
+            yield return null; // Wait for the next frame
+        }
+
+        screenTargetPosition = _uiManager.GetGoldUIPosition();
         StartCoroutine(MoveToRandomPositionThenUI());
     }
 
@@ -48,8 +83,8 @@ public class Gold : MonoBehaviour
             yield return null;
         }
 
-        ResourceManager.Instance.AddRoundGold(1);
-        UIManager.Instance.UpdateRoundGoldUI(ResourceManager.Instance.RoundGold);
+        _resourceManager.AddRoundGold(1);
+        _uiManager.UpdateRoundGoldUI(_resourceManager.RoundGold);
 
         Destroy(gameObject);
     }

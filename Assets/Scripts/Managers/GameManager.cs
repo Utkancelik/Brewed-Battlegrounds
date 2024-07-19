@@ -5,8 +5,9 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
-
+    public static event Action OnBattleStarted;
+    public static event Action OnGameOver;
+    
     [SerializeField] public Base PlayerBase;
     [SerializeField] public Base EnemyBase;
     [SerializeField] private SpawnArea playerSpawnArea;
@@ -14,44 +15,42 @@ public class GameManager : MonoBehaviour
     [SerializeField] public List<SoldierType> soldierTypes;
     [SerializeField] private GameObject gameOverPanel;
 
-    private SoldierSpawner soldierSpawner;
-    private ResourceManager resourceManager;
+    private SoldierSpawner _soldierSpawner;
+    private ResourceManager _resourceManager;
+    private UIManager _uiManager;
+    private BattleManager _battleManager;
+    
+    
     private int roundGoldEarned;
     private bool isBattleStarted = false;
     private bool isGoldAddedToTotal = false;
 
-    public static event Action OnBattleStarted;
-    public static event Action OnGameOver;
+    
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        DIContainer.Instance.Register(this);
+        _soldierSpawner = new SoldierSpawner(playerSpawnArea, enemySpawnArea);
 
-        soldierSpawner = new SoldierSpawner(playerSpawnArea, enemySpawnArea);
-        resourceManager = ResourceManager.Instance;
     }
 
     private void Start()
     {
+        _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
+        _uiManager = DIContainer.Instance.Resolve<UIManager>();
+        _battleManager = DIContainer.Instance.Resolve<BattleManager>();
+        
         if (soldierTypes.Count > 0)
         {
             soldierTypes[0].IsUnlocked = true;
         }
-    
-        BattleManager.Instance.SetSoldierSpawner(soldierSpawner);
         
-        UIManager.Instance.UpdateGoldUI(resourceManager.Gold);
-        UIManager.Instance.UpdateFoodUI(resourceManager.Food);
-        UIManager.Instance.UpdateTotalGoldUI(resourceManager.TotalGold);
-        UIManager.Instance.CreateUnitButtons(soldierTypes);
+        _battleManager.SetSoldierSpawner(_soldierSpawner);
+        
+        _uiManager.UpdateGoldUI(_resourceManager.Gold);
+        _uiManager.UpdateFoodUI(_resourceManager.Food);
+        _uiManager.UpdateTotalGoldUI(_resourceManager.TotalGold);
+        _uiManager.CreateUnitButtons(soldierTypes);
 
         gameOverPanel.SetActive(false);
     }
@@ -60,14 +59,14 @@ public class GameManager : MonoBehaviour
     {
         if (isBattleStarted)
         {
-            resourceManager.ProduceResources();
+            _resourceManager.ProduceResources();
         }
     }
 
     public void StartBattle()
     {
         isBattleStarted = true;
-        resourceManager.StartProduction();
+        _resourceManager.StartProduction();
         OnBattleStarted?.Invoke();
     }
 
@@ -77,7 +76,7 @@ public class GameManager : MonoBehaviour
         {
             isBattleStarted = false;
             StopAllActions();
-            BattleManager.Instance.StopSpawning();
+            _battleManager.StopSpawning();
             CollectAllGold();
             StartCoroutine(WaitForAllGoldToBeCollected());
         }
@@ -102,17 +101,17 @@ public class GameManager : MonoBehaviour
         if (!isGoldAddedToTotal)
         {
             roundGoldEarned = CalculateRoundGold();
-            resourceManager.AddRoundGoldToTotal();
+            _resourceManager.AddRoundGoldToTotal();
             isGoldAddedToTotal = true;
         }
 
         if (EnemyBase.Health <= 0)
         {
-            UIManager.Instance.ShowGameOverPanel(roundGoldEarned);
+            _uiManager.ShowGameOverPanel(roundGoldEarned);
         }
 
         OnGameOver?.Invoke();
-        UIManager.Instance.FadeAndReload();
+        _uiManager.FadeAndReload();
     }
 
     private void StopAllActions()
@@ -127,11 +126,11 @@ public class GameManager : MonoBehaviour
 
     private int CalculateRoundGold()
     {
-        return ResourceManager.Instance.RoundGold;
+        return _resourceManager.RoundGold;
     }
 
     public void SpawnSoldier(SoldierType soldierType)
     {
-        soldierSpawner.SpawnSoldier(soldierType.Prefab, false);
+        _soldierSpawner.SpawnSoldier(soldierType.Prefab, false);
     }
 }

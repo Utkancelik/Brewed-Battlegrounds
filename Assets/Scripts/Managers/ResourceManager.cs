@@ -3,8 +3,6 @@ using UnityEngine.UI;
 
 public class ResourceManager : MonoBehaviour
 {
-    public static ResourceManager Instance;
-
     [SerializeField] public GameObject goldPrefab;
     [SerializeField] private GameObject foodPrefab;
     [SerializeField] private int gold = 0;
@@ -23,27 +21,25 @@ public class ResourceManager : MonoBehaviour
     public int RoundGold => roundGold;
     public int Gold => gold;
     public int Food => food;
+    
+    private UIManager _uiManager;
+    private GameManager _gameManager;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        DIContainer.Instance.Register(this);
     }
 
     private void Start()
     {
+        _uiManager = DIContainer.Instance.Resolve<UIManager>();
+        _gameManager = DIContainer.Instance.Resolve<GameManager>();
+        
         LoadTotalGold();
-        UIManager.Instance.UpdateGoldUI(gold);
-        UIManager.Instance.UpdateFoodUI(food);
-        UIManager.Instance.UpdateTotalGoldUI(totalGold);
-        foodFillingImage = UIManager.Instance.GetFoodFillingImage();
+        _uiManager.UpdateGoldUI(gold);
+        _uiManager.UpdateFoodUI(food);
+        _uiManager.UpdateTotalGoldUI(totalGold);
+        foodFillingImage = _uiManager.GetFoodFillingImage();
     }
 
     private void Update()
@@ -57,13 +53,13 @@ public class ResourceManager : MonoBehaviour
     public void AddRoundGold(int amount)
     {
         roundGold += amount;
-        UIManager.Instance.UpdateRoundGoldUI(roundGold);
+        _uiManager.UpdateRoundGoldUI(roundGold);
     }
 
     public void AddRoundGoldToTotal()
     {
         totalGold += roundGold;
-        UIManager.Instance.UpdateTotalGoldUI(totalGold);
+        _uiManager.UpdateTotalGoldUI(totalGold);
         SaveTotalGold();
     }
 
@@ -83,7 +79,7 @@ public class ResourceManager : MonoBehaviour
         if (totalGold >= amount)
         {
             totalGold -= amount;
-            UIManager.Instance.UpdateTotalGoldUI(totalGold);
+            _uiManager.UpdateTotalGoldUI(totalGold);
             SaveTotalGold();
             return true;
         }
@@ -93,7 +89,7 @@ public class ResourceManager : MonoBehaviour
     public void SpendFood(int amount)
     {
         food -= amount;
-        UIManager.Instance.UpdateFoodUI(food);
+        _uiManager.UpdateFoodUI(food);
     }
 
     public void ProduceResources()
@@ -105,8 +101,8 @@ public class ResourceManager : MonoBehaviour
         {
             food += Mathf.FloorToInt(foodProductionTimer * foodProductionRate);
             foodProductionTimer = 0f;
-            UIManager.Instance.UpdateFoodUI(food);
-            StartCoroutine(UIManager.Instance.FillFoodImage(foodFillingImage, 1f / foodProductionRate));
+            _uiManager.UpdateFoodUI(food);
+            StartCoroutine(_uiManager.FillFoodImage(foodFillingImage, 1f / foodProductionRate));
         }
     }
 
@@ -120,7 +116,7 @@ public class ResourceManager : MonoBehaviour
         if (SpendGold(foodProductionUpgradeCost))
         {
             foodProductionRate += 0.25f;
-            UIManager.Instance.UpdateFoodProductionRateUI(foodProductionRate);
+            _uiManager.UpdateFoodProductionRateUI(foodProductionRate);
             PlayerPrefs.SetFloat("FoodProductionRate", foodProductionRate);
             PlayerPrefs.Save();
         }
@@ -130,10 +126,10 @@ public class ResourceManager : MonoBehaviour
     {
         if (SpendGold(baseHealthUpgradeCost))
         {
-            Base playerBase = GameManager.Instance.PlayerBase;
+            Base playerBase = _gameManager.PlayerBase;
             playerBase.maxHealth += 50;
             playerBase.Health = playerBase.maxHealth;
-            UIManager.Instance.UpdateBaseHealthUI(playerBase.Health);
+            _uiManager.UpdateBaseHealthUI(playerBase.Health);
             PlayerPrefs.SetInt("BaseHealth", playerBase.maxHealth);
             PlayerPrefs.Save();
         }
@@ -142,10 +138,10 @@ public class ResourceManager : MonoBehaviour
     public void LoadUpgrades()
     {
         foodProductionRate = PlayerPrefs.GetFloat("FoodProductionRate", 0.5f);
-        UIManager.Instance.UpdateFoodProductionRateUI(foodProductionRate);
-        int savedBaseHealth = PlayerPrefs.GetInt("BaseHealth", GameManager.Instance.PlayerBase.maxHealth);
-        GameManager.Instance.PlayerBase.maxHealth = savedBaseHealth;
-        GameManager.Instance.PlayerBase.Health = savedBaseHealth;
-        UIManager.Instance.UpdateBaseHealthUI(savedBaseHealth);
+        _uiManager.UpdateFoodProductionRateUI(foodProductionRate);
+        int savedBaseHealth = PlayerPrefs.GetInt("BaseHealth", _gameManager.PlayerBase.maxHealth);
+        _gameManager.PlayerBase.maxHealth = savedBaseHealth;
+        _gameManager.PlayerBase.Health = savedBaseHealth;
+        _uiManager.UpdateBaseHealthUI(savedBaseHealth);
     }
 }

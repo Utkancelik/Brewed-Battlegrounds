@@ -1,29 +1,31 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
-    public static BattleManager Instance;
-
     [SerializeField] private WaveData waveData;
     [SerializeField] private float waveTextDisplayDuration = 2f;
     [SerializeField] private float waveTextStayAfterSpawn = 2f;
     [SerializeField] private float battleButtonSlideDuration = 0.5f;
 
-    private SoldierSpawner soldierSpawner;
-    private Coroutine spawnWaveCoroutine;
+    private SoldierSpawner _soldierSpawner;
+    private Coroutine _spawnWaveCoroutine;
+    private UIManager _uiManager;
+    private GameManager _gameManager;
+    private ResourceManager _resourceManager;
 
     private void Awake()
+    {   
+        DIContainer.Instance.Register(this);
+    }
+
+    private void Start()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        _soldierSpawner = DIContainer.Instance.Resolve<SoldierSpawner>();
+        _uiManager = DIContainer.Instance.Resolve<UIManager>();
+        _gameManager = DIContainer.Instance.Resolve<GameManager>();
+        _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
     }
 
     private void OnEnable()
@@ -38,9 +40,9 @@ public class BattleManager : MonoBehaviour
 
     private void StartBattle()
     {
-        GameManager.Instance.StartBattle();
-        ResourceManager.Instance.StartProduction();
-        spawnWaveCoroutine = StartCoroutine(SpawnWaves());
+        _gameManager.StartBattle();
+        _resourceManager.StartProduction();
+        _spawnWaveCoroutine = StartCoroutine(SpawnWaves());
         StartCoroutine(SlideBattleButtonDown());
     }
 
@@ -49,13 +51,13 @@ public class BattleManager : MonoBehaviour
         int waveCount = waveData.Waves.Count;
         for (int i = 0; i < waveCount; i++)
         {
-            UIManager.Instance.DisplayWaveText(i == waveCount - 1 ? "Final Wave" : $"Wave {i + 1}");
+            _uiManager.DisplayWaveText(i == waveCount - 1 ? "Final Wave" : $"Wave {i + 1}");
             yield return new WaitForSeconds(waveTextDisplayDuration);
             foreach (var group in waveData.Waves[i].Groups)
             {
                 for (int j = 0; j < group.Amount; j++)
                 {
-                    soldierSpawner.SpawnSoldier(group.Soldier.gameObject, true);
+                    _soldierSpawner.SpawnSoldier(group.Soldier.gameObject, true);
                     yield return new WaitForSeconds(waveData.DelayBetweenUnits);
                 }
                 yield return new WaitForSeconds(group.DelayAfterGroup);
@@ -71,7 +73,7 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator SlideBattleButtonDown()
     {
-        RectTransform battleButtonRectTransform = UIManager.Instance.StartBattleButton.GetComponent<RectTransform>();
+        RectTransform battleButtonRectTransform = _uiManager.StartBattleButton.GetComponent<RectTransform>();
         float elapsedTime = 0f;
         Vector2 originalPosition = battleButtonRectTransform.anchoredPosition;
         Vector2 targetPosition = new Vector2(originalPosition.x, originalPosition.y - 1000);
@@ -83,20 +85,20 @@ public class BattleManager : MonoBehaviour
             yield return null;
         }
 
-        UIManager.Instance.StartBattleButton.gameObject.SetActive(false);
+        _uiManager.StartBattleButton.gameObject.SetActive(false);
     }
 
     public void SetSoldierSpawner(SoldierSpawner spawner)
     {
-        soldierSpawner = spawner;
+        _soldierSpawner = spawner;
     }
 
     public void StopSpawning()
     {
-        if (spawnWaveCoroutine != null)
+        if (_spawnWaveCoroutine != null)
         {
-            StopCoroutine(spawnWaveCoroutine);
-            spawnWaveCoroutine = null;
+            StopCoroutine(_spawnWaveCoroutine);
+            _spawnWaveCoroutine = null;
         }
     }
 }

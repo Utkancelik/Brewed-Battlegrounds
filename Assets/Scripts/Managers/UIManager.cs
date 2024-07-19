@@ -8,7 +8,6 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance;
     public static event Action OnStartBattle;
 
     [SerializeField] private GameObject waveTextObject;
@@ -45,6 +44,8 @@ public class UIManager : MonoBehaviour
 
     private List<Button> unitButtons = new List<Button>();
 
+    private ResourceManager _resourceManager;
+    private GameManager _gameManager;
     private void OnEnable()
     {
         OnStartBattle += StartBattle;
@@ -57,36 +58,32 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        DIContainer.Instance.Register(this);
     }
 
     private void Start()
     {
-        increaseFoodProductionButton.onClick.AddListener(() => ResourceManager.Instance.IncreaseFoodProductionRate());
-        increaseBaseHealthButton.onClick.AddListener(() => ResourceManager.Instance.IncreaseBaseHealth());
+        _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
+        _gameManager = DIContainer.Instance.Resolve<GameManager>();
+        
+        increaseFoodProductionButton.onClick.AddListener(() => _resourceManager.IncreaseFoodProductionRate());
+        increaseBaseHealthButton.onClick.AddListener(() => _resourceManager.IncreaseBaseHealth());
         goToBattleButton.onClick.AddListener(EnterBattleScene);
         upgradeButton.onClick.AddListener(OpenUpgradePanel);
         startBattleButton.onClick.AddListener(() => OnStartBattle?.Invoke()); // This is where you call the action
         closeGameOverPanelButton.onClick.AddListener(CloseGameOverPanel);
+        
+        
+        UpdateFoodProductionRateUI(_resourceManager.foodProductionRate);
+        UpdateBaseHealthUI(_gameManager.PlayerBase.Health);
+        UpdateGoldUI(_resourceManager.Gold);
+        UpdateFoodUI(_resourceManager.Food);
+        UpdateTotalGoldUI(_resourceManager.TotalGold);
+        UpdateRoundGoldUI(_resourceManager.RoundGold);
 
-        UpdateFoodProductionRateUI(ResourceManager.Instance.foodProductionRate);
-        UpdateBaseHealthUI(GameManager.Instance.PlayerBase.Health);
-        UpdateGoldUI(ResourceManager.Instance.Gold);
-        UpdateFoodUI(ResourceManager.Instance.Food);
-        UpdateTotalGoldUI(ResourceManager.Instance.TotalGold);
-        UpdateRoundGoldUI(ResourceManager.Instance.RoundGold);
+        _gameManager.soldierTypes[0].IsUnlocked = true;
 
-        GameManager.Instance.soldierTypes[0].IsUnlocked = true;
-
-        foreach (var soldierType in GameManager.Instance.soldierTypes)
+        foreach (var soldierType in _gameManager.soldierTypes)
         {
             soldierType.IsUnlocked = PlayerPrefs.GetInt(soldierType.SoldierName, 0) == 1;
         }
@@ -98,8 +95,8 @@ public class UIManager : MonoBehaviour
 
         EnterBattleScene();
         UpdateUpgradePanel();
-        CreateUnitButtons(GameManager.Instance.soldierTypes);
-        ResourceManager.Instance.LoadUpgrades();
+        CreateUnitButtons(_gameManager.soldierTypes);
+        _resourceManager.LoadUpgrades();
 
         gameOverPanel.SetActive(false);
         fadeOverlay.gameObject.SetActive(false);
@@ -209,11 +206,11 @@ public class UIManager : MonoBehaviour
             unitCostText.text = soldierType.Stats.FoodCost.ToString();
 
             button.onClick.AddListener(() => {
-                if (ResourceManager.Instance.Food >= soldierType.Stats.FoodCost)
+                if (_resourceManager.Food >= soldierType.Stats.FoodCost)
                 {
-                    GameManager.Instance.SpawnSoldier(soldierType);
-                    ResourceManager.Instance.SpendFood(soldierType.Stats.FoodCost);
-                    UpdateFoodUI(ResourceManager.Instance.Food);
+                    _gameManager.SpawnSoldier(soldierType);
+                    _resourceManager.SpendFood(soldierType.Stats.FoodCost);
+                    UpdateFoodUI(_resourceManager.Food);
                 }
             });
         }
@@ -230,17 +227,17 @@ public class UIManager : MonoBehaviour
 
     private void UnlockSoldierType(int index)
     {
-        if (index < 0 || index >= GameManager.Instance.soldierTypes.Count) return;
+        if (index < 0 || index >= _gameManager.soldierTypes.Count) return;
 
-        SoldierType soldierType = GameManager.Instance.soldierTypes[index];
-        if (!soldierType.IsUnlocked && ResourceManager.Instance.SpendGold(soldierType.UnlockCost))
+        SoldierType soldierType = _gameManager.soldierTypes[index];
+        if (!soldierType.IsUnlocked && _resourceManager.SpendGold(soldierType.UnlockCost))
         {
             soldierType.IsUnlocked = true;
             PlayerPrefs.SetInt(soldierType.SoldierName, 1); // Save unlock status
             PlayerPrefs.Save(); // Save preferences
 
             UpdateUpgradePanel();
-            CreateUnitButtons(GameManager.Instance.soldierTypes);
+            CreateUnitButtons(_gameManager.soldierTypes);
         }
     }
 
@@ -248,9 +245,9 @@ public class UIManager : MonoBehaviour
     {
         for (int i = 0; i < soldierCards.Count; i++)
         {
-            if (i < GameManager.Instance.soldierTypes.Count)
+            if (i < _gameManager.soldierTypes.Count)
             {
-                SoldierType soldierType = GameManager.Instance.soldierTypes[i];
+                SoldierType soldierType = _gameManager.soldierTypes[i];
                 soldierCards[i].color = soldierType.IsUnlocked ? Color.white : Color.gray;
                 unlockSoldierButtons[i].gameObject.SetActive(!soldierType.IsUnlocked || i == 0);
                 unlockSoldierButtons[i].GetComponentInChildren<TMP_Text>().text = soldierType.IsUnlocked ? "Unlocked" : $"{soldierType.UnlockCost} Gold";
@@ -276,7 +273,7 @@ public class UIManager : MonoBehaviour
     private IEnumerator RestartSceneWithFade()
     {
         yield return StartCoroutine(FadeToBlack());
-        ResourceManager.Instance.AddRoundGoldToTotal();
+        _resourceManager.AddRoundGoldToTotal();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         yield return StartCoroutine(FadeFromBlack());
     }
@@ -304,7 +301,7 @@ public class UIManager : MonoBehaviour
         color.a = 1f;
         fadeOverlay.color = color;
 
-        ResourceManager.Instance.SaveTotalGold();
+        _resourceManager.SaveTotalGold();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
