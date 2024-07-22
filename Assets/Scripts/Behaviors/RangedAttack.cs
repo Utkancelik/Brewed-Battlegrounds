@@ -5,7 +5,6 @@ using UnityEngine;
 public class RangedAttack : IAttackBehavior
 {
     [SerializeField] private GameObject projectilePrefab;
-    [SerializeField] private Transform firePoint;
     private bool isAttacking;
 
     public override void Attack(Soldier attacker, IDamageable target)
@@ -24,7 +23,7 @@ public class RangedAttack : IAttackBehavior
 
         if (target != null)
         {
-            SpawnProjectile(attacker, target.transform.position);
+            SpawnProjectile(attacker, target.transform.position, attacker.IsEnemy);
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -32,9 +31,10 @@ public class RangedAttack : IAttackBehavior
         isAttacking = false;
     }
 
-    private void SpawnProjectile(Soldier attacker, Vector3 targetPosition)
+    private void SpawnProjectile(Soldier attacker, Vector3 targetPosition, bool isEnemy)
     {
-        GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-        projectile.GetComponent<Projectile>().Initialize(targetPosition, attacker.Stats.Damage, attacker.gameObject);
+        GameObject projectile = Instantiate(projectilePrefab, attacker.transform.position, Quaternion.identity);
+        projectile.GetComponent<Projectile>().Initialize(targetPosition, attacker.Stats.Damage, isEnemy);
     }
 }
+

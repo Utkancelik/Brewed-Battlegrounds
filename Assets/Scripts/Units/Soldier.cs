@@ -16,6 +16,8 @@ public class Soldier : IDamageable
     private Rigidbody2D rb;
     private bool isAttacking;
     private bool isDead;
+    private float goldDropCooldown = 0.5f; // Cooldown in seconds
+    private float goldDropTimer = 0;
     private Vector3 currentDirection;
     private float directionChangeInterval = 2f;
     private float directionChangeTimer;
@@ -47,7 +49,7 @@ public class Soldier : IDamageable
     private void Awake()
     {
         DIContainer.Instance.Register(this);
-        
+
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         attackBehavior = GetComponent<IAttackBehavior>();
@@ -96,6 +98,8 @@ public class Soldier : IDamageable
         }
 
         directionChangeTimer -= Time.deltaTime;
+        goldDropTimer -= Time.deltaTime;  // Reduce cooldown timer
+
         if (directionChangeTimer <= 0)
         {
             SetNewDirection();
@@ -120,6 +124,13 @@ public class Soldier : IDamageable
                 attackTarget = CurrentTarget;
                 isAttacking = true;
                 attackBehavior.Attack(this, attackTarget);
+
+                // Drop gold if player soldier attacks enemy base
+                if (!isEnemy && CurrentTarget is Base && goldDropTimer <= 0)
+                {
+                    DropGold(CurrentTarget.transform.position);
+                    goldDropTimer = goldDropCooldown;  // Reset cooldown
+                }
             }
         }
 
@@ -243,7 +254,7 @@ public class Soldier : IDamageable
 
         if (isEnemy)
         {
-            DropGold();
+            DropGold(transform.position);
         }
 
         ResetAttackAnimation();
@@ -261,9 +272,9 @@ public class Soldier : IDamageable
         Destroy(gameObject);
     }
 
-    private void DropGold()
+    private void DropGold(Vector3 position)
     {
-        GameObject gold = Instantiate(_resourceManager.goldPrefab, transform.position, Quaternion.identity);
+        GameObject gold = Instantiate(_resourceManager.goldPrefab, position, Quaternion.identity);
         gold.GetComponent<Gold>().Initialize(Random.insideUnitCircle.normalized * .75f);
     }
 
@@ -278,7 +289,7 @@ public class Soldier : IDamageable
             Die();
         }
     }
-    
+
     public void StopAllActions()
     {
         isAttacking = false;

@@ -5,22 +5,16 @@ public class Projectile : MonoBehaviour
     private Vector3 initialTargetPosition;
     private int damage;
     [SerializeField] private float speed = 10f;
-    private GameObject shooter;
+    private bool isEnemy;
 
-    public void Initialize(Vector3 targetPosition, int damage, GameObject shooter)
+    public void Initialize(Vector3 targetPosition, int damage, bool isEnemy)
     {
         this.initialTargetPosition = targetPosition;
         this.damage = damage;
-        this.shooter = shooter;
+        this.isEnemy = isEnemy;
 
         Vector3 direction = (targetPosition - transform.position).normalized;
         transform.right = direction;
-
-        Collider2D shooterCollider = shooter.GetComponent<Collider2D>();
-        if (shooterCollider != null)
-        {
-            Physics2D.IgnoreCollision(GetComponent<Collider2D>(), shooterCollider);
-        }
     }
 
     private void Update()
@@ -35,7 +29,7 @@ public class Projectile : MonoBehaviour
         foreach (var hitCollider in hitColliders)
         {
             IDamageable target = hitCollider.GetComponent<IDamageable>();
-            if (target != null && shooter != null && target.IsEnemy != shooter.GetComponent<IDamageable>().IsEnemy)
+            if (target != null && target.IsEnemy != isEnemy)
             {
                 target.TakeDamage(damage);
                 Destroy(gameObject);
