@@ -25,7 +25,10 @@ MonoBehaviour:
       DelayAfterGroup: 5
     - Soldier: {fileID: 622894082000207707, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
       Amount: 3
-      DelayAfterGroup: 0
+      DelayAfterGroup: 5
+    - Soldier: {fileID: -4171262696366531182, guid: e6a8681ac143d9a408fc552a7327d0d7, type: 3}
+      Amount: 2
+      DelayAfterGroup: 5
   - Groups:
     - Soldier: {fileID: 2426460967753811068, guid: 2f08c40570eb64b41a5a26be8024e30f, type: 3}
       Amount: 2
@@ -38,6 +41,9 @@ MonoBehaviour:
       DelayAfterGroup: 5
     - Soldier: {fileID: 622894082000207707, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
       Amount: 4
+      DelayAfterGroup: 5
+    - Soldier: {fileID: -4171262696366531182, guid: e6a8681ac143d9a408fc552a7327d0d7, type: 3}
+      Amount: 3
       DelayAfterGroup: 0
   - Groups:
     - Soldier: {fileID: 622894082000207707, guid: e8673cb5695442241b7c286d28a666ac, type: 3}
@@ -49,7 +55,10 @@ MonoBehaviour:
     - Soldier: {fileID: 2426460967753811068, guid: 2f08c40570eb64b41a5a26be8024e30f, type: 3}
       Amount: 2
       DelayAfterGroup: 5
-    - Soldier: {fileID: 2426460967753811068, guid: 2f08c40570eb64b41a5a26be8024e30f, type: 3}
+    - Soldier: {fileID: -4171262696366531182, guid: e6a8681ac143d9a408fc552a7327d0d7, type: 3}
+      Amount: 4
+      DelayAfterGroup: 5
+    - Soldier: {fileID: -4171262696366531182, guid: e6a8681ac143d9a408fc552a7327d0d7, type: 3}
       Amount: 4
       DelayAfterGroup: 0
   DelayBetweenUnits: 0.1

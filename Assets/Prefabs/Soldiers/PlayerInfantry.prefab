@@ -141,8 +141,6 @@ MonoBehaviour:
     AttackRange: 0.4
     DetectRange: 2
     Damage: 25
-    FoodCost: 0
-    ArrowPrefab: {fileID: 0}
   health: 100
   isEnemy: 0
   deathEffectPrefab: {fileID: 1055890062764184040, guid: 8eb6419de7ebec04a810c8d635dad59d, type: 3}
@@ -552,6 +550,10 @@ PrefabInstance:
     - target: {fileID: 5571080277012268338, guid: 98f2c76a39c23a14b9565d89325e3eca, type: 3}
       propertyPath: m_Name
       value: Health_Bar_Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 5571080277012268338, guid: 98f2c76a39c23a14b9565d89325e3eca, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8805777057355392365, guid: 98f2c76a39c23a14b9565d89325e3eca, type: 3}
       propertyPath: m_PresetInfoIsWorld

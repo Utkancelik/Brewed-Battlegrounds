@@ -50,7 +50,7 @@ public class Soldier : IDamageable
     {
         DIContainer.Instance.Register(this);
 
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
         attackBehavior = GetComponent<IAttackBehavior>();
         moveBehavior = GetComponent<IMoveBehavior>();
