@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Arrow : MonoBehaviour
+public class Projectile : MonoBehaviour
 {
     private Vector3 initialTargetPosition;
     private int damage;

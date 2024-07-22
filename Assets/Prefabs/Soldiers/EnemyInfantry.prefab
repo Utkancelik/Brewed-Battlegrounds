@@ -141,7 +141,6 @@ MonoBehaviour:
     AttackRange: 0.4
     DetectRange: 2
     Damage: 25
-    FoodCost: 0
     ArrowPrefab: {fileID: 0}
   health: 100
   isEnemy: 1
@@ -262,7 +261,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 789033833, guid: 230239c4eda952b4e81272f785d0b593, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.98823535, g: 0.36078432, b: 0.39607847, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -346,8 +345,8 @@ SpriteRenderer:
   m_SortingLayerID: -823434513
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1378664573, guid: 230239c4eda952b4e81272f785d0b593, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Sprite: {fileID: -1609995854, guid: 230239c4eda952b4e81272f785d0b593, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

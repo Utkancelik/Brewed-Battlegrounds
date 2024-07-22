@@ -74,8 +74,8 @@ SpriteRenderer:
   m_SortingLayerID: -823434513
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: -284983373, guid: 230239c4eda952b4e81272f785d0b593, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Sprite: {fileID: 1750404481, guid: 230239c4eda952b4e81272f785d0b593, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -226,8 +226,6 @@ MonoBehaviour:
     AttackRange: 2
     DetectRange: 2.5
     Damage: 35
-    FoodCost: 0
-    ArrowPrefab: {fileID: 760878427838536779, guid: 3b3d3d08fd84bd543a6435669866ab7a, type: 3}
   health: 100
   isEnemy: 1
   deathEffectPrefab: {fileID: 1055890062764184040, guid: 8eb6419de7ebec04a810c8d635dad59d, type: 3}
@@ -273,7 +271,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6e5e80f7acd3974abae93a1be4d193b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arrowPrefab: {fileID: 760878427838536779, guid: 3b3d3d08fd84bd543a6435669866ab7a, type: 3}
+  projectilePrefab: {fileID: 760878427838536779, guid: 3b3d3d08fd84bd543a6435669866ab7a, type: 3}
+  firePoint: {fileID: 2407528551149858392}
 --- !u!1 &2785055593340485357
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,7 +347,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 1109465371, guid: 230239c4eda952b4e81272f785d0b593, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.98823535, g: 0.36078432, b: 0.39607847, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
