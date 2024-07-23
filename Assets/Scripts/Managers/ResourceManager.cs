@@ -24,6 +24,7 @@ public class ResourceManager : MonoBehaviour
     
     private UIManager _uiManager;
     private GameManager _gameManager;
+    
 
     private void Awake()
     {
@@ -41,15 +42,6 @@ public class ResourceManager : MonoBehaviour
         _uiManager.UpdateTotalGoldUI(totalGold);
         foodFillingImage = _uiManager.GetFoodFillingImage();
     }
-
-    private void Update()
-    {
-        if (isBattleStarted)
-        {
-            ProduceResources();
-        }
-    }
-
     public void AddRoundGold(int amount)
     {
         roundGold += amount;
@@ -102,7 +94,6 @@ public class ResourceManager : MonoBehaviour
             food += Mathf.FloorToInt(foodProductionTimer * foodProductionRate);
             foodProductionTimer = 0f;
             _uiManager.UpdateFoodUI(food);
-            StartCoroutine(_uiManager.FillFoodImage(foodFillingImage, 1f / foodProductionRate));
         }
     }
 

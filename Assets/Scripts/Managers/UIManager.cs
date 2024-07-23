@@ -53,6 +53,7 @@ public class UIManager : MonoBehaviour
     
     [SerializeField] private TMP_Text foodProductionCostText;
     [SerializeField] private TMP_Text baseHealthCostText;
+    private bool isFoodProcessed = false;
     private void OnEnable()
     {
         OnStartBattle += StartBattle;
@@ -444,17 +445,25 @@ private void UpdateUpgradePanel(List<SoldierType> eraSoldierTypes)
 
     public IEnumerator FillFoodImage(Image foodImage, float duration)
     {
+        if (isFoodProcessed)
+        {
+            yield break;
+        }
+
+        isFoodProcessed = true;
         foodImage.fillAmount = 0f; // Reset fill amount at the start
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)
         {
-            foodImage.fillAmount = Mathf.Lerp(0, 1, elapsedTime / duration);
-            elapsedTime += Time.deltaTime;
-            yield return null;
+            foodImage.fillAmount = Mathf.Lerp(0, 1,  duration);
+            elapsedTime += .1f;
+            yield return new WaitForSeconds(0.1f);
         }
 
         foodImage.fillAmount = 1f;
+        isFoodProcessed = false;
+
     }
 
     public Image GetFoodFillingImage()
