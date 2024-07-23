@@ -220,12 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db4bbda91abc46741b16a11690f8af7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stats:
-    Health: 50
-    Speed: 0.2
-    AttackRange: 2
-    DetectRange: 2.5
-    Damage: 35
+  data: {fileID: 11400000, guid: 9284b73581a922148b5e9e2d0002233d, type: 2}
   health: 100
   isEnemy: 1
   deathEffectPrefab: {fileID: 1055890062764184040, guid: 8eb6419de7ebec04a810c8d635dad59d, type: 3}
@@ -272,7 +267,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 760878427838536779, guid: 3b3d3d08fd84bd543a6435669866ab7a, type: 3}
-  firePoint: {fileID: 2407528551149858392}
 --- !u!1 &2785055593340485357
 GameObject:
   m_ObjectHideFlags: 0

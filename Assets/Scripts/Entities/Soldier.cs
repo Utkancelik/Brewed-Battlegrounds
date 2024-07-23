@@ -1,8 +1,12 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Soldier : IDamageable
 {
-    [SerializeField] private SoldierStats stats;
+    [FormerlySerializedAs("stats")]
+    [FormerlySerializedAs("statsSo")]
+    [Header("References")]
+    [SerializeField] private SoldierDataSO data;
     [SerializeField] private int health;
     [SerializeField] private bool isEnemy;
     [SerializeField] private GameObject deathEffectPrefab;
@@ -27,14 +31,14 @@ public class Soldier : IDamageable
     private float stuckThreshold = 1f;
 
     public IDamageable CurrentTarget { get; set; }
-    public SoldierStats Stats => stats;
+    public SoldierDataSO Data => data;
     public override int Health
     {
         get => health;
         set
         {
             health = value;
-            healthBar.SetHealth(health, stats.Health);
+            healthBar.SetHealth(health, data.Health);
         }
     }
     public override bool IsEnemy
@@ -64,15 +68,15 @@ public class Soldier : IDamageable
     {
         Debug.Assert(attackBehavior != null, "AttackBehavior not assigned");
         Debug.Assert(moveBehavior != null, "MoveBehavior not assigned");
-        Debug.Assert(stats != null, "Stats not assigned");
+        Debug.Assert(data != null, "Stats not assigned");
         Debug.Assert(damageFlicker != null, "DamageFlicker not assigned");
     }
 
     private void InitializeHealthBar()
     {
         healthBar = GetComponentInChildren<HealthBar>();
-        healthBar.Initialize(transform, stats.Health);
-        healthBar.SetHealth(health, stats.Health);
+        healthBar.Initialize(transform, data.Health);
+        healthBar.SetHealth(health, data.Health);
     }
 
     private void Start()
@@ -113,7 +117,7 @@ public class Soldier : IDamageable
         if (!isAttacking)
         {
             Vector3 targetPosition = GetClosestPointOnTarget();
-            if (Vector3.Distance(transform.position, targetPosition) > stats.AttackRange)
+            if (Vector3.Distance(transform.position, targetPosition) > data.AttackRange)
             {
                 MoveTowards(targetPosition);
             }
@@ -153,14 +157,14 @@ public class Soldier : IDamageable
 
     private void MoveTowards(Vector3 targetPosition)
     {
-        moveBehavior.Move(rb, targetPosition, stats.Speed);
+        moveBehavior.Move(rb, targetPosition, data.Speed);
     }
 
     private void MoveDiagonally()
     {
         if (!isAttacking)
         {
-            moveBehavior?.Move(rb, currentDirection, stats.Speed);
+            moveBehavior?.Move(rb, currentDirection, data.Speed);
         }
     }
 
@@ -183,7 +187,7 @@ public class Soldier : IDamageable
         IDamageable closestTarget = null;
         float closestDistance = Mathf.Infinity;
 
-        foreach (var hitCollider in Physics2D.OverlapCircleAll(transform.position, stats.DetectRange))
+        foreach (var hitCollider in Physics2D.OverlapCircleAll(transform.position, data.DetectRange))
         {
             IDamageable target = hitCollider.GetComponent<IDamageable>();
             if (target != null && target.IsEnemy != isEnemy && target.Health > 0)

@@ -135,13 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db4bbda91abc46741b16a11690f8af7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stats:
-    Health: 100
-    Speed: 0.3
-    AttackRange: 0.4
-    DetectRange: 2
-    Damage: 25
-    ArrowPrefab: {fileID: 0}
+  data: {fileID: 11400000, guid: 420ad432696ccb64db31260a6d967a00, type: 2}
   health: 100
   isEnemy: 1
   deathEffectPrefab: {fileID: 1055890062764184040, guid: 8eb6419de7ebec04a810c8d635dad59d, type: 3}

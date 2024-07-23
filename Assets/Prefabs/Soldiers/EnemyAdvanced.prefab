@@ -113,12 +113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db4bbda91abc46741b16a11690f8af7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stats:
-    Health: 200
-    Speed: 0.15
-    AttackRange: 0.6
-    DetectRange: 2
-    Damage: 40
+  data: {fileID: 11400000, guid: d8c0b8525192f5545b4c31f84b12e547, type: 2}
   health: 200
   isEnemy: 0
   deathEffectPrefab: {fileID: 1055890062764184040, guid: 8eb6419de7ebec04a810c8d635dad59d, type: 3}

@@ -22,7 +22,7 @@ public class MeleeAttack : IAttackBehavior
         
         if (target != null && target == attacker.CurrentTarget)
         {
-            target.TakeDamage(attacker.Stats.Damage);
+            target.TakeDamage(attacker.Data.Damage);
         }
 
         yield return new WaitForSeconds(0.5f);

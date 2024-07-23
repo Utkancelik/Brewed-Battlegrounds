@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
-
+/*
 [CustomEditor(typeof(UIManager))]
 public class UIManagerEditor : Editor
 {
@@ -125,3 +125,4 @@ public class UIManagerEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 }
+*/

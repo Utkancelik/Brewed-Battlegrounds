@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public Base EnemyBase;
     [SerializeField] private SpawnArea playerSpawnArea;
     [SerializeField] private SpawnArea enemySpawnArea;
-    [SerializeField] public List<SoldierType> allSoldierTypes;
+    [SerializeField] public List<SoldierDataSO> allSoldierTypes;
     [SerializeField] private GameObject gameOverPanel;
 
     private SoldierSpawner _soldierSpawner;
@@ -128,8 +128,8 @@ public class GameManager : MonoBehaviour
         return _resourceManager.RoundGold;
     }
 
-    public void SpawnSoldier(SoldierType soldierType)
+    public void SpawnSoldier(SoldierDataSO soldierDataSo)
     {
-        _soldierSpawner.SpawnSoldier(soldierType.Prefab, false);
+        _soldierSpawner.SpawnSoldier(soldierDataSo.Prefab, false);
     }
 }

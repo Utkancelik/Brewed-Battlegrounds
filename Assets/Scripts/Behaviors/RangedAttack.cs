@@ -34,7 +34,7 @@ public class RangedAttack : IAttackBehavior
     private void SpawnProjectile(Soldier attacker, Vector3 targetPosition, bool isEnemy)
     {
         GameObject projectile = Instantiate(projectilePrefab, attacker.transform.position, Quaternion.identity);
-        projectile.GetComponent<Projectile>().Initialize(targetPosition, attacker.Stats.Damage, isEnemy);
+        projectile.GetComponent<Projectile>().Initialize(targetPosition, attacker.Data.Damage, isEnemy);
     }
 }
 
