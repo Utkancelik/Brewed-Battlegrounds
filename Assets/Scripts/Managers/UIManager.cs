@@ -21,6 +21,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text roundGoldInGameText;
     [SerializeField] private GameObject unitButtonPrefab;
     [SerializeField] private Transform unitButtonContainer;
+    [SerializeField] private TMP_Text statusText;
     public Button StartBattleButton => startBattleButton;
     
     [Header("Panel Elements")]
@@ -269,6 +270,7 @@ public class UIManager : MonoBehaviour
 
     public void EnterBattleScene()
     {
+        statusText.text = $"Battle";
         mainBattlePanel.SetActive(true);
         mainButtonsPanel.SetActive(true);
         battleBottomPanel.SetActive(false);
@@ -277,6 +279,7 @@ public class UIManager : MonoBehaviour
 
     public void OpenUpgradePanel()
     {
+        statusText.text = $"Upgrades";
         mainBattlePanel.SetActive(false);
         battleBottomPanel.SetActive(false);
         upgradePanel.SetActive(true);
@@ -305,8 +308,16 @@ public class UIManager : MonoBehaviour
 
     public void UpdateTotalGoldUI(int totalGoldAmount)
     {
-        totalGoldVaultText.text = $"Total Gold: {totalGoldAmount}";
+        if (totalGoldAmount >= 1000)
+        {
+            totalGoldVaultText.text = $"{totalGoldAmount / 1000f:0.#}k";
+        }
+        else
+        {
+            totalGoldVaultText.text = $"{totalGoldAmount}";
+        }
     }
+
 
     public void UpdateFoodUI(int foodAmount)
     {
