@@ -135,12 +135,10 @@ public class UIManager : MonoBehaviour
         fadeOverlay.gameObject.SetActive(false);
 
         Initialize(_gameManager.allSoldierTypes);
-        Debug.Log("soldierCardsUI count after Initialize: " + soldierCardsUI.Count);
     }
     public void Initialize(List<SoldierDataSO> allSoldierTypes)
     {
         soldierTypes = allSoldierTypes;
-        Debug.Log("UIManager Initialize: soldierTypes count: " + soldierTypes.Count);
         CreateSoldierCards();
         UpdateSoldierTypesForEra(currentEra);
     }
@@ -160,14 +158,23 @@ public class UIManager : MonoBehaviour
 
         soldierCardsUI.Clear();
 
-        for (int i = 0; i < soldierTypes.Count; i++) 
+        // Filter soldierTypes by current era
+        var currentEraSoldiers = soldierTypes.Where(s => s.Era == currentEra).ToList();
+
+        if (currentEraSoldiers.Count == 0)
         {
-            Debug.Log($"Creating card for soldier: {soldierTypes[i].SoldierName}");
+            Debug.LogWarning($"No soldier types found for the current era: {currentEra}");
+            return;
+        }
+
+        for (int i = 0; i < currentEraSoldiers.Count; i++)
+        {
             GameObject cardObj = Instantiate(soldierCardPrefab, soldiersContainer);
             SoldierCardUI soldierCardUI = cardObj.GetComponent<SoldierCardUI>();
             if (soldierCardUI != null)
             {
                 soldierCardsUI.Add(soldierCardUI);
+                soldierCardUI.Setup(currentEraSoldiers[i], currentEraSoldiers[i].IsUnlocked, () => UnlockSoldierType(i));
             }
             else
             {
@@ -175,6 +182,7 @@ public class UIManager : MonoBehaviour
             }
         }
     }
+
     
     public void UpdateUpgradeButtonsUI()
     {
