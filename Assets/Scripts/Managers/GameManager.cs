@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -30,7 +29,6 @@ public class GameManager : MonoBehaviour
     {
         DIContainer.Instance.Register(this);
         _soldierSpawner = new SoldierSpawner(playerSpawnArea, enemySpawnArea);
-
     }
 
     private void Start()
@@ -38,21 +36,26 @@ public class GameManager : MonoBehaviour
         _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
         _uiManager = DIContainer.Instance.Resolve<UIManager>();
         _battleManager = DIContainer.Instance.Resolve<BattleManager>();
-        
+
         if (allSoldierTypes.Count > 0)
         {
             allSoldierTypes[0].IsUnlocked = true;
         }
-        
+
+        Debug.Log("GameManager Start: allSoldierTypes count: " + allSoldierTypes.Count);
+
         _battleManager.SetSoldierSpawner(_soldierSpawner);
-        
+
         _uiManager.UpdateGoldUI(_resourceManager.Gold);
         _uiManager.UpdateFoodUI(_resourceManager.Food);
         _uiManager.UpdateTotalGoldUI(_resourceManager.TotalGold);
-        _uiManager.Initialize(allSoldierTypes);
-        
+
+        Debug.Log("Calling UIManager.Initialize");
+        _uiManager.Initialize(allSoldierTypes); // Ensure this is called after allSoldierTypes is populated
+
         gameOverPanel.SetActive(false);
     }
+
 
     private void Update()
     {

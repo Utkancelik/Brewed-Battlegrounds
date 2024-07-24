@@ -2056,8 +2056,13 @@ MonoBehaviour:
   battleBottomPanel: {fileID: 2040549766}
   upgradePanel: {fileID: 164752866}
   mainButtonsPanel: {fileID: 1082034423}
+  gameOverPanel: {fileID: 1383036766}
+  fadeOverlay: {fileID: 964671900}
   goToBattleButton: {fileID: 402519346}
   upgradeButton: {fileID: 1197292468}
+  closeGameOverPanelButton: {fileID: 187569519}
+  increaseFoodProductionButton: {fileID: 1860651032}
+  increaseBaseHealthButton: {fileID: 1267888492}
   unlockSoldierButtons:
   - {fileID: 0}
   - {fileID: 0}
@@ -2066,18 +2071,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  gameOverPanel: {fileID: 1383036766}
-  closeGameOverPanelButton: {fileID: 187569519}
-  fadeOverlay: {fileID: 964671900}
-  increaseFoodProductionButton: {fileID: 1860651032}
-  increaseBaseHealthButton: {fileID: 1267888492}
+  soldierCardPrefab: {fileID: 6773533416379809704, guid: ba49252813970124095b5bdd17afe6ce, type: 3}
+  soldiersContainer: {fileID: 1132454}
+  soldierCardsUI: []
   foodProductionRateText: {fileID: 1989605222}
   baseHealthText: {fileID: 509328441}
   foodFillingImage: {fileID: 1312042801}
   foodProductionCostText: {fileID: 1731294973}
   baseHealthCostText: {fileID: 880697628}
-  soldierCardPrefab: {fileID: 6773533416379809704, guid: ba49252813970124095b5bdd17afe6ce, type: 3}
-  soldiersContainer: {fileID: 1132454}
 --- !u!1 &780636468
 GameObject:
   m_ObjectHideFlags: 0
@@ -2122,7 +2123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18ba30db2d099034ba954bae86298c60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveData: {fileID: 11400000, guid: 885aab09cdc8aa744985145643d59e9c, type: 2}
+  waveDataSo: {fileID: 11400000, guid: 885aab09cdc8aa744985145643d59e9c, type: 2}
   waveTextDisplayDuration: 5
   waveTextStayAfterSpawn: 1
   battleButtonSlideDuration: 1

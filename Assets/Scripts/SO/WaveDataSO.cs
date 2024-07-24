@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "NewWave", menuName = "Waves/Wave")]
-public class WaveData : ScriptableObject
+public class WaveDataSO : ScriptableObject
 {
     [Serializable]
     public class Group

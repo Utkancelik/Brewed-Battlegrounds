@@ -1,10 +1,9 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
-    [SerializeField] private WaveData waveData;
+    [SerializeField] private WaveDataSO waveDataSo;
     [SerializeField] private float waveTextDisplayDuration = 2f;
     [SerializeField] private float waveTextStayAfterSpawn = 2f;
     [SerializeField] private float battleButtonSlideDuration = 0.5f;
@@ -48,17 +47,17 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator SpawnWaves()
     {
-        int waveCount = waveData.Waves.Count;
+        int waveCount = waveDataSo.Waves.Count;
         for (int i = 0; i < waveCount; i++)
         {
             _uiManager.DisplayWaveText(i == waveCount - 1 ? "Final Wave" : $"Wave {i + 1}");
             yield return new WaitForSeconds(waveTextDisplayDuration);
-            foreach (var group in waveData.Waves[i].Groups)
+            foreach (var group in waveDataSo.Waves[i].Groups)
             {
                 for (int j = 0; j < group.Amount; j++)
                 {
                     _soldierSpawner.SpawnSoldier(group.Soldier.gameObject, true);
-                    yield return new WaitForSeconds(waveData.DelayBetweenUnits);
+                    yield return new WaitForSeconds(waveDataSo.DelayBetweenUnits);
                 }
                 yield return new WaitForSeconds(group.DelayAfterGroup);
             }
@@ -66,7 +65,7 @@ public class BattleManager : MonoBehaviour
             yield return new WaitForSeconds(waveTextStayAfterSpawn);
             if (i < waveCount - 1)
             {
-                yield return new WaitForSeconds(waveData.DelayBetweenWaves);
+                yield return new WaitForSeconds(waveDataSo.DelayBetweenWaves);
             }
         }
     }
