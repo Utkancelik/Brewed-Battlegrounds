@@ -130,7 +130,7 @@ public class ResourceManager : MonoBehaviour
 
     public void LoadUpgrades()
     {
-        foodProductionRate = PlayerPrefs.GetFloat("FoodProductionRate", 0.5f);
+        foodProductionRate = PlayerPrefs.GetFloat("FoodProductionRate", 1f);
         _uiManager.UpdateFoodProductionRateUI(foodProductionRate);
         int savedBaseHealth = PlayerPrefs.GetInt("BaseHealth", _gameManager.PlayerBase.maxHealth);
         _gameManager.PlayerBase.maxHealth = savedBaseHealth;

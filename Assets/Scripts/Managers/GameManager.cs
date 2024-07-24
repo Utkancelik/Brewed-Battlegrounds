@@ -20,7 +20,6 @@ public class GameManager : MonoBehaviour
     private UIManager _uiManager;
     private BattleManager _battleManager;
     
-    
     private int roundGoldEarned;
     private bool isBattleStarted = false;
     private bool isGoldAddedToTotal = false;
@@ -55,7 +54,6 @@ public class GameManager : MonoBehaviour
 
         gameOverPanel.SetActive(false);
     }
-
 
     private void Update()
     {

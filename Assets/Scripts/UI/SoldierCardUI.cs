@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -12,14 +13,32 @@ public class SoldierCardUI : MonoBehaviour
     [SerializeField] private TMP_Text damageText;
     [SerializeField] private TMP_Text healthText;
 
-    public void Setup(SoldierDataSO soldierData, bool isUnlocked, UnityAction unlockAction)
+    private ResourceManager _resourceManager;
+    private SoldierDataSO _soldierData;
+    private UIManager _uiManager;
+
+    public void Setup(SoldierDataSO soldierData, ResourceManager resourceManager, UIManager uiManager)
     {
+        _resourceManager = resourceManager;
+        _soldierData = soldierData;
+        _uiManager = uiManager;
+        
         soldierIcon.sprite = soldierData.SoldierIcon;
         unlockCost.text = $"{soldierData.UnlockCost} Gold";
-        unlockButton.SetActive(!isUnlocked);
-        statsPanel.SetActive(isUnlocked);
+        unlockButton.SetActive(!soldierData.IsUnlocked);
+        statsPanel.SetActive(soldierData.IsUnlocked);
 
-        if (isUnlocked)
+        // Set the color of the unlock cost text based on the player's total gold
+        if (_resourceManager.TotalGold >= soldierData.UnlockCost)
+        {
+            unlockCost.color = Color.green;
+        }
+        else
+        {
+            unlockCost.color = Color.red;
+        }
+
+        if (soldierData.IsUnlocked)
         {
             damageText.text = soldierData.Damage.ToString();
             healthText.text = soldierData.Health.ToString();
@@ -27,6 +46,19 @@ public class SoldierCardUI : MonoBehaviour
 
         var buttonComponent = unlockButton.GetComponent<Button>();
         buttonComponent.onClick.RemoveAllListeners();
-        buttonComponent.onClick.AddListener(unlockAction);
+        buttonComponent.onClick.AddListener(UnlockSoldier);
+    }
+
+    private void UnlockSoldier()
+    {
+        if (_resourceManager.SpendGold(_soldierData.UnlockCost))
+        {
+            _soldierData.IsUnlocked = true;
+            PlayerPrefs.SetInt(_soldierData.SoldierName, 1);
+            PlayerPrefs.Save();
+            unlockButton.SetActive(false);
+            statsPanel.SetActive(true);
+            _uiManager.OnSoldierUnlocked();
+        }
     }
 }

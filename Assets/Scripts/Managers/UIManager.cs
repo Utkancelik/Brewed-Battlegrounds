@@ -158,7 +158,6 @@ public class UIManager : MonoBehaviour
 
         soldierCardsUI.Clear();
 
-        // Filter soldierTypes by current era
         var currentEraSoldiers = soldierTypes.Where(s => s.Era == currentEra).ToList();
 
         if (currentEraSoldiers.Count == 0)
@@ -174,7 +173,7 @@ public class UIManager : MonoBehaviour
             if (soldierCardUI != null)
             {
                 soldierCardsUI.Add(soldierCardUI);
-                soldierCardUI.Setup(currentEraSoldiers[i], currentEraSoldiers[i].IsUnlocked, () => UnlockSoldierType(i));
+                soldierCardUI.Setup(currentEraSoldiers[i], _resourceManager, this);
             }
             else
             {
@@ -182,7 +181,6 @@ public class UIManager : MonoBehaviour
             }
         }
     }
-
     
     public void UpdateUpgradeButtonsUI()
     {
@@ -214,11 +212,10 @@ public class UIManager : MonoBehaviour
                     Debug.LogWarning($"Cost component is not found or inactive for soldier: {soldierType.SoldierName}");
                 }
 
-                soldierCardUI.Setup(soldierType, soldierType.IsUnlocked, () => UnlockSoldierType(i));
+                soldierCardUI.Setup(soldierType, _resourceManager, this);
             }
         }
     }
-
     private void UpdateUpgradeButtonColor(TMP_Text costText, int cost, Button associatedButton)
     {
         if (_resourceManager.TotalGold >= cost)
@@ -396,7 +393,7 @@ public class UIManager : MonoBehaviour
             {
                 SoldierDataSO soldierType = eraSoldierTypes[i];
                 soldierCardsUI[i].gameObject.SetActive(true);
-                soldierCardsUI[i].Setup(soldierType, soldierType.IsUnlocked, () => UnlockSoldierType(i));
+                soldierCardsUI[i].Setup(soldierType, _resourceManager, this);
             }
             else
             {
@@ -503,5 +500,11 @@ public class UIManager : MonoBehaviour
     public Image GetFoodFillingImage()
     {
         return foodFillingImage;
+    }
+    
+    public void OnSoldierUnlocked()
+    {
+        UpdateSoldierTypesForEra(currentEra);
+        CreateUnitButtons(soldierTypes.Where(s => s.Era == currentEra && s.IsUnlocked).ToList());
     }
 }
