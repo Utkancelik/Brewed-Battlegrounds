@@ -16,11 +16,11 @@ MonoBehaviour:
   soldierIcon: {fileID: 21300000, guid: 9e3e3b9171b05cd44bb85da6d1d3c240, type: 3}
   prefab: {fileID: 1377341517561657481, guid: 86a651fd2ad66944cbfc516cb4a892fe, type: 3}
   isUnlocked: 0
-  unlockCost: 10
+  unlockCost: 20
   era: 1
   foodCost: 10
   health: 200
-  speed: 0.1
-  attackRange: 0.6
+  speed: 0.15
+  attackRange: 0.5
   detectRange: 2
   damage: 40

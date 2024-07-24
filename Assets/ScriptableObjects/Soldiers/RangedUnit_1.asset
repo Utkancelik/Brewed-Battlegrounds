@@ -15,8 +15,8 @@ MonoBehaviour:
   soldierName: Archer
   soldierIcon: {fileID: 21300000, guid: a172bf00c5bfc644eadfe26938094f64, type: 3}
   prefab: {fileID: 1377341517561657481, guid: 9d12d1dbd694a6f4390562ab936b30c2, type: 3}
-  isUnlocked: 1
-  unlockCost: 1
+  isUnlocked: 0
+  unlockCost: 5
   era: 1
   foodCost: 8
   health: 50

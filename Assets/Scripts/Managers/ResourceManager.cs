@@ -106,7 +106,7 @@ public class ResourceManager : MonoBehaviour
     {
         if (SpendGold(foodProductionUpgradeCost))
         {
-            foodProductionRate += 0.25f;
+            foodProductionRate += 0.1f;
             _uiManager.UpdateFoodProductionRateUI(foodProductionRate);
             PlayerPrefs.SetFloat("FoodProductionRate", foodProductionRate);
             PlayerPrefs.Save();
@@ -130,7 +130,7 @@ public class ResourceManager : MonoBehaviour
 
     public void LoadUpgrades()
     {
-        foodProductionRate = PlayerPrefs.GetFloat("FoodProductionRate", 1f);
+        foodProductionRate = PlayerPrefs.GetFloat("FoodProductionRate", .5f);
         _uiManager.UpdateFoodProductionRateUI(foodProductionRate);
         int savedBaseHealth = PlayerPrefs.GetInt("BaseHealth", _gameManager.PlayerBase.maxHealth);
         _gameManager.PlayerBase.maxHealth = savedBaseHealth;

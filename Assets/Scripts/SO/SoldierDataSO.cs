@@ -31,10 +31,5 @@ public class SoldierDataSO : ScriptableObject
     public float AttackRange => attackRange;
     public float DetectRange => detectRange;
     public int Damage => damage;
-
-    public void Save()
-    {
-        PlayerPrefs.SetInt(SoldierName, IsUnlocked ? 1 : 0);
-    }
 }
 

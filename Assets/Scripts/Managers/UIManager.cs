@@ -22,6 +22,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject unitButtonPrefab;
     [SerializeField] private Transform unitButtonContainer;
     [SerializeField] private TMP_Text statusText;
+    [SerializeField] private TMP_Text versionText;
     public Button StartBattleButton => startBattleButton;
     
     [Header("Panel Elements")]
@@ -78,6 +79,8 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         DIContainer.Instance.Register(this);
+        versionText.text = $"V{Application.version}";
+        Debug.Log(versionText.text);
     }
 
     

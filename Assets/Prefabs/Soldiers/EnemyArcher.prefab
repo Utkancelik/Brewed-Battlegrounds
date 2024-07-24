@@ -221,7 +221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 9284b73581a922148b5e9e2d0002233d, type: 2}
-  health: 100
+  health: 50
   isEnemy: 1
   deathEffectPrefab: {fileID: 1055890062764184040, guid: 8eb6419de7ebec04a810c8d635dad59d, type: 3}
   bloodTracePrefabs:
