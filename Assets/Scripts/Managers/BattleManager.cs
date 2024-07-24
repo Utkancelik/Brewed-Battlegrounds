@@ -14,12 +14,14 @@ public class BattleManager : MonoBehaviour
     private GameManager _gameManager;
     private ResourceManager _resourceManager;
 
-    private void Awake()
-    {   
-        DIContainer.Instance.Register(this);
-    }
+    private void Awake() => DIContainer.Instance.Register(this);
 
     private void Start()
+    {
+        ResolveDependencies();
+    }
+
+    private void ResolveDependencies()
     {
         _soldierSpawner = DIContainer.Instance.Resolve<SoldierSpawner>();
         _uiManager = DIContainer.Instance.Resolve<UIManager>();
@@ -27,15 +29,8 @@ public class BattleManager : MonoBehaviour
         _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
     }
 
-    private void OnEnable()
-    {
-        UIManager.OnStartBattle += StartBattle;
-    }
-
-    private void OnDisable()
-    {
-        UIManager.OnStartBattle -= StartBattle;
-    }
+    private void OnEnable() => UIManager.OnStartBattle += StartBattle;
+    private void OnDisable() => UIManager.OnStartBattle -= StartBattle;
 
     private void StartBattle()
     {
@@ -47,11 +42,11 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator SpawnWaves()
     {
-        int waveCount = waveDataSo.Waves.Count;
-        for (int i = 0; i < waveCount; i++)
+        for (int i = 0; i < waveDataSo.Waves.Count; i++)
         {
-            _uiManager.DisplayWaveText(i == waveCount - 1 ? "Final Wave" : $"Wave {i + 1}");
+            _uiManager.DisplayWaveText(i == waveDataSo.Waves.Count - 1 ? "Final Wave" : $"Wave {i + 1}");
             yield return new WaitForSeconds(waveTextDisplayDuration);
+
             foreach (var group in waveDataSo.Waves[i].Groups)
             {
                 for (int j = 0; j < group.Amount; j++)
@@ -63,7 +58,7 @@ public class BattleManager : MonoBehaviour
             }
 
             yield return new WaitForSeconds(waveTextStayAfterSpawn);
-            if (i < waveCount - 1)
+            if (i < waveDataSo.Waves.Count - 1)
             {
                 yield return new WaitForSeconds(waveDataSo.DelayBetweenWaves);
             }
@@ -87,10 +82,7 @@ public class BattleManager : MonoBehaviour
         _uiManager.StartBattleButton.gameObject.SetActive(false);
     }
 
-    public void SetSoldierSpawner(SoldierSpawner spawner)
-    {
-        _soldierSpawner = spawner;
-    }
+    public void SetSoldierSpawner(SoldierSpawner spawner) => _soldierSpawner = spawner;
 
     public void StopSpawning()
     {

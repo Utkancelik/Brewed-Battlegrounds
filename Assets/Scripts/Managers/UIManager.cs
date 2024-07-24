@@ -37,10 +37,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button closeGameOverPanelButton;
     [SerializeField] private Button increaseFoodProductionButton;
     [SerializeField] private Button increaseBaseHealthButton;
-    [SerializeField] private List<Button> unlockSoldierButtons;
 
     [Header("Soldier Card Elements")]
-    [SerializeField] private List<Image> soldierCards;
     [SerializeField] private GameObject soldierCardPrefab;
     [SerializeField] private Transform soldiersContainer;
     [SerializeField] private List<SoldierCardUI> soldierCardsUI = new List<SoldierCardUI>();
@@ -78,11 +76,7 @@ public class UIManager : MonoBehaviour
     
     private void Awake()
     {
-        Debug.Log("UIManager Awake");
         DIContainer.Instance.Register(this);
-
-        unlockSoldierButtons = new List<Button>();
-        soldierCards = new List<Image>();
     }
 
     
@@ -134,12 +128,6 @@ public class UIManager : MonoBehaviour
             soldierType.IsUnlocked = PlayerPrefs.GetInt(soldierType.SoldierName, 0) == 1;
         }
 
-        for (int i = 0; i < unlockSoldierButtons.Count; i++)
-        {
-            int index = i;
-            unlockSoldierButtons[i].onClick.AddListener(() => UnlockSoldierType(index));
-        }
-
         EnterBattleScene();
         _resourceManager.LoadUpgrades();
 
@@ -159,8 +147,6 @@ public class UIManager : MonoBehaviour
 
     private void CreateSoldierCards()
     {
-        Debug.Log("Creating soldier cards...");
-    
         if (soldierCardPrefab == null)
         {
             Debug.LogError("SoldierCardPrefab is not assigned in the inspector.");
@@ -182,14 +168,12 @@ public class UIManager : MonoBehaviour
             if (soldierCardUI != null)
             {
                 soldierCardsUI.Add(soldierCardUI);
-                Debug.Log("Added SoldierCardUI to list.");
             }
             else
             {
                 Debug.LogError("SoldierCardUI component is missing on the instantiated prefab.");
             }
         }
-        Debug.Log($"Total soldier cards created: {soldierCardsUI.Count}");
     }
     
     public void UpdateUpgradeButtonsUI()
@@ -205,10 +189,10 @@ public class UIManager : MonoBehaviour
 
         for (int i = 0; i < soldierCardsUI.Count; i++)
         {
-            if (i < _gameManager.allSoldierTypes.Count)
+            if (i < soldierTypes.Count)
             {
                 SoldierCardUI soldierCardUI = soldierCardsUI[i];
-                SoldierDataSO soldierType = _gameManager.allSoldierTypes[i];
+                SoldierDataSO soldierType = soldierTypes[i];
                 Transform costTransform = soldierCardUI.transform.Find("Cost");
 
                 if (costTransform != null && costTransform.gameObject.activeSelf)
@@ -292,6 +276,8 @@ public class UIManager : MonoBehaviour
         battleBottomPanel.SetActive(false);
         upgradePanel.SetActive(true);
         UpdateSoldierTypesForEra(currentEra);
+        UpdateUpgradePanel(soldierTypes);
+        UpdateUpgradeButtonsUI();
     }
 
     public void StartBattle()
@@ -429,7 +415,32 @@ public class UIManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         yield return StartCoroutine(FadeFromBlack());
     }
-    
+
+    private IEnumerator Fade(float startAlpha, float endAlpha, float duration, Action postFadeAction = null)
+    {
+        fadeOverlay.gameObject.SetActive(true);
+        Color color = fadeOverlay.color;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            color.a = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / duration);
+            fadeOverlay.color = color;
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        color.a = endAlpha;
+        fadeOverlay.color = color;
+
+        postFadeAction?.Invoke();
+
+        if (endAlpha == 0f)
+        {
+            fadeOverlay.gameObject.SetActive(false);
+        }
+    }
+
     public void FadeAndReload()
     {
         StartCoroutine(FadeToBlackAndReload());
@@ -437,50 +448,23 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator FadeToBlackAndReload()
     {
-        fadeOverlay.gameObject.SetActive(true);
-        Color color = fadeOverlay.color;
-        float fadeDuration = 5f; // Extend duration for a longer fade
-        float elapsedTime = 0f;
-
-        while (elapsedTime < fadeDuration)
+        yield return Fade(0f, 1f, 5f, () =>
         {
-            color.a = Mathf.Lerp(0, 1, elapsedTime / fadeDuration);
-            fadeOverlay.color = color;
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        color.a = 1f;
-        fadeOverlay.color = color;
-
-        _resourceManager.SaveTotalGold();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            _resourceManager.SaveTotalGold();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        });
     }
 
     private IEnumerator FadeToBlack()
     {
-        fadeOverlay.gameObject.SetActive(true);
-        Color color = fadeOverlay.color;
-        while (color.a < 1f)
-        {
-            color.a += Time.deltaTime;
-            fadeOverlay.color = color;
-            yield return null;
-        }
+        yield return Fade(0f, 1f, 1f);
     }
 
     private IEnumerator FadeFromBlack()
     {
-        Color color = fadeOverlay.color;
-        while (color.a > 0f)
-        {
-            color.a -= Time.deltaTime;
-            fadeOverlay.color = color;
-            yield return null;
-        }
-        fadeOverlay.gameObject.SetActive(false);
+        yield return Fade(1f, 0f, 1f);
     }
-
+    
     private IEnumerator SlideUIElement(GameObject uiElement, int isDown)
     {
         RectTransform buttonRectTransform = uiElement.GetComponent<RectTransform>();
@@ -506,29 +490,6 @@ public class UIManager : MonoBehaviour
         uiElement.gameObject.SetActive(false);
         uiElement.GetComponent<RectTransform>().anchoredPosition = originalPosition;
         canvasGroupAlpha.alpha = 1f;
-    }
-
-    public IEnumerator FillFoodImage(Image foodImage, float duration)
-    {
-        if (isFoodProcessed)
-        {
-            yield break;
-        }
-
-        isFoodProcessed = true;
-        foodImage.fillAmount = 0f; // Reset fill amount at the start
-        float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
-        {
-            foodImage.fillAmount = Mathf.Lerp(0, 1,  duration);
-            elapsedTime += .1f;
-            yield return new WaitForSeconds(0.1f);
-        }
-
-        foodImage.fillAmount = 1f;
-        isFoodProcessed = false;
-
     }
 
     public Image GetFoodFillingImage()

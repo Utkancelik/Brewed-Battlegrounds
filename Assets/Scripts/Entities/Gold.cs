@@ -10,10 +10,7 @@ public class Gold : MonoBehaviour
     private ResourceManager _resourceManager;
     private UIManager _uiManager;
 
-    private void Awake()
-    {
-        DIContainer.Instance.Register(this);
-    }
+    private void Awake() => DIContainer.Instance.Register(this);
 
     private void Start()
     {
@@ -24,16 +21,7 @@ public class Gold : MonoBehaviour
     public void Initialize(Vector2 initialDirection)
     {
         direction = initialDirection;
-        
-        if (_uiManager == null)
-        {
-            StartCoroutine(RetryInitialize());
-        }
-        else
-        {
-            screenTargetPosition = _uiManager.GetGoldUIPosition();
-            StartCoroutine(MoveToRandomPositionThenUI());
-        }
+        StartCoroutine(_uiManager == null ? RetryInitialize() : MoveToRandomPositionThenUI());
     }
 
     private IEnumerator RetryInitialize()
@@ -41,7 +29,7 @@ public class Gold : MonoBehaviour
         while (_uiManager == null)
         {
             _uiManager = DIContainer.Instance.Resolve<UIManager>();
-            yield return null; // Wait for the next frame
+            yield return null;
         }
 
         screenTargetPosition = _uiManager.GetGoldUIPosition();
@@ -68,7 +56,6 @@ public class Gold : MonoBehaviour
         }
 
         yield return new WaitForSeconds(1f);
-
         StartCoroutine(MoveToUI());
     }
 
@@ -85,7 +72,6 @@ public class Gold : MonoBehaviour
 
         _resourceManager.AddRoundGold(1);
         _uiManager.UpdateRoundGoldUI(_resourceManager.RoundGold);
-
         Destroy(gameObject);
     }
 }
