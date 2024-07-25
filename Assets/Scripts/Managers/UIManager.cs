@@ -31,6 +31,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject upgradePanel;
     [SerializeField] private GameObject mainButtonsPanel;
     [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject pausePanel;
     [SerializeField] private Image fadeOverlay;
     
     [Header("Button Elements")]
@@ -39,6 +40,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button closeGameOverPanelButton;
     [SerializeField] private Button increaseFoodProductionButton;
     [SerializeField] private Button increaseBaseHealthButton;
+    [SerializeField] private Button pauseButton;
+    [SerializeField] private Button resumeButton;
 
     [Header("Soldier Card Elements")]
     [SerializeField] private GameObject soldierCardPrefab;
@@ -114,7 +117,9 @@ public class UIManager : MonoBehaviour
         upgradeButton.onClick.AddListener(OpenUpgradePanel);
         startBattleButton.onClick.AddListener(() => OnStartBattle?.Invoke());
         closeGameOverPanelButton.onClick.AddListener(CloseGameOverPanel);
-
+        pauseButton.onClick.AddListener(PauseGame);
+        resumeButton.onClick.AddListener(ResumeGame);
+        
         UpdateFoodProductionRateUI(_resourceManager.foodProductionRate);
         UpdateBaseHealthUI(_gameManager.PlayerBase.Health);
         UpdateGoldUI(_resourceManager.Gold);
@@ -278,6 +283,18 @@ public class UIManager : MonoBehaviour
         mainButtonsPanel.SetActive(true);
         battleBottomPanel.SetActive(false);
         upgradePanel.SetActive(false);
+        pausePanel.SetActive(false);
+    }
+    private void PauseGame()
+    {
+        pausePanel.SetActive(true);
+        Time.timeScale = 0f; // Pause the game
+    }
+
+    private void ResumeGame()
+    {
+        pausePanel.SetActive(false);
+        Time.timeScale = 1f; // Resume the game
     }
 
     public void OpenUpgradePanel()
@@ -421,7 +438,7 @@ public class UIManager : MonoBehaviour
         UpdateGameOverRoundGoldUI(roundGoldEarned);
         gameOverPanel.SetActive(true);
     }
-
+    
     public void CloseGameOverPanel()
     {
         StartCoroutine(RestartSceneWithFade());
