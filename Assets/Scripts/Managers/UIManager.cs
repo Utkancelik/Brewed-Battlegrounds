@@ -429,18 +429,18 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator RestartSceneWithFade()
     {
-        yield return StartCoroutine(FadeToBlack());
+        yield return StartCoroutine(Fade(0f, 1f, 1f));
         _resourceManager.AddRoundGoldToTotal();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        yield return StartCoroutine(FadeFromBlack());
+        yield return StartCoroutine(Fade(1f, 0f, 1f));
     }
 
-    private IEnumerator Fade(float startAlpha, float endAlpha, float duration, Action postFadeAction = null)
+    private IEnumerator Fade(float startAlpha, float endAlpha, float duration, Action postFadeAction = null, bool reloadScene = false)
     {
         fadeOverlay.gameObject.SetActive(true);
         Color color = fadeOverlay.color;
         float elapsedTime = 0f;
-
+    
         while (elapsedTime < duration)
         {
             color.a = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / duration);
@@ -448,40 +448,26 @@ public class UIManager : MonoBehaviour
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-
+    
         color.a = endAlpha;
         fadeOverlay.color = color;
-
+    
         postFadeAction?.Invoke();
-
-        if (endAlpha == 0f)
+    
+        if (reloadScene)
+        {
+            _resourceManager.SaveTotalGold();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        else if (endAlpha == 0f)
         {
             fadeOverlay.gameObject.SetActive(false);
         }
     }
-
+    
     public void FadeAndReload()
     {
-        StartCoroutine(FadeToBlackAndReload());
-    }
-
-    private IEnumerator FadeToBlackAndReload()
-    {
-        yield return Fade(0f, 1f, 5f, () =>
-        {
-            _resourceManager.SaveTotalGold();
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        });
-    }
-
-    private IEnumerator FadeToBlack()
-    {
-        yield return Fade(0f, 1f, 1f);
-    }
-
-    private IEnumerator FadeFromBlack()
-    {
-        yield return Fade(1f, 0f, 1f);
+        StartCoroutine(Fade(0f, 1f, 5f, null, true));
     }
     
     private IEnumerator SlideUIElement(GameObject uiElement, int slideAmount,int isDown)
