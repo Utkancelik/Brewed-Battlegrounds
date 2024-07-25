@@ -301,7 +301,7 @@ public class UIManager : MonoBehaviour
     {
         waveTextObject.GetComponentInChildren<TMP_Text>().text = text;
         waveTextObject.SetActive(true);
-        StartCoroutine(SlideUIElement(waveTextObject.gameObject, -1));
+        StartCoroutine(SlideUIElement(waveTextObject.gameObject,500, -1));
     }
 
     public void UpdateGoldUI(int goldAmount)
@@ -355,7 +355,7 @@ public class UIManager : MonoBehaviour
             unitButtons.Add(button);
 
             TMP_Text[] texts = buttonObj.GetComponentsInChildren<TMP_Text>();
-            Image unitImage = buttonObj.transform.Find("UnitImage").GetComponent<Image>();
+            Image unitImage = buttonObj.transform.Find("Frame_Unit/UnitImage").GetComponent<Image>();
             Image unitCostImage = buttonObj.transform.Find("UnitCostImage").GetComponent<Image>();
             TMP_Text unitCostText = unitCostImage.transform.Find("UnitCostText").GetComponent<TMP_Text>();
 
@@ -484,12 +484,12 @@ public class UIManager : MonoBehaviour
         yield return Fade(1f, 0f, 1f);
     }
     
-    private IEnumerator SlideUIElement(GameObject uiElement, int isDown)
+    private IEnumerator SlideUIElement(GameObject uiElement, int slideAmount,int isDown)
     {
         RectTransform buttonRectTransform = uiElement.GetComponent<RectTransform>();
         float elapsedTime = 0f;
         Vector2 originalPosition = buttonRectTransform.anchoredPosition;
-        Vector2 targetPosition = new Vector2(originalPosition.x, originalPosition.y - 1000 * isDown);
+        Vector2 targetPosition = new Vector2(originalPosition.x, originalPosition.y - slideAmount * isDown);
 
         while (elapsedTime < 5f)
         {
