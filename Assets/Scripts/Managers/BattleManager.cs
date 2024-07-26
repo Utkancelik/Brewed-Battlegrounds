@@ -14,20 +14,14 @@ public class BattleManager : MonoBehaviour
     private GameManager _gameManager;
     private ResourceManager _resourceManager;
 
-    private void Awake() => DIContainer.Instance.Register(this);
 
     private void Start()
     {
-        ResolveDependencies();
+        _uiManager = FindObjectOfType<UIManager>();
+        _gameManager = FindObjectOfType<GameManager>();
+        _resourceManager = FindObjectOfType<ResourceManager>();
     }
-
-    private void ResolveDependencies()
-    {
-        _soldierSpawner = DIContainer.Instance.Resolve<SoldierSpawner>();
-        _uiManager = DIContainer.Instance.Resolve<UIManager>();
-        _gameManager = DIContainer.Instance.Resolve<GameManager>();
-        _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
-    }
+    
 
     private void OnEnable() => UIManager.OnStartBattle += StartBattle;
     private void OnDisable() => UIManager.OnStartBattle -= StartBattle;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public class DIContainer
 {
     private static DIContainer _instance;
@@ -19,3 +20,4 @@ public class DIContainer
         return (T)_services[typeof(T)];
     }
 }
+*/

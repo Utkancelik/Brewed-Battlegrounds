@@ -52,8 +52,6 @@ public class Soldier : IDamageable
 
     private void Awake()
     {
-        DIContainer.Instance.Register(this);
-
         animator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
         attackBehavior = GetComponent<IAttackBehavior>();
@@ -84,8 +82,8 @@ public class Soldier : IDamageable
         SetNewDirection();
         lastPosition = transform.position;
 
-        _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
-        _gameManager = DIContainer.Instance.Resolve<GameManager>();
+        _resourceManager = FindObjectOfType<ResourceManager>();
+        _gameManager = FindObjectOfType<GameManager>();
     }
 
     private void Update()

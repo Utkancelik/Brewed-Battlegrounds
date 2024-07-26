@@ -10,7 +10,8 @@ public class Base : IDamageable
     [SerializeField] private GameObject destructionEffectPosition;
 
     public int maxHealth;
-
+    
+    public event Action<int> OnHealthChanged;
     public override int Health
     {
         get => health;
@@ -18,6 +19,7 @@ public class Base : IDamageable
         {
             health = value;
             healthBar.SetHealth(health, maxHealth);
+            OnHealthChanged?.Invoke(health);
         }
     }
 
@@ -30,14 +32,13 @@ public class Base : IDamageable
     private GameManager _gameManager;
     private void Awake()
     {
-        DIContainer.Instance.Register(this);
         maxHealth = health;
         InitializeHealthBar();
     }
 
     private void Start()
     {
-        _gameManager = DIContainer.Instance.Resolve<GameManager>();
+        _gameManager = FindObjectOfType<GameManager>();
     }
 
     private void InitializeHealthBar()
@@ -64,6 +65,4 @@ public class Base : IDamageable
         _gameManager.CheckGameOver();
         Destroy(gameObject);
     }
-
-
 }

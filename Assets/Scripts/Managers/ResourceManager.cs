@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,34 +26,34 @@ public class ResourceManager : MonoBehaviour
     private UIManager _uiManager;
     private GameManager _gameManager;
     
-
-    private void Awake()
-    {
-        DIContainer.Instance.Register(this);
-    }
-
+    public event Action<int> OnGoldChanged;
+    public event Action<int> OnFoodChanged;
+    public event Action<int> OnTotalGoldChanged;
+    public event Action<int> OnRoundGoldChanged;
+    public event Action<float> OnFoodProductionRateChanged;
+    
     private void Start()
     {
-        _uiManager = DIContainer.Instance.Resolve<UIManager>();
-        _gameManager = DIContainer.Instance.Resolve<GameManager>();
-        
+        _uiManager = FindObjectOfType<UIManager>();
+        _gameManager = FindObjectOfType<GameManager>();
+
         LoadTotalGold();
         _uiManager.UpdateGoldUI(gold);
         _uiManager.UpdateFoodUI(food);
         _uiManager.UpdateTotalGoldUI(totalGold);
         foodFillingImage = _uiManager.GetFoodFillingImage();
     }
+
     public void AddRoundGold(int amount)
     {
         roundGold += amount;
-        _uiManager.UpdateRoundGoldUI(roundGold);
+        OnRoundGoldChanged?.Invoke(roundGold);
     }
 
     public void AddRoundGoldToTotal()
     {
         totalGold += roundGold;
-        _uiManager.UpdateTotalGoldUI(totalGold);
-        SaveTotalGold();
+        OnTotalGoldChanged?.Invoke(totalGold);
     }
 
     public void SaveTotalGold()
@@ -71,8 +72,7 @@ public class ResourceManager : MonoBehaviour
         if (totalGold >= amount)
         {
             totalGold -= amount;
-            _uiManager.UpdateTotalGoldUI(totalGold);
-            SaveTotalGold();
+            OnTotalGoldChanged?.Invoke(totalGold);
             return true;
         }
         return false;
@@ -81,7 +81,7 @@ public class ResourceManager : MonoBehaviour
     public void SpendFood(int amount)
     {
         food -= amount;
-        _uiManager.UpdateFoodUI(food);
+        OnFoodChanged?.Invoke(food);
     }
 
     public void ProduceResources()
@@ -93,7 +93,7 @@ public class ResourceManager : MonoBehaviour
         {
             food += Mathf.FloorToInt(foodProductionTimer * foodProductionRate);
             foodProductionTimer = 0f;
-            _uiManager.UpdateFoodUI(food);
+            OnFoodChanged?.Invoke(food);
         }
     }
 
@@ -107,10 +107,7 @@ public class ResourceManager : MonoBehaviour
         if (SpendGold(foodProductionUpgradeCost))
         {
             foodProductionRate += 0.1f;
-            _uiManager.UpdateFoodProductionRateUI(foodProductionRate);
-            PlayerPrefs.SetFloat("FoodProductionRate", foodProductionRate);
-            PlayerPrefs.Save();
-            _uiManager.UpdateUpgradeButtonsUI();
+            OnFoodProductionRateChanged?.Invoke(foodProductionRate);
         }
     }
 

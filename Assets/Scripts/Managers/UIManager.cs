@@ -66,32 +66,28 @@ public class UIManager : MonoBehaviour
 
     [Header("Unit Buttons")]
     private List<Button> unitButtons = new List<Button>();
-
+    private void Awake()
+    {
+        versionText.text = $"V{Application.version}";
+        
+        _resourceManager = FindObjectOfType<ResourceManager>();
+        _gameManager = FindObjectOfType<GameManager>();
+    }
     private void OnEnable()
     {
         OnStartBattle += StartBattle;
         EraManager.OnEraChanged += UpdateSoldierTypesForEra;
+
+        _resourceManager.OnFoodProductionRateChanged += UpdateFoodProductionRateUI;
+        _resourceManager.OnGoldChanged += UpdateGoldUI;
+        _resourceManager.OnFoodChanged += UpdateFoodUI;
+        _resourceManager.OnTotalGoldChanged += UpdateTotalGoldUI;
+        _resourceManager.OnRoundGoldChanged += UpdateRoundGoldUI;
+        _gameManager.PlayerBase.OnHealthChanged += UpdateBaseHealthUI;
     }
 
-    private void OnDisable()
-    {
-        OnStartBattle -= StartBattle;
-        EraManager.OnEraChanged -= UpdateSoldierTypesForEra;
-    }
-    
-    private void Awake()
-    {
-        DIContainer.Instance.Register(this);
-        versionText.text = $"V{Application.version}";
-        Debug.Log(versionText.text);
-    }
-
-    
     private void Start()
     {
-        _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
-        _gameManager = DIContainer.Instance.Resolve<GameManager>();
-
         foodProductionCostText.text = _resourceManager.foodProductionUpgradeCost.ToString();
         baseHealthCostText.text = _resourceManager.baseHealthUpgradeCost.ToString();
 
@@ -119,7 +115,7 @@ public class UIManager : MonoBehaviour
         closeGameOverPanelButton.onClick.AddListener(CloseGameOverPanel);
         pauseButton.onClick.AddListener(PauseGame);
         resumeButton.onClick.AddListener(ResumeGame);
-        
+
         UpdateFoodProductionRateUI(_resourceManager.foodProductionRate);
         UpdateBaseHealthUI(_gameManager.PlayerBase.Health);
         UpdateGoldUI(_resourceManager.Gold);
@@ -145,6 +141,27 @@ public class UIManager : MonoBehaviour
 
         Initialize(_gameManager.allSoldierTypes);
     }
+
+    private void OnDisable()
+    {
+        OnStartBattle -= StartBattle;
+        EraManager.OnEraChanged -= UpdateSoldierTypesForEra;
+
+        if (_resourceManager != null)
+        {
+            _resourceManager.OnFoodProductionRateChanged -= UpdateFoodProductionRateUI;
+            _resourceManager.OnGoldChanged -= UpdateGoldUI;
+            _resourceManager.OnFoodChanged -= UpdateFoodUI;
+            _resourceManager.OnTotalGoldChanged -= UpdateTotalGoldUI;
+            _resourceManager.OnRoundGoldChanged -= UpdateRoundGoldUI;
+        }
+
+        if (_gameManager != null && _gameManager.PlayerBase != null)
+        {
+            _gameManager.PlayerBase.OnHealthChanged -= UpdateBaseHealthUI;
+        }
+    }
+
     public void Initialize(List<SoldierDataSO> allSoldierTypes)
     {
         soldierTypes = allSoldierTypes;

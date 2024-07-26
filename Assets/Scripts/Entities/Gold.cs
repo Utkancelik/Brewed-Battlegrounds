@@ -9,13 +9,10 @@ public class Gold : MonoBehaviour
 
     private ResourceManager _resourceManager;
     private UIManager _uiManager;
-
-    private void Awake() => DIContainer.Instance.Register(this);
-
     private void Start()
     {
-        _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
-        _uiManager = DIContainer.Instance.Resolve<UIManager>();
+        _resourceManager = FindObjectOfType<ResourceManager>();
+        _uiManager = FindObjectOfType<UIManager>();
     }
 
     public void Initialize(Vector2 initialDirection)
@@ -28,7 +25,7 @@ public class Gold : MonoBehaviour
     {
         while (_uiManager == null)
         {
-            _uiManager = DIContainer.Instance.Resolve<UIManager>();
+            _uiManager = FindObjectOfType<UIManager>();
             yield return null;
         }
 

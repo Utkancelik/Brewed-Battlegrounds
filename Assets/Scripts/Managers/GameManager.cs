@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public static event Action OnBattleStarted;
     public static event Action OnGameOver;
-    
+
     [SerializeField] public Base PlayerBase;
     [SerializeField] public Base EnemyBase;
     [SerializeField] private SpawnArea playerSpawnArea;
@@ -19,22 +19,21 @@ public class GameManager : MonoBehaviour
     private ResourceManager _resourceManager;
     private UIManager _uiManager;
     private BattleManager _battleManager;
-    
+
     private int roundGoldEarned;
     private bool isBattleStarted = false;
     private bool isGoldAddedToTotal = false;
-    
+
     private void Awake()
     {
-        DIContainer.Instance.Register(this);
         _soldierSpawner = new SoldierSpawner(playerSpawnArea, enemySpawnArea);
     }
 
     private void Start()
     {
-        _resourceManager = DIContainer.Instance.Resolve<ResourceManager>();
-        _uiManager = DIContainer.Instance.Resolve<UIManager>();
-        _battleManager = DIContainer.Instance.Resolve<BattleManager>();
+        _resourceManager = FindObjectOfType<ResourceManager>();
+        _uiManager = FindObjectOfType<UIManager>();
+        _battleManager = FindObjectOfType<BattleManager>();
 
         if (allSoldierTypes.Count > 0)
         {
