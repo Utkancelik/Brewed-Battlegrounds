@@ -14,6 +14,7 @@ public class Soldier : IDamageable
 
     private IAttackBehavior attackBehavior;
     private IMoveBehavior moveBehavior;
+    private IDamageable attackTarget;
     private HealthBar healthBar;
     private Animator animator;
     private DamageFlicker damageFlicker;
@@ -25,11 +26,7 @@ public class Soldier : IDamageable
     private Vector3 currentDirection;
     private float directionChangeInterval = 2f;
     private float directionChangeTimer;
-    private IDamageable attackTarget;
-    private Vector3 lastPosition;
-    private float stuckTimer;
-    private float stuckThreshold = 1f;
-
+    
     public IDamageable CurrentTarget { get; set; }
     public SoldierDataSO Data => data;
     public override int Health
@@ -58,16 +55,7 @@ public class Soldier : IDamageable
         moveBehavior = GetComponent<IMoveBehavior>();
         damageFlicker = GetComponent<DamageFlicker>();
 
-        ValidateComponents();
         InitializeHealthBar();
-    }
-
-    private void ValidateComponents()
-    {
-        Debug.Assert(attackBehavior != null, "AttackBehavior not assigned");
-        Debug.Assert(moveBehavior != null, "MoveBehavior not assigned");
-        Debug.Assert(data != null, "Stats not assigned");
-        Debug.Assert(damageFlicker != null, "DamageFlicker not assigned");
     }
 
     private void InitializeHealthBar()
@@ -80,7 +68,6 @@ public class Soldier : IDamageable
     private void Start()
     {
         SetNewDirection();
-        lastPosition = transform.position;
 
         _resourceManager = FindObjectOfType<ResourceManager>();
         _gameManager = FindObjectOfType<GameManager>();
@@ -106,8 +93,6 @@ public class Soldier : IDamageable
         {
             SetNewDirection();
         }
-
-        CheckIfStuck();
     }
 
     private void EngageTarget()
@@ -148,29 +133,23 @@ public class Soldier : IDamageable
         DetectTargets();
         if (CurrentTarget == null)
         {
-            MoveDiagonally();
+            MoveTowards(transform.position + currentDirection); // Patrol without moving diagonally
             isAttacking = false;
         }
     }
 
     private void MoveTowards(Vector3 targetPosition)
     {
-        moveBehavior.Move(rb, targetPosition, data.Speed);
-    }
-
-    private void MoveDiagonally()
-    {
         if (!isAttacking)
         {
-            moveBehavior?.Move(rb, currentDirection, data.Speed);
+            moveBehavior.Move(rb, targetPosition, data.Speed);
         }
     }
 
     private void SetNewDirection()
     {
-        currentDirection = new Vector2(isEnemy ? -1 : 1, Random.Range(-0.4f, 0.4f)).normalized;
+        currentDirection = new Vector2(isEnemy ? -1 : 1, 0).normalized; // Set new direction without diagonal
         directionChangeTimer = directionChangeInterval;
-        MoveDiagonally();
     }
 
     private void StopMovement()
@@ -218,24 +197,6 @@ public class Soldier : IDamageable
         Vector3 newScale = transform.localScale;
         newScale.x = Mathf.Abs(newScale.x) * (CurrentTarget.transform.position.x > transform.position.x ? 1 : -1);
         transform.localScale = newScale;
-    }
-
-    private void CheckIfStuck()
-    {
-        if (Vector3.Distance(transform.position, lastPosition) < 0.1f)
-        {
-            stuckTimer += Time.deltaTime;
-            if (stuckTimer > stuckThreshold)
-            {
-                SetNewDirection();
-                stuckTimer = 0;
-            }
-        }
-        else
-        {
-            stuckTimer = 0;
-        }
-        lastPosition = transform.position;
     }
 
     public void TriggerAttackAnimation()
