@@ -1,10 +1,7 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Soldier : IDamageable
 {
-    [FormerlySerializedAs("stats")]
-    [FormerlySerializedAs("statsSo")]
     [Header("References")]
     [SerializeField] private SoldierDataSO data;
     [SerializeField] private int health;
@@ -12,22 +9,23 @@ public class Soldier : IDamageable
     [SerializeField] private GameObject deathEffectPrefab;
     [SerializeField] private GameObject[] bloodTracePrefabs;
 
-    private IAttackBehavior attackBehavior;
-    private IMoveBehavior moveBehavior;
-    private IDamageable attackTarget;
-    private HealthBar healthBar;
-    private Animator animator;
-    private DamageFlicker damageFlicker;
-    private Rigidbody2D rb;
-    private bool isAttacking;
-    private bool isDead;
-    private float goldDropCooldown = 0.5f; // Cooldown in seconds
-    private float goldDropTimer = 0;
-    private Vector3 currentDirection;
-    private float directionChangeInterval = 2f;
-    private float directionChangeTimer;
-    
-    public IDamageable CurrentTarget { get; set; }
+    private ResourceManager _resourceManager;
+    private GameManager _gameManager;
+
+    private IAttackBehavior _attackBehavior;
+    private IMoveBehavior _moveBehavior;
+    private IDamageable _attackTarget;
+    private HealthBar _healthBar;
+    private Animator _animator;
+    private DamageFlicker _damageFlicker;
+    private Rigidbody2D _rb;
+    private bool _isAttacking;
+    private bool _isDead;
+    private const float GoldDropCooldown = 0.5f; // Cooldown in seconds
+    private float _goldDropTimer = 0;
+    private Vector3 _currentDirection;
+
+    public IDamageable CurrentTarget { get; private set; }
     public SoldierDataSO Data => data;
     public override int Health
     {
@@ -35,7 +33,7 @@ public class Soldier : IDamageable
         set
         {
             health = value;
-            healthBar.SetHealth(health, data.Health);
+            _healthBar.SetHealth(health, data.Health);
         }
     }
     public override bool IsEnemy
@@ -44,38 +42,35 @@ public class Soldier : IDamageable
         set => isEnemy = value;
     }
 
-    private ResourceManager _resourceManager;
-    private GameManager _gameManager;
+    private static readonly int Attack = Animator.StringToHash("Attack");
 
     private void Awake()
     {
-        animator = GetComponentInChildren<Animator>();
-        rb = GetComponent<Rigidbody2D>();
-        attackBehavior = GetComponent<IAttackBehavior>();
-        moveBehavior = GetComponent<IMoveBehavior>();
-        damageFlicker = GetComponent<DamageFlicker>();
+        _animator = GetComponentInChildren<Animator>();
+        _rb = GetComponent<Rigidbody2D>();
+        _attackBehavior = GetComponent<IAttackBehavior>();
+        _moveBehavior = GetComponent<IMoveBehavior>();
+        _damageFlicker = GetComponent<DamageFlicker>();
 
         InitializeHealthBar();
     }
 
     private void InitializeHealthBar()
     {
-        healthBar = GetComponentInChildren<HealthBar>();
-        healthBar.Initialize(transform, data.Health);
-        healthBar.SetHealth(health, data.Health);
+        _healthBar = GetComponentInChildren<HealthBar>();
+        _healthBar.Initialize(transform, data.Health);
+        _healthBar.SetHealth(health, data.Health);
     }
 
     private void Start()
     {
-        SetNewDirection();
-
         _resourceManager = FindObjectOfType<ResourceManager>();
         _gameManager = FindObjectOfType<GameManager>();
     }
 
     private void Update()
     {
-        if (isDead) return;
+        if (_isDead) return;
 
         if (CurrentTarget != null && CurrentTarget.Health > 0)
         {
@@ -86,18 +81,12 @@ public class Soldier : IDamageable
             PatrolArea();
         }
 
-        directionChangeTimer -= Time.deltaTime;
-        goldDropTimer -= Time.deltaTime;  // Reduce cooldown timer
-
-        if (directionChangeTimer <= 0)
-        {
-            SetNewDirection();
-        }
+        _goldDropTimer -= Time.deltaTime;  // Reduce cooldown timer
     }
 
     private void EngageTarget()
     {
-        if (!isAttacking)
+        if (!_isAttacking)
         {
             Vector3 targetPosition = GetClosestPointOnTarget();
             if (Vector3.Distance(transform.position, targetPosition) > data.AttackRange)
@@ -108,23 +97,23 @@ public class Soldier : IDamageable
             {
                 FaceTarget();
                 StopMovement();
-                attackTarget = CurrentTarget;
-                isAttacking = true;
-                attackBehavior.Attack(this, attackTarget);
+                _attackTarget = CurrentTarget;
+                _isAttacking = true;
+                _attackBehavior.Attack(this, _attackTarget);
 
                 // Drop gold if player soldier attacks enemy base
-                if (!isEnemy && CurrentTarget is Base && goldDropTimer <= 0)
+                if (!isEnemy && CurrentTarget is Base && _goldDropTimer <= 0)
                 {
                     DropGold(CurrentTarget.transform.position);
-                    goldDropTimer = goldDropCooldown;  // Reset cooldown
+                    _goldDropTimer = GoldDropCooldown;  // Reset cooldown
                 }
             }
         }
 
         DetectTargets();
-        if (CurrentTarget != attackTarget)
+        if (CurrentTarget != _attackTarget)
         {
-            isAttacking = false;
+            _isAttacking = false;
         }
     }
 
@@ -133,33 +122,27 @@ public class Soldier : IDamageable
         DetectTargets();
         if (CurrentTarget == null)
         {
-            MoveTowards(transform.position + currentDirection); // Patrol without moving diagonally
-            isAttacking = false;
+            MoveTowards(transform.position + _currentDirection); // Patrol without moving diagonally
+            _isAttacking = false;
         }
     }
 
     private void MoveTowards(Vector3 targetPosition)
     {
-        if (!isAttacking)
+        if (!_isAttacking)
         {
-            moveBehavior.Move(rb, targetPosition, data.Speed);
+            _moveBehavior.Move(_rb, targetPosition, data.Speed);
         }
-    }
-
-    private void SetNewDirection()
-    {
-        currentDirection = new Vector2(isEnemy ? -1 : 1, 0).normalized; // Set new direction without diagonal
-        directionChangeTimer = directionChangeInterval;
     }
 
     private void StopMovement()
     {
-        rb.velocity = Vector2.zero;
+        _rb.velocity = Vector2.zero;
     }
 
     private void DetectTargets()
     {
-        if (isAttacking && !(CurrentTarget is Base)) return;
+        if (_isAttacking && !(CurrentTarget is Base)) return;
 
         IDamageable closestTarget = null;
         float closestDistance = Mathf.Infinity;
@@ -201,19 +184,19 @@ public class Soldier : IDamageable
 
     public void TriggerAttackAnimation()
     {
-        animator?.SetTrigger("Attack");
+        _animator?.SetTrigger(Attack);
     }
 
     public void ResetAttackAnimation()
     {
-        animator?.ResetTrigger("Attack");
-        isAttacking = false;
+        _animator?.ResetTrigger(Attack);
+        _isAttacking = false;
     }
 
     public override void Die()
     {
-        if (isDead) return;
-        isDead = true;
+        if (_isDead) return;
+        _isDead = true;
 
         if (isEnemy)
         {
@@ -243,10 +226,10 @@ public class Soldier : IDamageable
 
     public override void TakeDamage(int damage)
     {
-        if (isDead) return;
+        if (_isDead) return;
 
         Health -= damage;
-        damageFlicker?.Flicker(0.1f, Color.gray);
+        _damageFlicker?.Flicker(0.1f, Color.gray);
         if (Health <= 0)
         {
             Die();
@@ -255,8 +238,8 @@ public class Soldier : IDamageable
 
     public void StopAllActions()
     {
-        isAttacking = false;
-        rb.velocity = Vector2.zero;
+        _isAttacking = false;
+        _rb.velocity = Vector2.zero;
         ResetAttackAnimation();
         enabled = false;
     }
