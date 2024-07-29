@@ -141,6 +141,8 @@ public class UIManager : MonoBehaviour
 
         gameOverPanel.SetActive(false);
         fadeOverlay.gameObject.SetActive(false);
+        pauseButton.transform.parent.gameObject.SetActive(false);
+        waveTextObject.gameObject.SetActive(false);
 
         Initialize(_gameManager.allSoldierTypes);
     }
@@ -338,6 +340,8 @@ public class UIManager : MonoBehaviour
     {
         mainButtonsPanel.SetActive(false);
         battleBottomPanel.SetActive(true);
+        pauseButton.transform.parent.gameObject.SetActive(true);
+        waveTextObject.gameObject.SetActive(true);
     }
 
     public void DisplayWaveText(string text)
