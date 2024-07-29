@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class UIManager : MonoBehaviour
 {
@@ -41,7 +42,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button increaseFoodProductionButton;
     [SerializeField] private Button increaseBaseHealthButton;
     [SerializeField] private Button pauseButton;
-    [SerializeField] private Button resumeButton;
+    [SerializeField] private Button pauseResumeButton;
+    [SerializeField] private Button pauseQuitButton;
 
     [Header("Soldier Card Elements")]
     [SerializeField] private GameObject soldierCardPrefab;
@@ -114,7 +116,8 @@ public class UIManager : MonoBehaviour
         startBattleButton.onClick.AddListener(() => OnStartBattle?.Invoke());
         closeGameOverPanelButton.onClick.AddListener(CloseGameOverPanel);
         pauseButton.onClick.AddListener(PauseGame);
-        resumeButton.onClick.AddListener(ResumeGame);
+        pauseResumeButton.onClick.AddListener(ResumeGame);
+        pauseQuitButton.onClick.AddListener(QuitToMainMenu);
 
         UpdateFoodProductionRateUI(_resourceManager.foodProductionRate);
         UpdateBaseHealthUI(_gameManager.PlayerBase.Health);
@@ -314,6 +317,12 @@ public class UIManager : MonoBehaviour
         Time.timeScale = 1f; // Resume the game
     }
 
+    private void QuitToMainMenu()
+    {
+        Time.timeScale = 1f;
+        StartCoroutine(RestartSceneWithFade(false));
+    }
+
     public void OpenUpgradePanel()
     {
         statusText.text = $"Upgrades";
@@ -354,8 +363,7 @@ public class UIManager : MonoBehaviour
             totalGoldVaultText.text = $"{totalGoldAmount}";
         }
     }
-
-
+    
     public void UpdateFoodUI(int foodAmount)
     {
         foodText.text = $"{foodAmount}";
@@ -417,22 +425,6 @@ public class UIManager : MonoBehaviour
         unitButtons.Clear();
     }
 
-    private void UnlockSoldierType(int index)
-    {
-        if (index < 0 || index >= _gameManager.allSoldierTypes.Count) return;
-
-        SoldierDataSO soldierType = _gameManager.allSoldierTypes[index];
-        if (!soldierType.IsUnlocked && _resourceManager.SpendGold(soldierType.UnlockCost))
-        {
-            soldierType.IsUnlocked = true;
-            PlayerPrefs.SetInt(soldierType.SoldierName, 1); // Save unlock status
-            PlayerPrefs.Save(); // Save preferences
-
-            UpdateSoldierTypesForEra(currentEra);
-            UpdateUpgradeButtonsUI();
-        }
-    }
-
     private void UpdateUpgradePanel(List<SoldierDataSO> eraSoldierTypes)
     {
         for (int i = 0; i < soldierCardsUI.Count; i++)
@@ -458,16 +450,22 @@ public class UIManager : MonoBehaviour
     
     public void CloseGameOverPanel()
     {
-        StartCoroutine(RestartSceneWithFade());
+        StartCoroutine(RestartSceneWithFade(true));
     }
 
-    private IEnumerator RestartSceneWithFade()
+    private IEnumerator RestartSceneWithFade(bool shouldRoundGoldToTotalGold)
     {
         yield return StartCoroutine(Fade(0f, 1f, 1f));
-        _resourceManager.AddRoundGoldToTotal();
+    
+        if (shouldRoundGoldToTotalGold)
+        {
+            _resourceManager.AddRoundGoldToTotal();
+        }
+    
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         yield return StartCoroutine(Fade(1f, 0f, 1f));
     }
+
 
     private IEnumerator Fade(float startAlpha, float endAlpha, float duration, Action postFadeAction = null, bool reloadScene = false)
     {
